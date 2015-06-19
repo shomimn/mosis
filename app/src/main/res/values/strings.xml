@@ -14,4 +14,5 @@
     <string name="password_label">Password</string>
     <string name="email_label">E-mail</string>
     <string name="birth_date">Date of birth</string>
+    <string name="title_activity_map">Map</string>
 </resources>

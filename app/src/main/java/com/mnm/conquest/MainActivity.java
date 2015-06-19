@@ -16,17 +16,20 @@ import android.widget.EditText;
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener
 {
+    private Button map_button;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Button sign_up_button = (Button)findViewById(R.id.sign_up_login_button);
         sign_up_button.setOnClickListener(this);
 
         Button sign_in_button = (Button)findViewById(R.id.sign_in_button);
         sign_in_button.setOnClickListener(this);
+
+        map_button = (Button)findViewById(R.id.map_button);
+        map_button.setOnClickListener(this);
     }
 
     @Override
@@ -65,7 +68,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             Intent i1 = new Intent(this, RegisterActivity.class);
             startActivity(i1);
         }
-        if(id == R.id.sign_in_button)
+        else if(id == R.id.sign_in_button)
         {
             EditText user = (EditText)findViewById(R.id.username_login);
             EditText pass = (EditText)findViewById(R.id.password_login);
@@ -89,9 +92,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         });
                 AlertDialog alert = builder.create();
                 alert.show();
-
-
             }
+        }
+        else if (id == R.id.map_button)
+        {
+            Intent i = new Intent(this, MapActivity.class);
+            startActivity(i);
         }
     }
 }
