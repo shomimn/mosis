@@ -11,6 +11,7 @@ public class MainActivity extends ActionBarActivity
     private int milos;
     private int milos2;
 
+    public int tomas;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
