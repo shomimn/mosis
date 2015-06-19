@@ -1,6 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Conquest</string>
 
+    <string name="app_name">Conquest</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_register">Sign up for free</string>
+
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="user_name_label">Username</string>
+    <string name="name_label">Name</string>
+    <string name="last_name_label">Last name</string>
+    <string name="password_label">Password</string>
+    <string name="email_label">E-mail</string>
+    <string name="birth_date">Date of birth</string>
 </resources>
