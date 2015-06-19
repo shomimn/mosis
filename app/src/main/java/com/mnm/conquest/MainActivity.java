@@ -9,7 +9,7 @@ import android.view.MenuItem;
 public class MainActivity extends ActionBarActivity
 {
     private int milan;
-
+    private int Milan;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
