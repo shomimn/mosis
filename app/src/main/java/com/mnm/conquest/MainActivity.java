@@ -8,6 +8,8 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity
 {
+    private int milos;
+    private int milos2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
