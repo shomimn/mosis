@@ -1,19 +1,33 @@
 package com.mnm.conquest;
 
+import android.content.Context;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
 
 
 public class MapActivity extends AppCompatActivity
 {
 
     private GoogleMap map;
+    private static LatLng mylocation;
+    private Location location;
+    private LocationManager locationManager;
+    String provider;
+    Criteria cri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -22,6 +36,16 @@ public class MapActivity extends AppCompatActivity
         setContentView(R.layout.activity_map);
         map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
         map.setMyLocationEnabled(true);
+
+        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        cri=new Criteria();
+        provider=locationManager.getBestProvider(cri, false);
+        location=locationManager.getLastKnownLocation(provider);
+        mylocation = new LatLng(location.getLatitude(), location.getLongitude());
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(mylocation, 15));
+
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
     }
 
     @Override
