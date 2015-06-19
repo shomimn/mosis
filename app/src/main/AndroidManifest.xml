@@ -27,11 +27,12 @@
         </activity>
         <activity
             android:name=".MapActivity"
-            android:label="@string/title_activity_map" >
+            android:label="@string/title_activity_map"
+            android:theme="@style/MapTheme">
         </activity>
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
         <meta-data android:name="com.google.android.maps.v2.API_KEY"
-                   android:value="AIzaSyCk3xDNKM-ZUGAPABsqWbUu_VfwDA7lJMM"/>
+                   android:value="AIzaSyD1-GANcvCUYsiPvvfH1lHQcGU0Ff6TnQ0"/>
     </application>
 
 </manifest>
