@@ -19,4 +19,5 @@
     <string name="progress_logging_message">Please wait!</string>
     <string name="error_title">Error!</string>
     <string name="error_message">You have empty fields!</string>
+    <string name="log_out">Log out</string>
 </resources>
