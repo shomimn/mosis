@@ -8,8 +8,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity
 {
-
-    public int tomas;
+    //aaaa
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
