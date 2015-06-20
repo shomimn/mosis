@@ -1,6 +1,8 @@
 package com.mnm.conquest;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -9,30 +11,34 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import android.widget.LinearLayout;
 
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener
 {
-    private Button map_button;
+    private Button mapButton;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button sign_up_button = (Button) findViewById(R.id.sign_up_login_button);
-        sign_up_button.setOnClickListener(this);
 
-        Button sign_in_button = (Button) findViewById(R.id.sign_in_button);
-        sign_in_button.setOnClickListener(this);
+        Button signUpButton = (Button)findViewById(R.id.sign_up_login_button);
+        signUpButton.setOnClickListener(this);
 
-        map_button = (Button) findViewById(R.id.map_button);
-        map_button.setOnClickListener(this);
+        Button signInButton = (Button)findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(this);
+
+        mapButton = (Button)findViewById(R.id.map_button);
+        mapButton.setOnClickListener(this);
     }
 
     @Override
@@ -79,13 +85,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             String username = user.getText().toString();
             String password = pass.getText().toString();
 
-            Log.d("username:",username);
-
             if(username.trim().length() == 0 || password.trim().length() == 0)
             {
-               AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Error!");
-                builder.setMessage("You have empty fields!");
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.error_title);
+                builder.setMessage(R.string.error_message);
                 builder.setCancelable(true);
                 builder.setNegativeButton("OK",
                         new DialogInterface.OnClickListener() {
@@ -95,6 +99,18 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         });
                 AlertDialog alert = builder.create();
                 alert.show();
+            }
+            else
+            {
+                LinearLayout l = (LinearLayout)findViewById(R.id.login_layout);
+                AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+                anim.setFillAfter(true);
+                anim.setDuration(1500);
+                l.startAnimation(anim);
+                ProgressDialog progDialog = new ProgressDialog(this);
+                progDialog.setTitle(R.string.progress_logging_title);
+                progDialog.setMessage(getResources().getString(R.string.progress_logging_message));
+                progDialog.show();
             }
         }
         else if (id == R.id.map_button)

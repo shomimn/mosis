@@ -42,7 +42,6 @@ public class MapActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_map, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
