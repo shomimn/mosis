@@ -1,18 +1,24 @@
 package com.mnm.conquest;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends ActionBarActivity implements View.OnClickListener
 {
+    private Button map_button;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        map_button = (Button)findViewById(R.id.map_button);
+        map_button.setOnClickListener(this);
     }
 
     @Override
@@ -38,5 +44,12 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        Intent i = new Intent(this, MapActivity.class);
+        startActivity(i);
     }
 }
