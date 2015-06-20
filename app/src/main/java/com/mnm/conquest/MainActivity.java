@@ -78,13 +78,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
             Log.d("username:",username);
 
-            if(username.trim() == "" || password.trim() == "")
+            if(username.trim().length() == 0 || password.trim().length() == 0)
             {
                AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Error!");
                 builder.setMessage("You have empty fields!");
                 builder.setCancelable(true);
-                builder.setNegativeButton("No",
+                builder.setNegativeButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
