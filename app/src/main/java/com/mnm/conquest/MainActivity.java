@@ -15,6 +15,10 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import android.widget.LinearLayout;
 
 

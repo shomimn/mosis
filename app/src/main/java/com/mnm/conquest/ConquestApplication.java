@@ -6,6 +6,7 @@ import android.content.Context;
 public class ConquestApplication extends Application
 {
     private static ConquestApplication instance;
+//    private ThreadManager threadManager;
 
     public ConquestApplication()
     {
