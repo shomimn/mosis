@@ -23,11 +23,7 @@ public class MapActivity extends AppCompatActivity
 {
 
     private GoogleMap map;
-    private static LatLng mylocation;
-    private Location location;
-    private LocationManager locationManager;
-    String provider;
-    Criteria cri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -37,12 +33,7 @@ public class MapActivity extends AppCompatActivity
         map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
         map.setMyLocationEnabled(true);
 
-        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        cri=new Criteria();
-        provider=locationManager.getBestProvider(cri, false);
-        location=locationManager.getLastKnownLocation(provider);
-        mylocation = new LatLng(location.getLatitude(), location.getLongitude());
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(mylocation, 15));
+
 
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
