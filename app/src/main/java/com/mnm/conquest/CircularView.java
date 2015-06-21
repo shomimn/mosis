@@ -106,7 +106,7 @@ public class CircularView extends View implements View.OnTouchListener {
 
             int centerX = (int) ((currentRadius + mInnerRadius) / 2 * Math.cos(Math.toRadians(startAngle + mSweepAngle / 2)));
             int centerY = (int) ((currentRadius + mInnerRadius) / 2 * Math.sin(Math.toRadians(startAngle + mSweepAngle / 2)));
-            
+
             mPaint.setColor(getResources().getColor(R.color.transparent_gray));
             mPaint.setStyle(Paint.Style.FILL);
             canvas.drawCircle(width / 2 + centerX - mCenterIcon.getWidth() / 2+mCenterIcon.getWidth()/2,height / 2 + centerY - mCenterIcon.getHeight() / 2+ mCenterIcon.getHeight()/2, mCenterIcon.getWidth(), mPaint);
