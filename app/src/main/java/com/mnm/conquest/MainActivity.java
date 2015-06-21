@@ -4,10 +4,8 @@ import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,19 +17,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import javax.net.ssl.KeyManager;
 
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener, Animator.AnimatorListener
@@ -121,11 +112,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     usernameEdit.setText("");
                     passwordEdit.setText("");
 
-
-
-                  //  invalidateOptionsMenu();
-
-//                    onCreateOptionsMenu(menu);
                     animSetLogOut.start();
                 }
             });
@@ -139,7 +125,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             });
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
-
         }
 
         return super.onOptionsItemSelected(item);
@@ -149,7 +134,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     public void onClick(View view)
     {
         int id = view.getId();
-
 
         switch(id)
         {
@@ -183,7 +167,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 }
                 else
                 {
-
                     final ProgressDialog progDialog = new ProgressDialog(this);
                     progDialog.setTitle(R.string.progress_logging_title);
                     progDialog.setMessage(getResources().getString(R.string.progress_logging_message));
@@ -197,9 +180,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         {
                             progDialog.dismiss();
                             animSetLogIn.start();
-
-
-
                         }
                     }, 3000);
                 }
@@ -208,8 +188,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 Intent i = new Intent(this, MapActivity.class);
                 startActivity(i);
                 break;
-
-
         }
     }
 
