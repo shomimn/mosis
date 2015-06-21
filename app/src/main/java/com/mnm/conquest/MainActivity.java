@@ -27,9 +27,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener
+public class MainActivity extends ActionBarActivity implements View.OnClickListener, Animator.AnimatorListener
 {
     private Button mapButton;
+    private AnimatorSet animSetLogIn;
+    private AnimatorSet animSetLogOut;
+    private LinearLayout layoutLogin;
+    private LinearLayout layoutLogged;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -47,6 +52,21 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         mapButton = (Button)findViewById(R.id.map_button);
         mapButton.setOnClickListener(this);
+
+        animSetLogIn = new AnimatorSet();
+        animSetLogOut = new AnimatorSet();
+
+        animSetLogIn.addListener(this);
+        animSetLogOut.addListener(this);
+
+        layoutLogin = (LinearLayout) findViewById(R.id.login_layout);
+        layoutLogged = (LinearLayout) findViewById(R.id.loged_layout);
+
+        animSetLogIn.play(ObjectAnimator.ofFloat(layoutLogin, "alpha", 1.0f, 0.0f).setDuration(1500))
+                .before(ObjectAnimator.ofFloat(layoutLogged, "alpha", 0.0f, 1.0f).setDuration(1500));
+
+        animSetLogOut.play(ObjectAnimator.ofFloat(layoutLogged, "alpha", 1.0f, 0.0f).setDuration(1500))
+                .before(ObjectAnimator.ofFloat(layoutLogin, "alpha", 0.0f, 1.0f).setDuration(1500));
     }
 
     @Override
@@ -93,65 +113,43 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 String username = user.getText().toString();
                 String password = pass.getText().toString();
 
-                if(username.trim().length() == 0 || password.trim().length() == 0) {
+                if(username.trim().length() == 0 || password.trim().length() == 0)
+                {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle(R.string.error_title);
                     builder.setMessage(R.string.error_message);
                     builder.setCancelable(true);
                     builder.setNegativeButton("OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
+                            new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
                                     dialog.cancel();
                                 }
                             });
                     AlertDialog alert = builder.create();
                     alert.show();
                 }
-                else {
+                else
+                {
 
                     final ProgressDialog progDialog = new ProgressDialog(this);
                     progDialog.setTitle(R.string.progress_logging_title);
                     progDialog.setMessage(getResources().getString(R.string.progress_logging_message));
                     progDialog.show();
 
-
                     Handler h = new Handler();
-                    h.postDelayed(new Runnable() {
+                    h.postDelayed(new Runnable()
+                    {
                         @Override
-                        public void run() {
+                        public void run()
+                        {
                             progDialog.dismiss();
 
-                            final LinearLayout layoutLogin = (LinearLayout) findViewById(R.id.login_layout);
-                            final LinearLayout layoutLoged = (LinearLayout) findViewById(R.id.loged_layout);
-
                             TextView usernameTextView = (TextView) findViewById(R.id.username_text_view);
-                            usernameTextView.setText("Loged in as: " + ((EditText) findViewById(R.id.username_login)).getText());
-                            AnimatorSet animatorSet = new AnimatorSet();
-                            animatorSet.addListener(new Animator.AnimatorListener() {
-                                @Override
-                                public void onAnimationStart(Animator animation) {
-                                    layoutLoged.setVisibility(View.VISIBLE);
-                                }
+                            usernameTextView.setText("Logged in as: " + ((EditText) findViewById(R.id.username_login)).getText());
 
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    layoutLogin.setVisibility(View.INVISIBLE);
-                                }
-
-                                @Override
-                                public void onAnimationCancel(Animator animation) {
-
-                                }
-
-                                @Override
-                                public void onAnimationRepeat(Animator animation) {
-
-                                }
-                            });
-                            animatorSet.play(ObjectAnimator.ofFloat(layoutLogin, "alpha", 1.0f, 0.0f).setDuration(1500))
-                                    .before(ObjectAnimator.ofFloat(layoutLoged, "alpha", 0.0f, 1.0f).setDuration(1500));
-                            animatorSet.start();
-
+                            animSetLogIn.start();
                         }
                     }, 3000);
                 }
@@ -164,56 +162,68 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Confirm");
                 builder.setMessage("Are you sure?");
-                builder.setPositiveButton("YES", new DialogInterface.OnClickListener(){
-
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener()
+                {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        final LinearLayout layoutLogin = (LinearLayout) findViewById(R.id.login_layout);
-                        final LinearLayout layoutLoged = (LinearLayout) findViewById(R.id.loged_layout);
-
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
                         EditText usernameEdit = (EditText)findViewById(R.id.username_login);
                         EditText passwordEdit = (EditText)findViewById(R.id.password_login);
 
                         usernameEdit.setText("");
                         passwordEdit.setText("");
-                        AnimatorSet animatorSet = new AnimatorSet();
-                        animatorSet.addListener(new Animator.AnimatorListener() {
-                            @Override
-                            public void onAnimationStart(Animator animation) {
-                                layoutLogin.setVisibility(View.VISIBLE);
-                            }
 
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                layoutLoged.setVisibility(View.INVISIBLE);
-                            }
-
-                            @Override
-                            public void onAnimationCancel(Animator animation) {
-
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animator animation) {
-
-                            }
-                        });
-                        animatorSet.play(ObjectAnimator.ofFloat(layoutLoged, "alpha", 1.0f, 0.0f).setDuration(1500))
-                                .before(ObjectAnimator.ofFloat(layoutLogin, "alpha", 0.0f, 1.0f).setDuration(1500));
-                        animatorSet.start();
-
+                        animSetLogOut.start();
                     }
                 });
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener()
+                {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
                         dialogInterface.dismiss();
                     }
                 });
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
                 break;
-
         }
+    }
+    @Override
+    public void onAnimationStart(Animator animation)
+    {
+        if(animation == animSetLogIn)
+        {
+            layoutLogged.setVisibility(View.VISIBLE);
+        }
+        else if(animation == animSetLogOut)
+        {
+           layoutLogin.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onAnimationEnd(Animator animation)
+    {
+        if(animation == animSetLogIn)
+        {
+            layoutLogin.setVisibility(View.INVISIBLE);
+        }
+        else if(animation == animSetLogOut)
+        {
+            layoutLogged.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void onAnimationCancel(Animator animation)
+    {
+
+    }
+
+    @Override
+    public void onAnimationRepeat(Animator animation)
+    {
+
     }
 }
