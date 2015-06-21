@@ -28,6 +28,7 @@ public class WebSocketTester
                     super.onOpen();
 
                     Log.d("Tester", "Connection open");
+                    connection.sendTextMessage("{ type: 0, data: { username: 'user', password: 'pw' } }");
                 }
 
                 @Override
