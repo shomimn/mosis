@@ -21,14 +21,12 @@ public class MapActivity extends AppCompatActivity
 
     private GoogleMap map;
     private CircularView circularView;
-    private Context cont = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        cont = this;
         map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
         map.setMyLocationEnabled(true);
 
@@ -45,6 +43,7 @@ public class MapActivity extends AppCompatActivity
                 circularView.setVisibility(View.VISIBLE);
             }
         });
+
     }
 
     @Override
@@ -54,7 +53,6 @@ public class MapActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_map, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {

@@ -15,4 +15,9 @@
     <string name="email_label">E-mail</string>
     <string name="birth_date">Date of birth</string>
     <string name="title_activity_map">Map</string>
+    <string name="progress_logging_title">Logging in...</string>
+    <string name="progress_logging_message">Please wait!</string>
+    <string name="error_title">Error!</string>
+    <string name="error_message">You have empty fields!</string>
+    <string name="log_out">Log out</string>
 </resources>
