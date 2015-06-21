@@ -7,6 +7,7 @@ import com.nineoldandroids.animation.ObjectAnimator;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,11 +34,18 @@ import android.widget.TextView;
 import javax.net.ssl.KeyManager;
 
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener
+public class MainActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener, Animator.AnimatorListener
 {
     private Button mapButton;
+    private AnimatorSet animSetLogIn;
+    private AnimatorSet animSetLogOut;
+    private LinearLayout layoutLogin;
+    private LinearLayout layoutLogged;
+
     EditText usernameET;
     EditText passwordET;
+
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -58,6 +66,21 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         mapButton = (Button) findViewById(R.id.map_button);
         mapButton.setOnClickListener(this);
+
+        animSetLogIn = new AnimatorSet();
+        animSetLogOut = new AnimatorSet();
+
+        animSetLogIn.addListener(this);
+        animSetLogOut.addListener(this);
+
+        layoutLogin = (LinearLayout) findViewById(R.id.login_layout);
+        layoutLogged = (LinearLayout) findViewById(R.id.loged_layout);
+
+        animSetLogIn.play(ObjectAnimator.ofFloat(layoutLogin, "alpha", 1.0f, 0.0f).setDuration(1500))
+                .before(ObjectAnimator.ofFloat(layoutLogged, "alpha", 0.0f, 1.0f).setDuration(1500));
+
+        animSetLogOut.play(ObjectAnimator.ofFloat(layoutLogged, "alpha", 1.0f, 0.0f).setDuration(1500))
+                .before(ObjectAnimator.ofFloat(layoutLogin, "alpha", 0.0f, 1.0f).setDuration(1500));
     }
 
     @Override
@@ -65,6 +88,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -86,49 +110,30 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Confirm");
             builder.setMessage("Are you sure?");
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener(){
-
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener()
+            {
                 @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    final LinearLayout layoutLogin = (LinearLayout) findViewById(R.id.login_layout);
-                    final LinearLayout layoutLoged = (LinearLayout) findViewById(R.id.loged_layout);
-
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
                     EditText usernameEdit = (EditText)findViewById(R.id.username_login);
                     EditText passwordEdit = (EditText)findViewById(R.id.password_login);
 
                     usernameEdit.setText("");
                     passwordEdit.setText("");
-                    AnimatorSet animatorSet = new AnimatorSet();
-                    animatorSet.addListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-                            layoutLogin.setVisibility(View.VISIBLE);
-                        }
 
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            layoutLoged.setVisibility(View.INVISIBLE);
-                        }
 
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
 
-                        }
+                  //  invalidateOptionsMenu();
 
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-
-                        }
-                    });
-                    animatorSet.play(ObjectAnimator.ofFloat(layoutLoged, "alpha", 1.0f, 0.0f).setDuration(1500))
-                            .before(ObjectAnimator.ofFloat(layoutLogin, "alpha", 0.0f, 1.0f).setDuration(1500));
-                    animatorSet.start();
-
+//                    onCreateOptionsMenu(menu);
+                    animSetLogOut.start();
                 }
             });
-            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener()
+            {
                 @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
                     dialogInterface.dismiss();
                 }
             });
@@ -159,65 +164,42 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 String username = user.getText().toString();
                 String password = pass.getText().toString();
 
-                if(username.trim().length() == 0 || password.trim().length() == 0) {
+                if(username.trim().length() == 0 || password.trim().length() == 0)
+                {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle(R.string.error_title);
                     builder.setMessage(R.string.error_message);
                     builder.setCancelable(true);
                     builder.setNegativeButton("OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
+                            new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
                                     dialog.cancel();
                                 }
                             });
                     AlertDialog alert = builder.create();
                     alert.show();
                 }
-                else {
+                else
+                {
 
                     final ProgressDialog progDialog = new ProgressDialog(this);
                     progDialog.setTitle(R.string.progress_logging_title);
                     progDialog.setMessage(getResources().getString(R.string.progress_logging_message));
                     progDialog.show();
 
-
                     Handler h = new Handler();
-                    h.postDelayed(new Runnable() {
+                    h.postDelayed(new Runnable()
+                    {
                         @Override
-                        public void run() {
+                        public void run()
+                        {
                             progDialog.dismiss();
-
-                            final LinearLayout layoutLogin = (LinearLayout) findViewById(R.id.login_layout);
-                            final LinearLayout layoutLoged = (LinearLayout) findViewById(R.id.loged_layout);
+                            animSetLogIn.start();
 
 
 
-                            getSupportActionBar().setTitle(getResources().getString(R.string.optionsActionBarName) + " " + ((EditText) findViewById(R.id.username_login)).getText());
-                            AnimatorSet animatorSet = new AnimatorSet();
-                            animatorSet.addListener(new Animator.AnimatorListener() {
-                                @Override
-                                public void onAnimationStart(Animator animation) {
-                                    layoutLoged.setVisibility(View.VISIBLE);
-                                }
-
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    layoutLogin.setVisibility(View.INVISIBLE);
-                                }
-
-                                @Override
-                                public void onAnimationCancel(Animator animation) {
-
-                                }
-
-                                @Override
-                                public void onAnimationRepeat(Animator animation) {
-
-                                }
-                            });
-                            animatorSet.play(ObjectAnimator.ofFloat(layoutLogin, "alpha", 1.0f, 0.0f).setDuration(1500))
-                                    .before(ObjectAnimator.ofFloat(layoutLoged, "alpha", 0.0f, 1.0f).setDuration(1500));
-                            animatorSet.start();
                         }
                     }, 3000);
                 }
@@ -226,7 +208,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 Intent i = new Intent(this, MapActivity.class);
                 startActivity(i);
                 break;
-            //case R.id.log_out_button:
 
 
         }
@@ -257,5 +238,50 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 break;
         }
         return false;
+    }
+
+    @Override
+    public void onAnimationStart(Animator animation)
+    {
+        if(animation == animSetLogIn)
+        {
+            layoutLogged.setVisibility(View.VISIBLE);
+        }
+        else if(animation == animSetLogOut)
+        {
+           layoutLogin.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onAnimationEnd(Animator animation)
+    {
+        if(animation == animSetLogIn)
+        {
+            layoutLogin.setVisibility(View.INVISIBLE);
+            MenuItem logOut = menu.findItem(R.id.log_out);
+            logOut.setVisible(true);
+            getSupportActionBar().setTitle(getResources().getString(R.string.optionsActionBarName)
+                    + " " + ((EditText) findViewById(R.id.username_login)).getText());
+        }
+        else if(animation == animSetLogOut)
+        {
+            layoutLogged.setVisibility(View.INVISIBLE);
+            MenuItem logOut = menu.findItem(R.id.log_out);
+            logOut.setVisible(false);
+            getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
+        }
+    }
+
+    @Override
+    public void onAnimationCancel(Animator animation)
+    {
+
+    }
+
+    @Override
+    public void onAnimationRepeat(Animator animation)
+    {
+
     }
 }
