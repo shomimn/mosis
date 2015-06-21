@@ -32,15 +32,15 @@ public class TaskManager
     private static TaskManager instance = new TaskManager();
     private ExecutorService threadPool;
     private static Handler mainHandler;
-//    private ThreadPoolExecutor threadPoolExecutor;
-//    private BlockingQueue<Runnable> executorQueue;
+
+    private ExecutorService[] threadPools = new ExecutorService[2];
 
     private TaskManager()
     {
         threadPool = Executors.newFixedThreadPool(CORE_POOL_SIZE);
+        for (int i = 0; i < 2; ++i)
+            threadPools[i] = Executors.newFixedThreadPool(CORE_POOL_SIZE);
         mainHandler = new Handler();
-//        executorQueue = new LinkedBlockingQueue<Runnable>();
-//        threadPoolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, executorQueue);
     }
 
     public static TaskManager getTaskManager()
@@ -93,5 +93,37 @@ public class TaskManager
     public <T extends Object> Future<T> execute(Callable<T> callable)
     {
         return threadPool.submit(callable);
+    }
+
+    public void execute(final Task task)
+    {
+        threadPools[task.type].execute(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                task.execute();
+            }
+        });
+    }
+
+    public void executeAndPost(final Task.Ui task)
+    {
+        threadPools[task.type].execute(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                task.execute();
+                mainHandler.post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        task.uiExecute();
+                    }
+                });
+            }
+        });
     }
 }

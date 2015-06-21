@@ -7,16 +7,21 @@ import com.nineoldandroids.animation.ObjectAnimator;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,6 +30,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import javax.net.ssl.KeyManager;
 
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, Animator.AnimatorListener
@@ -35,22 +42,48 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private LinearLayout layoutLogin;
     private LinearLayout layoutLogged;
 
+    EditText usernameET;
+    EditText passwordET;
+
+    private Menu menu;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        usernameET = (EditText)findViewById(R.id.username_login);
+        usernameET.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == event.KEYCODE_ENTER) {
+                    usernameET.clearFocus();
+                    passwordET.requestFocus();
+                }
+                return true;
+            }
+        });
+        passwordET = (EditText)findViewById(R.id.password_login);
+        passwordET.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (passwordET.getText().toString().length() != 0) {
+                    passwordET.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(passwordET.getWindowToken(), 0);
+                }
+                return true;
+            }
+        });
+
         Button signUpButton = (Button)findViewById(R.id.sign_up_login_button);
         signUpButton.setOnClickListener(this);
 
-        Button signInButton = (Button)findViewById(R.id.sign_in_button);
+        Button signInButton = (Button) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
 
-        Button logOutButton = (Button)findViewById(R.id.log_out_button);
-        logOutButton.setOnClickListener(this);
-
-        mapButton = (Button)findViewById(R.id.map_button);
+        mapButton = (Button) findViewById(R.id.map_button);
         mapButton.setOnClickListener(this);
 
         animSetLogIn = new AnimatorSet();
@@ -74,6 +107,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -89,6 +123,42 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         if (id == R.id.action_settings)
         {
             return true;
+        }
+        else if(id == R.id.log_out)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Confirm");
+            builder.setMessage("Are you sure?");
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    EditText usernameEdit = (EditText)findViewById(R.id.username_login);
+                    EditText passwordEdit = (EditText)findViewById(R.id.password_login);
+
+                    usernameEdit.setText("");
+                    passwordEdit.setText("");
+
+
+
+                  //  invalidateOptionsMenu();
+
+//                    onCreateOptionsMenu(menu);
+                    animSetLogOut.start();
+                }
+            });
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    dialogInterface.dismiss();
+                }
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -145,11 +215,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         public void run()
                         {
                             progDialog.dismiss();
-
-                            TextView usernameTextView = (TextView) findViewById(R.id.username_text_view);
-                            usernameTextView.setText("Logged in as: " + ((EditText) findViewById(R.id.username_login)).getText());
-
                             animSetLogIn.start();
+
+
+
                         }
                     }, 3000);
                 }
@@ -158,35 +227,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 Intent i = new Intent(this, MapActivity.class);
                 startActivity(i);
                 break;
-            case R.id.log_out_button:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Confirm");
-                builder.setMessage("Are you sure?");
-                builder.setPositiveButton("YES", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-                        EditText usernameEdit = (EditText)findViewById(R.id.username_login);
-                        EditText passwordEdit = (EditText)findViewById(R.id.password_login);
 
-                        usernameEdit.setText("");
-                        passwordEdit.setText("");
 
-                        animSetLogOut.start();
-                    }
-                });
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-                        dialogInterface.dismiss();
-                    }
-                });
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
-                break;
         }
     }
     @Override
@@ -201,17 +243,23 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
            layoutLogin.setVisibility(View.VISIBLE);
         }
     }
-
     @Override
     public void onAnimationEnd(Animator animation)
     {
         if(animation == animSetLogIn)
         {
             layoutLogin.setVisibility(View.INVISIBLE);
+            MenuItem logOut = menu.findItem(R.id.log_out);
+            logOut.setVisible(true);
+            getSupportActionBar().setTitle(getResources().getString(R.string.optionsActionBarName)
+                    + " " + ((EditText) findViewById(R.id.username_login)).getText());
         }
         else if(animation == animSetLogOut)
         {
             layoutLogged.setVisibility(View.INVISIBLE);
+            MenuItem logOut = menu.findItem(R.id.log_out);
+            logOut.setVisible(false);
+            getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
         }
     }
 
