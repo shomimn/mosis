@@ -10,6 +10,7 @@ public class ConquestApplication extends Application
     public ConquestApplication()
     {
         instance = this;
+        ServerConnection.connect();
     }
 
     public static Context getContext()

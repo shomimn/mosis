@@ -145,8 +145,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 EditText user = (EditText)findViewById(R.id.username_login);
                 EditText pass = (EditText)findViewById(R.id.password_login);
 
-                String username = user.getText().toString();
-                String password = pass.getText().toString();
+                final String username = user.getText().toString();
+                final String password = pass.getText().toString();
 
                 if(username.trim().length() == 0 || password.trim().length() == 0)
                 {
@@ -172,16 +172,31 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     progDialog.setMessage(getResources().getString(R.string.progress_logging_message));
                     progDialog.show();
 
-                    Handler h = new Handler();
-                    h.postDelayed(new Runnable()
+//                    Handler h = new Handler();
+//                    h.postDelayed(new Runnable()
+//                    {
+//                        @Override
+//                        public void run()
+//                        {
+//                            progDialog.dismiss();
+//                            animSetLogIn.start();
+//                        }
+//                    }, 3000);
+                    TaskManager.getTaskManager().executeAndPost(new Task.Ui(Task.SERVER)
                     {
                         @Override
-                        public void run()
+                        public void execute()
+                        {
+                            ServerConnection.login(username, password);
+                        }
+
+                        @Override
+                        public void uiExecute()
                         {
                             progDialog.dismiss();
                             animSetLogIn.start();
                         }
-                    }, 3000);
+                    });
                 }
                 break;
             case R.id.map_button:
