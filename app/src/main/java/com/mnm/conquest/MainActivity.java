@@ -24,6 +24,9 @@ import android.widget.Toast;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener, Animator.AnimatorListener
 {
@@ -170,31 +173,35 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     final ProgressDialog progDialog = new ProgressDialog(this);
                     progDialog.setTitle(R.string.progress_logging_title);
                     progDialog.setMessage(getResources().getString(R.string.progress_logging_message));
+                    progDialog.setCanceledOnTouchOutside(false);
                     progDialog.show();
 
-//                    Handler h = new Handler();
-//                    h.postDelayed(new Runnable()
-//                    {
-//                        @Override
-//                        public void run()
-//                        {
-//                            progDialog.dismiss();
-//                            animSetLogIn.start();
-//                        }
-//                    }, 3000);
-                    TaskManager.getTaskManager().executeAndPost(new Task.Ui(Task.SERVER)
+                    TaskManager.getTaskManager().executeAndPost(new Task.Waitable()
                     {
                         @Override
                         public void execute()
                         {
+                            ServerConnection.getHandler().setWaitingTask(this);
                             ServerConnection.login(username, password);
                         }
 
                         @Override
                         public void uiExecute()
                         {
-                            progDialog.dismiss();
-                            animSetLogIn.start();
+                            final int code = getResponseCode();
+                            String message = getResponseMessage();
+                            progDialog.setMessage(message);
+
+                            TaskManager.getMainHandler().postDelayed(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    progDialog.dismiss();
+                                    if (code == ServerConnection.Response.SUCCESS)
+                                        animSetLogIn.start();
+                                }
+                            }, 500);
                         }
                     });
                 }
@@ -221,7 +228,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 }
                 break;
             case R.id.password_login:
-                if (passwordET.getText().toString().length() != 0)
+                if (passwordET.getText().toString().length() != 0 && keyCode == KeyEvent.KEYCODE_ENTER)
                 {
                     passwordET.clearFocus();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
