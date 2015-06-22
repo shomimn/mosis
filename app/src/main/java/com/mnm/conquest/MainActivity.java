@@ -72,15 +72,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Button signUpButton = (Button)findViewById(R.id.sign_up_login_button);
         signUpButton.setOnClickListener(this);
 
-        Button signInButton = (Button)findViewById(R.id.sign_in_button);
+        Button signInButton = (Button) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
 
+        Button logOutButton = (Button) findViewById(R.id.log_out_button);
+        logOutButton.setOnClickListener(this);
 
-
-        mapButton = (Button)findViewById(R.id.map_button);
+        mapButton = (Button) findViewById(R.id.map_button);
         mapButton.setOnClickListener(this);
-
-
     }
 
     @Override
