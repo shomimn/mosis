@@ -168,8 +168,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         switch(id)
         {
             case R.id.sign_up_login_button:
-
-//
                 Intent i1 = new Intent(this, RegisterActivity.class);
 //                ActivityOptionsCompat options1 = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
 //                startActivity(i1, options1.toBundle());
