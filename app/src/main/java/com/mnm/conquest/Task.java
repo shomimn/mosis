@@ -2,6 +2,9 @@ package com.mnm.conquest;
 
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.widget.EditText;
 
 import com.nineoldandroids.animation.AnimatorSet;
 
@@ -136,7 +139,7 @@ public abstract class Task
         @Override
         public void execute()
         {
-            if (ServerConnection.isConnected())
+            if (ServerConnection.isValid())
             {
                 ServerConnection.getHandler().setWaitingTask(this);
                 ServerConnection.login(username, password);
@@ -161,9 +164,48 @@ public abstract class Task
                 {
                     progressDialog.dismiss();
                     if (getResponseCode() == ServerConnection.Response.SUCCESS)
+                    {
+                        SharedPreferences sharedPrefs = ConquestApplication.getContext()
+                                .getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPrefs.edit();
+                        editor.putString("username", username);
+                        editor.commit();
+
+                        animSetLogIn.setDuration(500);
                         animSetLogIn.start();
+                    }
                 }
-            }, 500);
+            }, 1000);
+        }
+    }
+
+    public static class Logout extends Task.Ui
+    {
+        private EditText username;
+        private EditText password;
+        private AnimatorSet animSetLogOut;
+
+        public Logout(EditText user, EditText pw, AnimatorSet animSet)
+        {
+            username = user;
+            password = pw;
+            animSetLogOut = animSet;
+        }
+
+        @Override
+        public void execute()
+        {
+            SharedPreferences.Editor editor = ConquestApplication.getContext()
+                    .getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE).edit();
+            editor.remove("username");
+            editor.commit();
+        }
+
+        @Override
+        public void uiExecute()
+        {
+            animSetLogOut.setDuration(500);
+            animSetLogOut.start();
         }
     }
 }

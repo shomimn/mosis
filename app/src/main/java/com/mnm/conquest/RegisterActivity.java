@@ -2,6 +2,10 @@ package com.mnm.conquest;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.transition.Explode;
+import android.transition.Slide;
+import android.transition.Transition;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -14,6 +18,12 @@ public class RegisterActivity extends ActionBarActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+//        Transition enterTrans = new Slide();
+//        getWindow().setEnterTransition(enterTrans);
+//
+//        Transition returnTrans = new Slide();
+//        getWindow().setReturnTransition(returnTrans);
     }
 
 

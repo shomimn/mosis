@@ -1,18 +1,26 @@
 package com.mnm.conquest;
 
 import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.AnimatorInflater;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.transition.Explode;
+import android.transition.Slide;
+import android.transition.Transition;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +34,7 @@ import android.widget.TextView;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Logger;
 
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener, Animator.AnimatorListener
@@ -41,11 +50,15 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     private Menu menu;
 
+    private boolean loggedIn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        loggedIn = getSharedPreferences("PREF", Context.MODE_PRIVATE).contains("username");
 
         usernameET = (EditText)findViewById(R.id.username_login);
         usernameET.setOnKeyListener(this);
@@ -70,11 +83,17 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         layoutLogin = (LinearLayout) findViewById(R.id.login_layout);
         layoutLogged = (LinearLayout) findViewById(R.id.loged_layout);
 
-        animSetLogIn.play(ObjectAnimator.ofFloat(layoutLogin, "alpha", 1.0f, 0.0f).setDuration(1500))
-                .before(ObjectAnimator.ofFloat(layoutLogged, "alpha", 0.0f, 1.0f).setDuration(1500));
+        animSetLogIn.play(ObjectAnimator.ofFloat(layoutLogin, "alpha", 1.0f, 0.0f).setDuration(loggedIn ? 0 : 500))
+                .before(ObjectAnimator.ofFloat(layoutLogged, "alpha", 0.0f, 1.0f).setDuration(loggedIn ? 0 : 500));
 
-        animSetLogOut.play(ObjectAnimator.ofFloat(layoutLogged, "alpha", 1.0f, 0.0f).setDuration(1500))
-                .before(ObjectAnimator.ofFloat(layoutLogin, "alpha", 0.0f, 1.0f).setDuration(1500));
+        animSetLogOut.play(ObjectAnimator.ofFloat(layoutLogged, "alpha", 1.0f, 0.0f).setDuration(loggedIn ? 0 : 500))
+                .before(ObjectAnimator.ofFloat(layoutLogin, "alpha", 0.0f, 1.0f).setDuration(loggedIn ? 0 : 500));
+
+//        Transition exitTrans = new Slide();
+//        getWindow().setReenterTransition(exitTrans);
+//
+//        Transition reenterTrans = new Slide();
+//        getWindow().setExitTransition(reenterTrans);
     }
 
     @Override
@@ -83,6 +102,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         this.menu = menu;
+
+        if (loggedIn)
+            animSetLogIn.start();
+
         return true;
     }
 
@@ -115,7 +138,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     usernameEdit.setText("");
                     passwordEdit.setText("");
 
-                    animSetLogOut.start();
+                    TaskManager.getTaskManager().executeAndPost(new Task.Logout(usernameET, passwordET, animSetLogOut));
+
+                    loggedIn = false;
                 }
             });
             builder.setNegativeButton("NO", new DialogInterface.OnClickListener()
@@ -141,8 +166,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         switch(id)
         {
             case R.id.sign_up_login_button:
+
+//
                 Intent i1 = new Intent(this, RegisterActivity.class);
-                startActivity(i1);
+                ActivityOptionsCompat options1 = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
+                startActivity(i1, options1.toBundle());
                 break;
             case R.id.sign_in_button:
                 EditText user = (EditText)findViewById(R.id.username_login);
@@ -176,49 +204,15 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     progDialog.setCanceledOnTouchOutside(false);
                     progDialog.show();
 
-//                    TaskManager.getTaskManager().executeAndPost(new Task.Waitable()
-//                    {
-//                        @Override
-//                        public void execute()
-//                        {
-//                            if (ServerConnection.isConnected())
-//                            {
-//                                ServerConnection.getHandler().setWaitingTask(this);
-//                                ServerConnection.login(username, password);
-//                                synchronize();
-//                            }
-//                            else
-//                            {
-//                                setResponseCode(ServerConnection.Response.FAILURE);
-//                                setResponseMessage("Server not available, try again");
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void uiExecute()
-//                        {
-//                            final int code = getResponseCode();
-//                            String message = getResponseMessage();
-//                            progDialog.setMessage(message);
-//
-//                            TaskManager.getMainHandler().postDelayed(new Runnable()
-//                            {
-//                                @Override
-//                                public void run()
-//                                {
-//                                    progDialog.dismiss();
-//                                    if (code == ServerConnection.Response.SUCCESS)
-//                                        animSetLogIn.start();
-//                                }
-//                            }, 500);
-//                        }
-//                    });
                     TaskManager.getTaskManager().executeAndPost(new Task.Login(progDialog, username, password, animSetLogIn));
+
+                    loggedIn = true;
                 }
                 break;
             case R.id.map_button:
                 Intent i = new Intent(this, MapActivity.class);
-                startActivity(i);
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
+                startActivity(i, options.toBundle());
                 break;
         }
     }
@@ -259,7 +253,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
         else if(animation == animSetLogOut)
         {
-           layoutLogin.setVisibility(View.VISIBLE);
+            layoutLogin.setVisibility(View.VISIBLE);
         }
     }
 
@@ -268,11 +262,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     {
         if(animation == animSetLogIn)
         {
+            String username = getSharedPreferences("PREF", Context.MODE_PRIVATE).getString("username", "");
             layoutLogin.setVisibility(View.INVISIBLE);
             MenuItem logOut = menu.findItem(R.id.log_out);
             logOut.setVisible(true);
             getSupportActionBar().setTitle(getResources().getString(R.string.optionsActionBarName)
-                    + " " + ((EditText) findViewById(R.id.username_login)).getText());
+                    + " " + username);
         }
         else if(animation == animSetLogOut)
         {

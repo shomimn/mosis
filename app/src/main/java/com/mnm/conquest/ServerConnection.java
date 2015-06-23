@@ -1,7 +1,9 @@
 package com.mnm.conquest;
 
-import android.os.Message;
 import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import de.tavendo.autobahn.WebSocketConnection;
 import de.tavendo.autobahn.WebSocketException;
@@ -9,12 +11,20 @@ import de.tavendo.autobahn.WebSocketHandler;
 
 public class ServerConnection
 {
-    private static final String SERVER_IP = "ws://192.168.0.11:8181/";
+    private static final String SERVER_IP = "ws://192.168.1.6:8181/";
 
     private static ServerConnection instance = new ServerConnection();
     private static WebSocketConnection socket;
-    private static WaitingHandler handler;
+    private static ServerHandler handler;
     private static final Object monitor = new Object();
+
+    public static class Request
+    {
+        public static final int LOGIN = 0;
+        public static final int LOGOUT = 1;
+
+        private Request() {}
+    }
 
     public static class Response
     {
@@ -24,56 +34,10 @@ public class ServerConnection
         private Response() {}
     }
 
-    public static class WaitingHandler extends WebSocketHandler
-    {
-        private Task.Waitable waitingTask;
-
-        @Override
-        public void onOpen()
-        {
-            super.onOpen();
-        }
-
-        @Override
-        public void onTextMessage(String payload)
-        {
-            super.onTextMessage(payload);
-
-            Log.d("WebSocket", payload);
-
-            if (waitingTask != null)
-            {
-                synchronized (waitingTask)
-                {
-                    waitingTask.setResponse(payload);
-                    waitingTask.notify();
-                }
-                waitingTask = null;
-            }
-        }
-
-        @Override
-        public void onBinaryMessage(byte[] payload)
-        {
-            super.onBinaryMessage(payload);
-        }
-
-        @Override
-        public void onClose(int code, String reason)
-        {
-            super.onClose(code, reason);
-        }
-
-        public void setWaitingTask(Task.Waitable task)
-        {
-            waitingTask = task;
-        }
-    }
-
     private ServerConnection()
     {
         socket = new WebSocketConnection();
-        handler = new WaitingHandler();
+        handler = new ServerHandler();
     }
 
     public static void connect()
@@ -109,15 +73,25 @@ public class ServerConnection
     public static void login(String username, String password)
     {
         if (socket.isConnected())
-            socket.sendTextMessage("{ type: 0, data: { username: '" + username + "', password: '" + password + "' } }");
+        {
+            try
+            {
+                JSONObject json = new JSONObject().put("type", Request.LOGIN).put("data", new JSONObject().put("username", username).put("password", password));
+                socket.sendTextMessage(json.toString());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public static WaitingHandler getHandler()
+    public static ServerHandler getHandler()
     {
         return handler;
     }
 
-    public static boolean isConnected()
+    public static boolean isValid()
     {
         return socket.isConnected();
     }
