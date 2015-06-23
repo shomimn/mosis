@@ -65,12 +65,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         passwordET = (EditText)findViewById(R.id.password_login);
         passwordET.setOnKeyListener(this);
 
-        Button signUpButton = (Button)findViewById(R.id.sign_up_login_button);
+        Button signUpButton = (Button) findViewById(R.id.sign_up_login_button);
         signUpButton.setOnClickListener(this);
 
         Button signInButton = (Button) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
 
+        Button profileSet = (Button)findViewById(R.id.player_settings);
+        profileSet.setOnClickListener(this);
         mapButton = (Button) findViewById(R.id.map_button);
         mapButton.setOnClickListener(this);
 
@@ -173,8 +175,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 startActivity(i1, options1.toBundle());
                 break;
             case R.id.sign_in_button:
-                EditText user = (EditText)findViewById(R.id.username_login);
-                EditText pass = (EditText)findViewById(R.id.password_login);
+                EditText user = (EditText) findViewById(R.id.username_login);
+                EditText pass = (EditText) findViewById(R.id.password_login);
 
                 final String username = user.getText().toString();
                 final String password = pass.getText().toString();
@@ -214,6 +216,17 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
                 startActivity(i, options.toBundle());
                 break;
+            case R.id.player_settings:
+            {
+                Intent profSettings = new Intent(getApplicationContext(), RegisterActivity.class);
+                String button = "profile_settings";
+                String usernameExtra = usernameET.getText().toString();
+                String passwordExtra = passwordET.getText().toString();
+                profSettings.putExtra("from", button);
+                profSettings.putExtra("username", usernameExtra);
+                profSettings.putExtra("password", passwordExtra);
+                startActivity(profSettings);
+            }
         }
     }
 
