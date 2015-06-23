@@ -20,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,19 +45,13 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
     EditText userName;
     EditText password;
     EditText email;
+    String from;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
-        markerIds = new int[]{R.mipmap.blue_marker, R.mipmap.red_marker, R.mipmap.green_marker, R.mipmap.purple_marker};
-
-        image = (ImageView)findViewById(R.id.image);
-        chooseImage = (ImageView)findViewById(R.id.image);
-        chooseImage.setOnClickListener(this);
-        markerFlipper = (ViewFlipper)findViewById(R.id.marker_flipper);
 
         name = (EditText)findViewById(R.id.name_sign_up);
         name.setOnKeyListener(this);
@@ -68,6 +63,33 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
         password.setOnKeyListener(this);
         email = (EditText)findViewById(R.id.email_sign_up);
         email.setOnKeyListener(this);
+        image = (ImageView)findViewById(R.id.image);
+        chooseImage = (ImageView)findViewById(R.id.image);
+        Button sign_save = (Button)findViewById(R.id.sign_up_button);
+
+        from = null;
+        String usernameExtra, passWordExtra;
+        Intent fromIntent = getIntent();
+        Bundle bundle = fromIntent.getExtras();
+        if(bundle != null)
+        {
+            from = (String)bundle.get("from");
+            if(from.contains("profile_settings"))
+            {
+                usernameExtra = (String)bundle.get("username");
+                passWordExtra = (String)bundle.get("password");
+                userName.setText(usernameExtra);
+                password.setText(passWordExtra);
+                sign_save.setText("Save");
+                setTitle("Profile settings");
+                findViewById(R.id.username_sign_up).setEnabled(false);
+            }
+        }
+
+        markerIds = new int[]{R.mipmap.blue_marker, R.mipmap.red_marker, R.mipmap.green_marker, R.mipmap.purple_marker};
+
+        chooseImage.setOnClickListener(this);
+        markerFlipper = (ViewFlipper)findViewById(R.id.marker_flipper);
 
         markerFlipper.setInAnimation(AnimationUtils.loadAnimation(
                 getApplicationContext(), R.anim.abc_popup_enter));
@@ -178,7 +200,7 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
     }
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        Bitmap photo = null;
+        Bitmap photo = BitmapFactory.decodeResource(getResources(), R.mipmap.player_default);
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK)
         {
             photo = (Bitmap) data.getExtras().get("data");
@@ -227,7 +249,12 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
                 case R.id.last_name_sign_up:
                 {
                     lastName.clearFocus();
-                    userName.requestFocus();
+                    if(from != null)
+                    {
+                        password.requestFocus();
+                    }
+                    else
+                        userName.requestFocus();
                 }
                 return true;
                 case R.id.username_sign_up:
