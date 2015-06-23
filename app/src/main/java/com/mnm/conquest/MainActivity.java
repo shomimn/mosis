@@ -176,34 +176,44 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     progDialog.setCanceledOnTouchOutside(false);
                     progDialog.show();
 
-                    TaskManager.getTaskManager().executeAndPost(new Task.Waitable()
-                    {
-                        @Override
-                        public void execute()
-                        {
-                            ServerConnection.getHandler().setWaitingTask(this);
-                            ServerConnection.login(username, password);
-                        }
-
-                        @Override
-                        public void uiExecute()
-                        {
-                            final int code = getResponseCode();
-                            String message = getResponseMessage();
-                            progDialog.setMessage(message);
-
-                            TaskManager.getMainHandler().postDelayed(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    progDialog.dismiss();
-                                    if (code == ServerConnection.Response.SUCCESS)
-                                        animSetLogIn.start();
-                                }
-                            }, 500);
-                        }
-                    });
+//                    TaskManager.getTaskManager().executeAndPost(new Task.Waitable()
+//                    {
+//                        @Override
+//                        public void execute()
+//                        {
+//                            if (ServerConnection.isConnected())
+//                            {
+//                                ServerConnection.getHandler().setWaitingTask(this);
+//                                ServerConnection.login(username, password);
+//                                synchronize();
+//                            }
+//                            else
+//                            {
+//                                setResponseCode(ServerConnection.Response.FAILURE);
+//                                setResponseMessage("Server not available, try again");
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void uiExecute()
+//                        {
+//                            final int code = getResponseCode();
+//                            String message = getResponseMessage();
+//                            progDialog.setMessage(message);
+//
+//                            TaskManager.getMainHandler().postDelayed(new Runnable()
+//                            {
+//                                @Override
+//                                public void run()
+//                                {
+//                                    progDialog.dismiss();
+//                                    if (code == ServerConnection.Response.SUCCESS)
+//                                        animSetLogIn.start();
+//                                }
+//                            }, 500);
+//                        }
+//                    });
+                    TaskManager.getTaskManager().executeAndPost(new Task.Login(progDialog, username, password, animSetLogIn));
                 }
                 break;
             case R.id.map_button:

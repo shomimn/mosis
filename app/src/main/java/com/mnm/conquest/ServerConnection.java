@@ -41,14 +41,14 @@ public class ServerConnection
 
             Log.d("WebSocket", payload);
 
-            synchronized (monitor)
+            if (waitingTask != null)
             {
-                if (waitingTask != null)
+                synchronized (waitingTask)
                 {
                     waitingTask.setResponse(payload);
-                    waitingTask = null;
+                    waitingTask.notify();
                 }
-                monitor.notify();
+                waitingTask = null;
             }
         }
 
@@ -109,10 +109,7 @@ public class ServerConnection
     public static void login(String username, String password)
     {
         if (socket.isConnected())
-        {
             socket.sendTextMessage("{ type: 0, data: { username: '" + username + "', password: '" + password + "' } }");
-            synchronize();
-        }
     }
 
     public static WaitingHandler getHandler()
@@ -120,19 +117,9 @@ public class ServerConnection
         return handler;
     }
 
-    public static void synchronize()
+    public static boolean isConnected()
     {
-        synchronized (monitor)
-        {
-            try
-            {
-                monitor.wait();
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-        }
+        return socket.isConnected();
     }
 
 }

@@ -1,6 +1,10 @@
 package com.mnm.conquest;
 
 
+import android.app.ProgressDialog;
+
+import com.nineoldandroids.animation.AnimatorSet;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -76,14 +80,90 @@ public abstract class Task
             }
         }
 
+        public void setResponseCode(int code)
+        {
+            responseCode = code;
+        }
+
         public int getResponseCode()
         {
             return responseCode;
         }
 
+        public void setResponseMessage(String msg)
+        {
+            responseMessage = msg;
+        }
+
         public String getResponseMessage()
         {
             return responseMessage;
+        }
+
+        protected void synchronize()
+        {
+            synchronized (this)
+            {
+                try
+                {
+                    this.wait();
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static class Login extends Waitable
+    {
+        private ProgressDialog progressDialog;
+        private String username;
+        private String password;
+        private AnimatorSet animSetLogIn;
+
+        public Login(ProgressDialog dialog, String user, String pw, AnimatorSet animSet)
+        {
+            super();
+
+            progressDialog = dialog;
+            username = user;
+            password = pw;
+            animSetLogIn = animSet;
+        }
+
+        @Override
+        public void execute()
+        {
+            if (ServerConnection.isConnected())
+            {
+                ServerConnection.getHandler().setWaitingTask(this);
+                ServerConnection.login(username, password);
+                synchronize();
+            }
+            else
+            {
+                setResponseCode(ServerConnection.Response.FAILURE);
+                setResponseMessage("Server not available, try again");
+            }
+        }
+
+        @Override
+        public void uiExecute()
+        {
+            progressDialog.setMessage(getResponseMessage());
+
+            TaskManager.getMainHandler().postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    progressDialog.dismiss();
+                    if (getResponseCode() == ServerConnection.Response.SUCCESS)
+                        animSetLogIn.start();
+                }
+            }, 500);
         }
     }
 }
