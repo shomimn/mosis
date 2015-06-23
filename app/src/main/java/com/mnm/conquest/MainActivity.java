@@ -171,8 +171,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
 //
                 Intent i1 = new Intent(this, RegisterActivity.class);
-                ActivityOptionsCompat options1 = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
-                startActivity(i1, options1.toBundle());
+//                ActivityOptionsCompat options1 = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
+//                startActivity(i1, options1.toBundle());
+                startActivity(i1);
                 break;
             case R.id.sign_in_button:
                 EditText user = (EditText) findViewById(R.id.username_login);
@@ -213,8 +214,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 break;
             case R.id.map_button:
                 Intent i = new Intent(this, MapActivity.class);
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
-                startActivity(i, options.toBundle());
+//                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
+//                startActivity(i, options.toBundle());
+                startActivity(i);
                 break;
             case R.id.player_settings:
             {
