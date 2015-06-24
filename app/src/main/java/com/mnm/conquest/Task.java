@@ -3,6 +3,8 @@ package com.mnm.conquest;
 
 public abstract class Task
 {
+    public static final int TOTAL = 2;
+
     public static final int SERVER = 0;
     public static final int GENERAL = 1;
 
