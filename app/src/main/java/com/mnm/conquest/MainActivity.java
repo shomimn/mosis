@@ -55,6 +55,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Button signInButton = (Button) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
 
+        Button profileSet = (Button)findViewById(R.id.player_settings);
+        profileSet.setOnClickListener(this);
         mapButton = (Button) findViewById(R.id.map_button);
         mapButton.setOnClickListener(this);
 
@@ -188,6 +190,17 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 Intent i = new Intent(this, MapActivity.class);
                 startActivity(i);
                 break;
+            case R.id.player_settings:
+            {
+                Intent profSettings = new Intent(getApplicationContext(), RegisterActivity.class);
+                String button = "profile_settings";
+                String usernameExtra = usernameET.getText().toString();
+                String passwordExtra = passwordET.getText().toString();
+                profSettings.putExtra("from", button);
+                profSettings.putExtra("username", usernameExtra);
+                profSettings.putExtra("password", passwordExtra);
+                startActivity(profSettings);
+            }
         }
     }
 
