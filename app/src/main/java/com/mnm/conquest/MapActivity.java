@@ -36,13 +36,18 @@ public class MapActivity extends AppCompatActivity
         circularView.setVisibility(View.GONE);
 
 
-        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener()
+        {
             @Override
-            public void onMapLongClick(LatLng latLng) {
+            public void onMapLongClick(LatLng latLng)
+            {
 
                 circularView.setVisibility(View.VISIBLE);
             }
+
+
         });
+
 
     }
 

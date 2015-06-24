@@ -45,38 +45,43 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        usernameET = (EditText)findViewById(R.id.username_login);
-        usernameET.setOnKeyListener(new View.OnKeyListener() {
+        usernameET = (EditText) findViewById(R.id.username_login);
+        usernameET.setOnKeyListener(new View.OnKeyListener()
+        {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == event.KEYCODE_ENTER) {
+            public boolean onKey(View v, int keyCode, KeyEvent event)
+            {
+                if (keyCode == event.KEYCODE_ENTER)
+                {
                     usernameET.clearFocus();
                     passwordET.requestFocus();
+                    return true;
                 }
-                return true;
+                return false;
             }
         });
-        passwordET = (EditText)findViewById(R.id.password_login);
-        passwordET.setOnKeyListener(new View.OnKeyListener() {
+        passwordET = (EditText) findViewById(R.id.password_login);
+        passwordET.setOnKeyListener(new View.OnKeyListener()
+        {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (passwordET.getText().toString().length() != 0) {
+            public boolean onKey(View v, int keyCode, KeyEvent event)
+            {
+                if (passwordET.getText().toString().length() != 0)
+                {
                     passwordET.clearFocus();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(passwordET.getWindowToken(), 0);
+                    return true;
                 }
-                return true;
+                return false;
             }
         });
 
-        Button signUpButton = (Button)findViewById(R.id.sign_up_login_button);
+        Button signUpButton = (Button) findViewById(R.id.sign_up_login_button);
         signUpButton.setOnClickListener(this);
 
         Button signInButton = (Button) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
-
-        Button logOutButton = (Button) findViewById(R.id.log_out_button);
-        logOutButton.setOnClickListener(this);
 
         mapButton = (Button) findViewById(R.id.map_button);
         mapButton.setOnClickListener(this);
@@ -102,43 +107,49 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         if (id == R.id.action_settings)
         {
             return true;
-        }
-        else if(id == R.id.logOut)
+        } else if (id == R.id.logOut)
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Confirm");
             builder.setMessage("Are you sure?");
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener(){
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener()
+            {
 
                 @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
                     final LinearLayout layoutLogin = (LinearLayout) findViewById(R.id.login_layout);
                     final LinearLayout layoutLoged = (LinearLayout) findViewById(R.id.loged_layout);
 
-                    EditText usernameEdit = (EditText)findViewById(R.id.username_login);
-                    EditText passwordEdit = (EditText)findViewById(R.id.password_login);
+                    EditText usernameEdit = (EditText) findViewById(R.id.username_login);
+                    EditText passwordEdit = (EditText) findViewById(R.id.password_login);
 
                     usernameEdit.setText("");
                     passwordEdit.setText("");
                     AnimatorSet animatorSet = new AnimatorSet();
-                    animatorSet.addListener(new Animator.AnimatorListener() {
+                    animatorSet.addListener(new Animator.AnimatorListener()
+                    {
                         @Override
-                        public void onAnimationStart(Animator animation) {
+                        public void onAnimationStart(Animator animation)
+                        {
                             layoutLogin.setVisibility(View.VISIBLE);
                         }
 
                         @Override
-                        public void onAnimationEnd(Animator animation) {
+                        public void onAnimationEnd(Animator animation)
+                        {
                             layoutLoged.setVisibility(View.INVISIBLE);
                         }
 
                         @Override
-                        public void onAnimationCancel(Animator animation) {
+                        public void onAnimationCancel(Animator animation)
+                        {
 
                         }
 
                         @Override
-                        public void onAnimationRepeat(Animator animation) {
+                        public void onAnimationRepeat(Animator animation)
+                        {
 
                         }
                     });
@@ -148,9 +159,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
                 }
             });
-            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener()
+            {
                 @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
                     dialogInterface.dismiss();
                 }
             });
@@ -168,34 +181,37 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         int id = view.getId();
 
 
-        switch(id)
+        switch (id)
         {
             case R.id.sign_up_login_button:
                 Intent i1 = new Intent(this, RegisterActivity.class);
                 startActivity(i1);
                 break;
             case R.id.sign_in_button:
-                EditText user = (EditText)findViewById(R.id.username_login);
-                EditText pass = (EditText)findViewById(R.id.password_login);
+                EditText user = (EditText) findViewById(R.id.username_login);
+                EditText pass = (EditText) findViewById(R.id.password_login);
 
                 String username = user.getText().toString();
                 String password = pass.getText().toString();
 
-                if(username.trim().length() == 0 || password.trim().length() == 0) {
+                if (username.trim().length() == 0 || password.trim().length() == 0)
+                {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle(R.string.error_title);
                     builder.setMessage(R.string.error_message);
                     builder.setCancelable(true);
                     builder.setNegativeButton("OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
+                            new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
                                     dialog.cancel();
                                 }
                             });
                     AlertDialog alert = builder.create();
                     alert.show();
-                }
-                else {
+                } else
+                {
 
                     final ProgressDialog progDialog = new ProgressDialog(this);
                     progDialog.setTitle(R.string.progress_logging_title);
@@ -204,36 +220,42 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
 
                     Handler h = new Handler();
-                    h.postDelayed(new Runnable() {
+                    h.postDelayed(new Runnable()
+                    {
                         @Override
-                        public void run() {
+                        public void run()
+                        {
                             progDialog.dismiss();
 
                             final LinearLayout layoutLogin = (LinearLayout) findViewById(R.id.login_layout);
                             final LinearLayout layoutLoged = (LinearLayout) findViewById(R.id.loged_layout);
 
 
-
                             getSupportActionBar().setTitle(getResources().getString(R.string.optionsActionBarName) + " " + ((EditText) findViewById(R.id.username_login)).getText());
                             AnimatorSet animatorSet = new AnimatorSet();
-                            animatorSet.addListener(new Animator.AnimatorListener() {
+                            animatorSet.addListener(new Animator.AnimatorListener()
+                            {
                                 @Override
-                                public void onAnimationStart(Animator animation) {
+                                public void onAnimationStart(Animator animation)
+                                {
                                     layoutLoged.setVisibility(View.VISIBLE);
                                 }
 
                                 @Override
-                                public void onAnimationEnd(Animator animation) {
+                                public void onAnimationEnd(Animator animation)
+                                {
                                     layoutLogin.setVisibility(View.INVISIBLE);
                                 }
 
                                 @Override
-                                public void onAnimationCancel(Animator animation) {
+                                public void onAnimationCancel(Animator animation)
+                                {
 
                                 }
 
                                 @Override
-                                public void onAnimationRepeat(Animator animation) {
+                                public void onAnimationRepeat(Animator animation)
+                                {
 
                                 }
                             });
