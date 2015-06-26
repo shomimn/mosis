@@ -36,6 +36,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
 
+import de.tavendo.autobahn.WebSocketConnection;
+
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener, Animator.AnimatorListener
 {
@@ -58,7 +60,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loggedIn = getSharedPreferences("PREF", Context.MODE_PRIVATE).contains("username");
+//        loggedIn = getSharedPreferences("PREF", Context.MODE_PRIVATE).contains("username");
+        loggedIn = true;
 
         usernameET = (EditText)findViewById(R.id.username_login);
         usernameET.setOnKeyListener(this);

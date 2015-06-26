@@ -12,13 +12,23 @@
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        android:name="com.mnm.conquest.MapActivity$MySupportMapFragment"/>
 
     <com.mnm.conquest.CircularView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/circularView"
         />
+
+    <FrameLayout
+        android:layout_width="100dip"
+        android:layout_height="100dip"
+        android:id="@+id/imageWrapper">
+    <ImageView
+        android:layout_width="100dip"
+        android:layout_height="100dip"
+        android:id="@+id/animImage"/>
+    </FrameLayout>>
 
 
 </RelativeLayout>
