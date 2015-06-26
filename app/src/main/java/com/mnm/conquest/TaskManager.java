@@ -36,8 +36,9 @@ public class TaskManager
 
     private TaskManager()
     {
-        for (int i = 0; i < Task.TOTAL; ++i)
-            threadPools[i] = Executors.newFixedThreadPool(CORE_POOL_SIZE);
+        threadPools[Task.SERVER] = Executors.newFixedThreadPool(1);
+        threadPools[Task.GENERAL] = Executors.newFixedThreadPool(CORE_POOL_SIZE - 1);
+
         mainHandler = new Handler();
     }
 
