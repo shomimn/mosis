@@ -14,38 +14,43 @@ public class Game
 
     private static EntityManager entityManager;
     private static System movement;
-    private static System attack;
+    private static System combat;
     private static System graphics;
     private static System animation;
 
     private static GoogleMap map;
     private static HashMap<Integer, Marker> markers;
 
-    public static Event.System<Event.CombatEvent> eventSystem;
+    private static EventManager eventManager;
 
     private static Runnable loop = new Runnable()
     {
         @Override
         public void run()
         {
+            Event.Combat event = new Event.Combat();
+            event.attacker = getEntityManager().getEntities().get(0);
+            event.defender = getEntityManager().getEntities().get(1);
+
+            eventManager.emit(event);
+
             movement.update();
             animation.update();
             graphics.update();
 
-            TaskManager.getMainHandler().postDelayed(this, 200);
+            TaskManager.getMainHandler().postDelayed(this, 1000);
         }
     };
 
     private Game()
     {
-        eventSystem = new Event.System<>();
-
+        eventManager = new EventManager();
         entityManager = new EntityManager();
 
         markers = new HashMap<Integer, Marker>();
 
         movement = new System.Movement();
-        attack = new System.Combat();
+        combat = new System.Combat();
         graphics = new System.Graphics();
         animation = new System.Animation();
     }
@@ -90,5 +95,10 @@ public class Game
     public static HashMap<Integer, Marker> getMarkers()
     {
         return markers;
+    }
+
+    public static EventManager getEventManager()
+    {
+        return eventManager;
     }
 }

@@ -2,45 +2,41 @@ package com.mnm.conquest.ecs;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-public class Event<T extends Event>
+public interface Event<T>
 {
-    public interface Listener<T extends Event>
+    void notify(T handler);
+
+    interface CombatListener
     {
-        void onRecieve(T event);
+        void onRecieve(Combat event);
     }
 
-    public static class CombatEvent extends Event<CombatEvent>
+    class Combat implements Event<CombatListener>
     {
-        public Entity e1;
-        public Entity e2;
+        Entity attacker;
+        Entity defender;
+
+        @Override
+        public void notify(CombatListener handler)
+        {
+            handler.onRecieve(this);
+        }
     }
 
-    public static class System<T extends Event>
+    interface AnimationListener
     {
-        ArrayList<Listener<T>> handlers;
+        void onRecieve(Animation event);
+    }
 
-        public System()
-        {
-            handlers = new ArrayList<>();
-        }
+    class Animation implements Event<AnimationListener>
+    {
+        Entity animated;
+        BitmapDescriptor frame;
 
-        public void register(Listener<T> handler)
+        @Override
+        public void notify(AnimationListener handler)
         {
-            handlers.add(handler);
-        }
-
-        public void unregister(Listener<T> handler)
-        {
-            handlers.remove(handler);
-        }
-
-        public void emit(T event)
-        {
-            for (Listener<T> handler : handlers)
-                handler.onRecieve(event);
+            handler.onRecieve(this);
         }
     }
 }

@@ -27,16 +27,25 @@ public abstract class System
         }
     }
 
-    public static class Combat extends System
+    public static class Combat extends System implements Event.CombatListener
     {
         public Combat()
         {
+            Game.getEventManager().register(Event.Combat.class, this);
         }
 
         @Override
         public void update()
         {
 
+        }
+
+        @Override
+        public void onRecieve(Event.Combat event)
+        {
+            Component.Attack attack = event.attacker.getComponent(Component.ATTACK);
+            Component.Health health = event.defender.getComponent(Component.HEALTH);
+            health.damage(attack.getDamage());
         }
     }
 

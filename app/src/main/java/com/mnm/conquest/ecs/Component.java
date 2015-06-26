@@ -87,6 +87,11 @@ public abstract class Component
         {
             this.health = health;
         }
+
+        public void damage(int damage)
+        {
+            health -= damage;
+        }
     }
 
     public static class Appearance extends Component
@@ -153,7 +158,7 @@ public abstract class Component
 
         public Attack(int dmg)
         {
-            type = Component.ATTACK;
+            type = ATTACK;
             damage = dmg;
         }
 
@@ -162,6 +167,4 @@ public abstract class Component
             return damage;
         }
     }
-
-
 }
