@@ -55,6 +55,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Button signInButton = (Button) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
 
+        Button alliance = (Button)findViewById(R.id.alliance_button);
+        alliance.setOnClickListener(this);
+
         mapButton = (Button) findViewById(R.id.map_button);
         mapButton.setOnClickListener(this);
 
@@ -185,8 +188,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 }
                 break;
             case R.id.map_button:
-                Intent i = new Intent(this, MapActivity.class);
-                startActivity(i);
+                Intent i2 = new Intent(this, MapActivity.class);
+                startActivity(i2);
+                break;
+            case R.id.alliance_button:
+                Intent i3 = new Intent(this, AllianceActivity.class);
+                startActivity(i3);
                 break;
         }
     }

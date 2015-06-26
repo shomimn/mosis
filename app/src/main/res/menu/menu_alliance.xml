@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="com.mnm.conquest.AllianceActivity">
+
+    <item android:id="@+id/action_settings"
+          android:title="@string/action_settings"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
+    <item android:id="@+id/bluetooth_enable"
+          android:icon="@mipmap/ic_action_bluetooth"
+          app:showAsAction="always"
+          android:title="@string/bluetooth_enable_action"/>
+</menu>
