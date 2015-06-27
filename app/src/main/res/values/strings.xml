@@ -6,7 +6,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_register">Sign up for free</string>
-
     <string name="sign_in">Sign in</string>
     <string name="sign_up">Sign up</string>
     <string name="user_name_label">Username</string>
@@ -21,9 +20,16 @@
     <string name="error_title">Error!</string>
     <string name="error_message">You have empty fields!</string>
     <string name="log_out">Log out</string>
-
     <string name="play_button">Start</string>
     <string name="highScoresButton">High scores</string>
     <string name="game_settings">Game settings</string>
     <string name="player_settings">Profile settings</string>
+    <string name="title_activity_alliance">Alliances:</string>
+    <string name="make_alliance">Make new alliance</string>
+    <string name="alliances_button">Alliances</string>
+    <string name="error_bluetooth_message">Device does not support Bluetooth!</string>
+    <string name="bluetooth_dialog">Available devices:</string>
+    <string name="bluetooth_dialog_done_label">Done</string>
+    <string name="bluetooth_enable_action">Enable Bluetooth</string>
+    <string name="bluetooth_discovery_error">No discovered bluetooth devices!</string>
 </resources>

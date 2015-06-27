@@ -36,6 +36,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
 
+import de.tavendo.autobahn.WebSocketConnection;
+
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener, Animator.AnimatorListener
 {
@@ -58,7 +60,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loggedIn = getSharedPreferences("PREF", Context.MODE_PRIVATE).contains("username");
+//        loggedIn = getSharedPreferences("PREF", Context.MODE_PRIVATE).contains("username");
+        loggedIn = true;
 
         usernameET = (EditText)findViewById(R.id.username_login);
         usernameET.setOnKeyListener(this);
@@ -71,8 +74,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Button signInButton = (Button) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
 
+        Button alliance = (Button)findViewById(R.id.alliance_button);
+        alliance.setOnClickListener(this);
+
         Button profileSet = (Button)findViewById(R.id.player_settings);
         profileSet.setOnClickListener(this);
+
         mapButton = (Button) findViewById(R.id.map_button);
         mapButton.setOnClickListener(this);
 
@@ -168,8 +175,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         switch(id)
         {
             case R.id.sign_up_login_button:
-
-//
                 Intent i1 = new Intent(this, RegisterActivity.class);
 //                ActivityOptionsCompat options1 = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
 //                startActivity(i1, options1.toBundle());
@@ -213,10 +218,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 }
                 break;
             case R.id.map_button:
-                Intent i = new Intent(this, MapActivity.class);
-//                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
-//                startActivity(i, options.toBundle());
-                startActivity(i);
+                Intent i2 = new Intent(this, MapActivity.class);
+                startActivity(i2);
+                break;
+            case R.id.alliance_button:
+                Intent i3 = new Intent(this, AllianceActivity.class);
+                startActivity(i3);
                 break;
             case R.id.player_settings:
             {

@@ -195,6 +195,8 @@ public abstract class Task
         @Override
         public void execute()
         {
+            username.setText("");
+            password.setText("");
             SharedPreferences.Editor editor = ConquestApplication.getContext()
                     .getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE).edit();
             editor.remove("username");
