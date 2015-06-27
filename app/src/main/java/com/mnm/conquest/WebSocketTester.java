@@ -9,7 +9,7 @@ import de.tavendo.autobahn.WebSocketHandler;
 public class WebSocketTester
 {
     private WebSocketConnection connection = new WebSocketConnection();
-    private static final String SERVER_IP = "ws://192.168.0.105:8181/";
+    private static final String SERVER_IP = "ws://192.168.1.6:8181/";
 
     public WebSocketTester()
     {
