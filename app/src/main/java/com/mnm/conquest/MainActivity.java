@@ -1,26 +1,16 @@
 package com.mnm.conquest;
 
 import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorInflater;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
-import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Handler;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.transition.Explode;
-import android.transition.Slide;
-import android.transition.Transition;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,15 +18,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.logging.Logger;
-
-import de.tavendo.autobahn.WebSocketConnection;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener, Animator.AnimatorListener
@@ -60,8 +46,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        loggedIn = getSharedPreferences("PREF", Context.MODE_PRIVATE).contains("username");
-        loggedIn = true;
+        loggedIn = getSharedPreferences("PREF", Context.MODE_PRIVATE).contains("username");
+//        loggedIn = true;
 
         usernameET = (EditText)findViewById(R.id.username_login);
         usernameET.setOnKeyListener(this);
@@ -227,13 +213,32 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 break;
             case R.id.player_settings:
             {
-                Intent profSettings = new Intent(getApplicationContext(), RegisterActivity.class);
+                final ProgressDialog progDialog = new ProgressDialog(this);
+                progDialog.setTitle("Retrieving data");
+                progDialog.setMessage("Please wait");
+                progDialog.setCanceledOnTouchOutside(false);
+                progDialog.show();
+
+                Task.Data task = new Task.Data(progDialog, getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE).getString("username", ""));
+                TaskManager.getTaskManager().executeAndPost(task);
+
+                JSONArray dataArray = task.getData();
+                Intent profSettings = new Intent(this, RegisterActivity.class);
                 String button = "profile_settings";
-                String usernameExtra = usernameET.getText().toString();
-                String passwordExtra = passwordET.getText().toString();
                 profSettings.putExtra("from", button);
-                profSettings.putExtra("username", usernameExtra);
-                profSettings.putExtra("password", passwordExtra);
+                try
+                    {
+                    JSONObject data = dataArray.getJSONObject(0);
+                    profSettings.putExtra("username", data.getString("username"));
+                    profSettings.putExtra("name", data.getString("name"));
+                    profSettings.putExtra("lastname", data.getString("lastname"));
+                    profSettings.putExtra("password", data.getString("password"));
+                    profSettings.putExtra("email", data.getString("email"));
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
                 startActivity(profSettings);
             }
         }

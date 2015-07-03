@@ -1,15 +1,24 @@
 package com.mnm.conquest;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.widget.EditText;
 
 import com.nineoldandroids.animation.AnimatorSet;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public abstract class Task
 {
@@ -43,11 +52,6 @@ public abstract class Task
         }
 
         public abstract void uiExecute();
-
-        public void templatedExecute()
-        {
-            execute();
-        }
     }
 
     public static abstract class Waitable extends Ui
@@ -61,11 +65,22 @@ public abstract class Task
         }
 
         @Override
-        public void templatedExecute()
+        public void execute()
         {
-            ServerConnection.getHandler().setWaitingTask(this);
-            super.templatedExecute();
+            if (ServerConnection.isValid())
+            {
+                ServerConnection.getHandler().setWaitingTask(this);
+                executeImpl();
+                synchronize();
+            }
+            else
+            {
+                setResponseCode(ServerConnection.Response.FAILURE);
+                setResponseMessage("Server not available, try again");
+            }
         }
+
+        public abstract void executeImpl();
 
         public void setResponse(String r)
         {
@@ -137,19 +152,9 @@ public abstract class Task
         }
 
         @Override
-        public void execute()
+        public void executeImpl()
         {
-            if (ServerConnection.isValid())
-            {
-                ServerConnection.getHandler().setWaitingTask(this);
-                ServerConnection.login(username, password);
-                synchronize();
-            }
-            else
-            {
-                setResponseCode(ServerConnection.Response.FAILURE);
-                setResponseMessage("Server not available, try again");
-            }
+            ServerConnection.login(username, password);
         }
 
         @Override
@@ -208,6 +213,90 @@ public abstract class Task
         {
             animSetLogOut.setDuration(500);
             animSetLogOut.start();
+        }
+    }
+
+    public static class Register extends Waitable
+    {
+        private ProgressDialog progressDialog;
+        private Bundle userInfo;
+        private Bitmap photo;
+        private Activity activity;
+
+        public Register(ProgressDialog dialog, Activity a, Bundle info, Bitmap p)
+        {
+            progressDialog = dialog;
+            activity = a;
+            userInfo = info;
+            photo = p;
+        }
+
+        @Override
+        public void executeImpl()
+        {
+            ServerConnection.register(userInfo, photo);
+        }
+
+        @Override
+        public void uiExecute()
+        {
+            progressDialog.setMessage(getResponseMessage());
+
+            TaskManager.getMainHandler().postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    progressDialog.dismiss();
+                    if (getResponseCode() == ServerConnection.Response.SUCCESS)
+                        activity.finish();
+                }
+            }, 1000);
+        }
+    }
+
+    public static class Data extends Waitable
+    {
+        private ProgressDialog progressDialog;
+        private JSONArray data;
+        private String username;
+
+        public Data(ProgressDialog dialog, String u)
+        {
+            progressDialog = dialog;
+            username = u;
+        }
+
+        @Override
+        public void executeImpl()
+        {
+            ServerConnection.getData(username);
+        }
+
+        @Override
+        public void uiExecute()
+        {
+            progressDialog.dismiss();
+        }
+
+        @Override
+        public void setResponse(String r)
+        {
+            try
+            {
+                JSONObject json = new JSONObject(r);
+
+                data = json.getJSONArray("data");
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        public JSONArray getData()
+        {
+            return data;
         }
     }
 }

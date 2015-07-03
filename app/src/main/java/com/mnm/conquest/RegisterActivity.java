@@ -1,22 +1,17 @@
 package com.mnm.conquest;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.transition.Explode;
-import android.transition.Slide;
-import android.transition.Transition;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,13 +22,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ViewFlipper;
-
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorInflater;
-import com.nineoldandroids.animation.AnimatorSet;
-import com.nineoldandroids.animation.ObjectAnimator;
 
 
 public class RegisterActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener
@@ -50,6 +39,8 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
     EditText password;
     EditText email;
     String from;
+    Bitmap photo;
+    boolean register = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -70,6 +61,7 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
         image = (ImageView)findViewById(R.id.image);
         chooseImage = (ImageView)findViewById(R.id.image);
         Button sign_save = (Button)findViewById(R.id.sign_up_button);
+        sign_save.setOnClickListener(this);
 
         from = null;
         String usernameExtra, passWordExtra;
@@ -80,26 +72,30 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
             from = (String)bundle.get("from");
             if(from.contains("profile_settings"))
             {
-                usernameExtra = (String)bundle.get("username");
-                passWordExtra = (String)bundle.get("password");
-                userName.setText(usernameExtra);
-                password.setText(passWordExtra);
+                userName.setText(bundle.getString("username"));
+                password.setText(bundle.getString("password"));
+                name.setText(bundle.getString("name"));
+                lastName.setText(bundle.getString("lastname"));
+                email.setText(bundle.getString("email"));
                 sign_save.setText("Save");
                 setTitle("Profile settings");
                 findViewById(R.id.username_sign_up).setEnabled(false);
+                register = false;
             }
         }
 
-        markerIds = new int[]{R.mipmap.blue_marker, R.mipmap.red_marker, R.mipmap.green_marker, R.mipmap.purple_marker};
+        markerIds = new int[]{R.mipmap.blue_marker, R.mipmap.red_marker, R.mipmap.green_marker, R.mipmap.purple_marker, R.mipmap.air1};
 
         chooseImage.setOnClickListener(this);
         markerFlipper = (ViewFlipper)findViewById(R.id.marker_flipper);
 
         markerFlipper.setInAnimation(AnimationUtils.loadAnimation(
-                getApplicationContext(), R.anim.abc_popup_enter));
+                this, R.anim.abc_popup_enter));
 
         markerFlipper.setOutAnimation(AnimationUtils.loadAnimation(
-                getApplicationContext(), R.anim.abc_popup_exit));
+                this, R.anim.abc_popup_exit));
+
+        photo = BitmapFactory.decodeResource(getResources(), R.mipmap.player_default);
 
         for(int i=0; i<markerIds.length; i++)
         {
@@ -143,7 +139,7 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
     }
 
     private void setFlipperImage(int res) {
-        ImageView image = new ImageView(getApplicationContext());
+        ImageView image = new ImageView(this);
         image.setBackgroundResource(res);
         markerFlipper.addView(image);
     }
@@ -176,7 +172,8 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
     @Override
     public void onClick(View v)
     {
-        if(v == image)
+        int id = v.getId();
+        if(id == R.id.image)
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Choose");
@@ -207,10 +204,31 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         }
+        else if (id == R.id.sign_up_button)
+        {
+            ProgressDialog progDialog = new ProgressDialog(this);
+            progDialog.setTitle(register ? R.string.progress_signing_up_title : R.string.progress_editing_title);
+            progDialog.setMessage(getResources().getString(R.string.progress_wait_message));
+            progDialog.setCanceledOnTouchOutside(false);
+            progDialog.show();
+
+            int markerId = markerIds[markerFlipper.getDisplayedChild()];
+            String markerString = getResources().getResourceName(markerId);
+
+            Bundle userInfo = new Bundle();
+            userInfo.putString("name", name.getText().toString());
+            userInfo.putString("lastname", lastName.getText().toString());
+            userInfo.putString("username", userName.getText().toString());
+            userInfo.putString("password", password.getText().toString());
+            userInfo.putString("email", email.getText().toString());
+            userInfo.putString("marker", markerString);
+
+            Task.Register task = new Task.Register(progDialog, this, userInfo, photo);
+            TaskManager.getTaskManager().executeAndPost(task);
+        }
     }
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        Bitmap photo = BitmapFactory.decodeResource(getResources(), R.mipmap.player_default);
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK)
         {
             photo = (Bitmap) data.getExtras().get("data");
@@ -227,7 +245,7 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
 
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(selectedImagePath, options);
+            photo = BitmapFactory.decodeFile(selectedImagePath, options);
             final int REQUIRED_SIZE = 200;
             int scale = 1;
             while (options.outWidth / scale / 2 >= REQUIRED_SIZE
@@ -285,5 +303,35 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
             }
         }
         return false;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+
+        outState.putString("name", name.getText().toString());
+        outState.putString("lastname", lastName.getText().toString());
+        outState.putString("username", userName.getText().toString());
+        outState.putString("password", password.getText().toString());
+        outState.putString("email", email.getText().toString());
+        outState.putParcelable("photo", photo);
+        outState.putBoolean("register", register);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        name.setText(savedInstanceState.getString("name"));
+        lastName.setText(savedInstanceState.getString("lastname"));
+        userName.setText(savedInstanceState.getString("username"));
+        password.setText(savedInstanceState.getString("password"));
+        email.setText(savedInstanceState.getString("email"));
+        photo = savedInstanceState.getParcelable("photo");
+        register = savedInstanceState.getBoolean("register");
+
+        image.setImageBitmap(photo);
     }
 }

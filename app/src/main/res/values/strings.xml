@@ -32,4 +32,7 @@
     <string name="bluetooth_dialog_done_label">Done</string>
     <string name="bluetooth_enable_action">Enable Bluetooth</string>
     <string name="bluetooth_discovery_error">No discovered bluetooth devices!</string>
+    <string name="progress_signing_up_title">Signing up...</string>
+    <string name="progress_wait_message">Please Wait!</string>
+    <string name="progress_editing_title">Editing profile...</string>
 </resources>
