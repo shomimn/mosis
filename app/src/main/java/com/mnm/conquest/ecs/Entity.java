@@ -1,5 +1,7 @@
 package com.mnm.conquest.ecs;
 
+import android.util.SparseArray;
+
 import java.util.HashMap;
 
 public abstract class Entity
@@ -9,7 +11,8 @@ public abstract class Entity
     protected int componentMask = 0;
     protected int id;
 
-    protected HashMap<Integer, Component> components = new HashMap<Integer, Component>();
+//    protected HashMap<Integer, Component> components = new HashMap<Integer, Component>();
+    protected SparseArray<Component> components = new SparseArray<>();
 
     public Entity()
     {

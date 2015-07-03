@@ -1,18 +1,34 @@
 package com.mnm.conquest.ecs;
 
+import android.util.SparseArray;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.mnm.conquest.Task;
+import com.mnm.conquest.TaskManager;
 
 import java.util.HashMap;
 
 public abstract class System
 {
-    public abstract void update();
+    public void update()
+    {
+        TaskManager.getTaskManager().execute(new Task(Task.GENERAL)
+        {
+            @Override
+            public void execute()
+            {
+                updateImpl();
+            }
+        });
+    }
+
+    public abstract void updateImpl();
 
     public static class Movement extends System
     {
         @Override
-        public void update()
+        public void updateImpl()
         {
             for (Entity e : Game.getEntityManager().getEntities())
             {
@@ -20,7 +36,7 @@ public abstract class System
                 {
                     Component.Position c = e.getComponent(Component.POSITION);
                     LatLng oldPos = c.getLatLng();
-                    LatLng newPos = new LatLng(oldPos.latitude + 0.01, oldPos.longitude + 0.01);
+                    LatLng newPos = new LatLng(oldPos.latitude + 0.01, oldPos.longitude);
                     c.setLatLng(newPos);
                 }
             }
@@ -35,7 +51,7 @@ public abstract class System
         }
 
         @Override
-        public void update()
+        public void updateImpl()
         {
 
         }
@@ -52,7 +68,7 @@ public abstract class System
     public static class Animation extends System
     {
         @Override
-        public void update()
+        public void updateImpl()
         {
             for (Entity e : Game.getEntityManager().getEntities())
             {
@@ -68,10 +84,17 @@ public abstract class System
 
     public static class Graphics extends System
     {
-        @Override
+
         public void update()
         {
-            HashMap<Integer, Marker> markers = Game.getMarkers();
+            updateImpl();
+        }
+
+        @Override
+        public void updateImpl()
+        {
+//            HashMap<Integer, Marker> markers = Game.getMarkers();
+            SparseArray<Marker> markers = Game.getMarkers();
             for (Entity e : Game.getEntityManager().getEntities())
             {
                 int mask = e.getComponentMask();

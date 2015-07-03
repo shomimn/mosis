@@ -5,6 +5,7 @@ import android.graphics.BitmapRegionDecoder;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
@@ -98,10 +99,10 @@ public abstract class Component
     {
         private BitmapDescriptor icon;
 
-        public Appearance(BitmapDescriptor i)
+        public Appearance(int i)
         {
             type = APPEARANCE;
-            icon = i;
+            icon = BitmapDescriptorFactory.fromResource(i);
         }
 
         public void setIcon(BitmapDescriptor icon)
@@ -129,9 +130,9 @@ public abstract class Component
             forward = true;
         }
 
-        public Animation addFrame(BitmapDescriptor frame)
+        public Animation addFrame(int frame)
         {
-            frames.add(frame);
+            frames.add(BitmapDescriptorFactory.fromResource(frame));
 
             return this;
         }

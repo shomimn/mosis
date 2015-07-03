@@ -1,13 +1,15 @@
 package com.mnm.conquest.ecs;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.mnm.conquest.Task;
+import com.mnm.conquest.TaskManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class EventManager
 {
-    HashMap<Class, ArrayList> handlers;
+    private HashMap<Class, ArrayList> handlers;
 
     public EventManager()
     {
@@ -24,11 +26,18 @@ public class EventManager
         handlersOf(event).remove(handler);
     }
 
-    public <T> void emit(Event<T> event)
+    public <T> void emit(final Event<T> event)
     {
-        Class<Event<T>> eventType = (Class<Event<T>>) event.getClass();
-        for (T handler : handlersOf(eventType))
-            event.notify(handler);
+//        TaskManager.getTaskManager().execute(new Task()
+//        {
+//            @Override
+//            public void execute()
+//            {
+                Class<Event<T>> eventType = (Class<Event<T>>) event.getClass();
+                for (T handler : handlersOf(eventType))
+                    event.notify(handler);
+//            }
+//        });
     }
 
     private <T> ArrayList<T> handlersOf(Class<? extends Event<T>> event)

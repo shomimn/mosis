@@ -1,10 +1,15 @@
 package com.mnm.conquest.ecs;
 
+import android.util.SparseArray;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.mnm.conquest.Task;
 import com.mnm.conquest.TaskManager;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,35 +24,65 @@ public class Game
     private static System animation;
 
     private static GoogleMap map;
-    private static HashMap<Integer, Marker> markers;
+//    private static HashMap<Integer, Marker> markers;
+    private static SparseArray<Marker> markers;
 
     private static EventManager eventManager;
+
+    private static Task.Ui updateTask = new Task.Ui(Task.GENERAL)
+    {
+        @Override
+        public void execute()
+        {
+//            for (int i = 0; i < 30; i += 3)
+//            {
+//                Event.Combat event = new Event.Combat();
+//                event.attacker = getEntityManager().getEntities().get(i);
+//                event.defender = getEntityManager().getEntities().get(i + 1);
+//
+//                eventManager.emit(event);
+//            }
+
+            movement.update();
+            animation.update();
+        }
+
+        @Override
+        public void uiExecute()
+        {
+            graphics.update();
+        }
+    };
 
     private static Runnable loop = new Runnable()
     {
         @Override
         public void run()
         {
-            Event.Combat event = new Event.Combat();
-            event.attacker = getEntityManager().getEntities().get(0);
-            event.defender = getEntityManager().getEntities().get(1);
+//            Event.Combat event = new Event.Combat();
+//            event.attacker = getEntityManager().getEntities().get(0);
+//            event.defender = getEntityManager().getEntities().get(1);
+//
+//            eventManager.emit(event);
+//
+//            movement.update();
+//            animation.update();
+//            graphics.update();
 
-            eventManager.emit(event);
+            TaskManager.getTaskManager().executeAndPost(updateTask);
 
-            movement.update();
-            animation.update();
-            graphics.update();
-
-            TaskManager.getMainHandler().postDelayed(this, 1000);
+            TaskManager.getMainHandler().postDelayed(this, 150);
         }
     };
 
     private Game()
     {
         eventManager = new EventManager();
+
         entityManager = new EntityManager();
 
-        markers = new HashMap<Integer, Marker>();
+//        markers = new HashMap<Integer, Marker>();
+        markers = new SparseArray<>();
 
         movement = new System.Movement();
         combat = new System.Combat();
@@ -92,7 +127,12 @@ public class Game
         map = m;
     }
 
-    public static HashMap<Integer, Marker> getMarkers()
+//    public static HashMap<Integer, Marker> getMarkers()
+//    {
+//        return markers;
+//    }
+
+    public static SparseArray<Marker> getMarkers()
     {
         return markers;
     }

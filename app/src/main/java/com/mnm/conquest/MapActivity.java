@@ -109,9 +109,9 @@ public class MapActivity extends AppCompatActivity
             public void onMapLongClick(LatLng latLng)
             {
                 CameraUpdate clickLocation = CameraUpdateFactory.newLatLngZoom(latLng, map.getCameraPosition().zoom);
-                map.animateCamera(clickLocation);
+//                map.animateCamera(clickLocation);
 
-                circularView.setVisibility(View.VISIBLE);
+//                circularView.setVisibility(View.VISIBLE);
 
                 Game.play();
             }
