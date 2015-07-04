@@ -8,7 +8,7 @@ public interface Event<T>
 
     interface CombatListener
     {
-        void onRecieve(Combat event);
+        void onReceive(Combat event);
     }
 
     class Combat implements Event<CombatListener>
@@ -19,13 +19,13 @@ public interface Event<T>
         @Override
         public void notify(CombatListener handler)
         {
-            handler.onRecieve(this);
+            handler.onReceive(this);
         }
     }
 
     interface AnimationListener
     {
-        void onRecieve(Animation event);
+        void onReceive(Animation event);
     }
 
     class Animation implements Event<AnimationListener>
@@ -36,7 +36,7 @@ public interface Event<T>
         @Override
         public void notify(AnimationListener handler)
         {
-            handler.onRecieve(this);
+            handler.onReceive(this);
         }
     }
 }

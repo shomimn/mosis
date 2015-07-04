@@ -257,14 +257,31 @@ public abstract class Task
 
     public static class Data extends Waitable
     {
-        private ProgressDialog progressDialog;
+        public static abstract class DataReadyCallback
+        {
+            private JSONArray data;
+
+            public abstract void dataReady();
+
+            public void setData(JSONArray d)
+            {
+                data = d;
+            }
+
+            public JSONArray getData()
+            {
+                return data;
+            }
+        }
+
         private JSONArray data;
         private String username;
+        private DataReadyCallback callback;
 
-        public Data(ProgressDialog dialog, String u)
+        public Data(String u, DataReadyCallback c)
         {
-            progressDialog = dialog;
             username = u;
+            callback = c;
         }
 
         @Override
@@ -276,7 +293,6 @@ public abstract class Task
         @Override
         public void uiExecute()
         {
-            progressDialog.dismiss();
         }
 
         @Override
@@ -287,6 +303,8 @@ public abstract class Task
                 JSONObject json = new JSONObject(r);
 
                 data = json.getJSONArray("data");
+                callback.setData(data);
+                callback.dataReady();
             }
             catch (JSONException e)
             {

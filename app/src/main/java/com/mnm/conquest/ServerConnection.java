@@ -13,13 +13,15 @@ import java.io.ByteArrayOutputStream;
 import de.tavendo.autobahn.WebSocketConnection;
 import de.tavendo.autobahn.WebSocketException;
 import de.tavendo.autobahn.WebSocketHandler;
+import de.tavendo.autobahn.WebSocketOptions;
 
 public class ServerConnection
 {
-    private static final String SERVER_IP = "ws://192.168.0.10:8181/";
+    private static final String SERVER_IP = "ws://192.168.0.106:8181/";
 
     private static ServerConnection instance = new ServerConnection();
     private static WebSocketConnection socket;
+    private static WebSocketOptions options;
     private static ServerHandler handler;
 
     public static class Request
@@ -44,13 +46,16 @@ public class ServerConnection
     {
         socket = new WebSocketConnection();
         handler = new ServerHandler();
+        options = new WebSocketOptions();
+        options.setMaxFramePayloadSize(options.getMaxFramePayloadSize() * 4);
+        options.setMaxMessagePayloadSize(options.getMaxMessagePayloadSize() * 4);
     }
 
     public static void connect()
     {
         try
         {
-            socket.connect(SERVER_IP, handler);
+            socket.connect(SERVER_IP, handler, options);
         }
         catch (WebSocketException e)
         {

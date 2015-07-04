@@ -11,7 +11,6 @@ public abstract class Entity
     protected int componentMask = 0;
     protected int id;
 
-//    protected HashMap<Integer, Component> components = new HashMap<Integer, Component>();
     protected SparseArray<Component> components = new SparseArray<>();
 
     public Entity()

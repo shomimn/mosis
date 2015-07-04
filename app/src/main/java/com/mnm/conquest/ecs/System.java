@@ -7,8 +7,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.mnm.conquest.Task;
 import com.mnm.conquest.TaskManager;
 
-import java.util.HashMap;
-
 public abstract class System
 {
     public void update()
@@ -57,7 +55,7 @@ public abstract class System
         }
 
         @Override
-        public void onRecieve(Event.Combat event)
+        public void onReceive(Event.Combat event)
         {
             Component.Attack attack = event.attacker.getComponent(Component.ATTACK);
             Component.Health health = event.defender.getComponent(Component.HEALTH);
@@ -93,7 +91,6 @@ public abstract class System
         @Override
         public void updateImpl()
         {
-//            HashMap<Integer, Marker> markers = Game.getMarkers();
             SparseArray<Marker> markers = Game.getMarkers();
             for (Entity e : Game.getEntityManager().getEntities())
             {

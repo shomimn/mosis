@@ -24,7 +24,6 @@ public class Game
     private static System animation;
 
     private static GoogleMap map;
-//    private static HashMap<Integer, Marker> markers;
     private static SparseArray<Marker> markers;
 
     private static EventManager eventManager;
@@ -81,7 +80,6 @@ public class Game
 
         entityManager = new EntityManager();
 
-//        markers = new HashMap<Integer, Marker>();
         markers = new SparseArray<>();
 
         movement = new System.Movement();
@@ -126,11 +124,6 @@ public class Game
     {
         map = m;
     }
-
-//    public static HashMap<Integer, Marker> getMarkers()
-//    {
-//        return markers;
-//    }
 
     public static SparseArray<Marker> getMarkers()
     {

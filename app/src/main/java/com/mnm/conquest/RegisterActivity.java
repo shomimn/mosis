@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -60,8 +61,16 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
         email.setOnKeyListener(this);
         image = (ImageView)findViewById(R.id.image);
         chooseImage = (ImageView)findViewById(R.id.image);
+        markerFlipper = (ViewFlipper)findViewById(R.id.marker_flipper);
         Button sign_save = (Button)findViewById(R.id.sign_up_button);
         sign_save.setOnClickListener(this);
+
+        photo = BitmapFactory.decodeResource(getResources(), R.mipmap.player_default);
+
+        markerIds = new int[]{R.mipmap.blue_marker, R.mipmap.red_marker, R.mipmap.green_marker, R.mipmap.purple_marker, R.mipmap.air1};
+
+        for(int i=0; i<markerIds.length; i++)
+            setFlipperImage(markerIds[i]);
 
         from = null;
         String usernameExtra, passWordExtra;
@@ -77,30 +86,36 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
                 name.setText(bundle.getString("name"));
                 lastName.setText(bundle.getString("lastname"));
                 email.setText(bundle.getString("email"));
+
+                String marker = bundle.getString("marker");
+                String photoString = bundle.getString("photo");
+
                 sign_save.setText("Save");
                 setTitle("Profile settings");
                 findViewById(R.id.username_sign_up).setEnabled(false);
                 register = false;
+
+                int id = getResources().getIdentifier(marker, "id", getPackageName());
+                for (int i = 0; i < markerIds.length; ++i)
+                    if (markerIds[i] == id)
+                    {
+                        markerFlipper.setDisplayedChild(i);
+                        break;
+                    }
+
+                byte[] bitmap = Base64.decode(photoString, Base64.DEFAULT);
+                photo = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
+                image.setImageBitmap(photo);
             }
         }
 
-        markerIds = new int[]{R.mipmap.blue_marker, R.mipmap.red_marker, R.mipmap.green_marker, R.mipmap.purple_marker, R.mipmap.air1};
-
         chooseImage.setOnClickListener(this);
-        markerFlipper = (ViewFlipper)findViewById(R.id.marker_flipper);
 
         markerFlipper.setInAnimation(AnimationUtils.loadAnimation(
                 this, R.anim.abc_popup_enter));
 
         markerFlipper.setOutAnimation(AnimationUtils.loadAnimation(
                 this, R.anim.abc_popup_exit));
-
-        photo = BitmapFactory.decodeResource(getResources(), R.mipmap.player_default);
-
-        for(int i=0; i<markerIds.length; i++)
-        {
-            setFlipperImage(markerIds[i]);
-        }
 
         markerFlipper.setOnTouchListener(new View.OnTouchListener()
         {
@@ -243,18 +258,19 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
 
             String selectedImagePath = cursor.getString(columnIndex);
 
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            photo = BitmapFactory.decodeFile(selectedImagePath, options);
-            final int REQUIRED_SIZE = 200;
-            int scale = 1;
-            while (options.outWidth / scale / 2 >= REQUIRED_SIZE
-                    && options.outHeight / scale / 2 >= REQUIRED_SIZE)
-                scale *= 2;
-            options.inSampleSize = scale;
-            options.inJustDecodeBounds = false;
-            photo = BitmapFactory.decodeFile(selectedImagePath, options);
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inJustDecodeBounds = true;
+//            photo = BitmapFactory.decodeFile(selectedImagePath, options);
+//            final int REQUIRED_SIZE = 200;
+//            int scale = 1;
+//            while (options.outWidth / scale / 2 >= REQUIRED_SIZE
+//                    && options.outHeight / scale / 2 >= REQUIRED_SIZE)
+//                scale *= 2;
+//            options.inSampleSize = scale;
+//            options.inJustDecodeBounds = false;
+            photo = BitmapFactory.decodeFile(selectedImagePath);
         }
+        photo = Bitmap.createScaledBitmap(photo, photo.getWidth() / 10, photo.getHeight() / 10, true);
         chooseImage.setImageBitmap(photo);
     }
 
@@ -316,6 +332,7 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
         outState.putString("password", password.getText().toString());
         outState.putString("email", email.getText().toString());
         outState.putParcelable("photo", photo);
+        outState.putInt("marker", markerFlipper.getDisplayedChild());
         outState.putBoolean("register", register);
     }
 
@@ -333,5 +350,6 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
         register = savedInstanceState.getBoolean("register");
 
         image.setImageBitmap(photo);
+        markerFlipper.setDisplayedChild(savedInstanceState.getInt("marker"));
     }
 }
