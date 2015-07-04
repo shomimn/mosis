@@ -26,13 +26,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.net.ssl.ManagerFactoryParameters;
-
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener, Animator.AnimatorListener
 {
@@ -150,7 +146,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 //
 //        Transition reenterTrans = new Slide();
 //        getWindow().setExitTransition(reenterTrans);
-    }
+}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
