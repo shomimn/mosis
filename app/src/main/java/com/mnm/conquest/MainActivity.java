@@ -58,7 +58,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         progDialog.setMessage("Any second now");
         progDialog.setCanceledOnTouchOutside(false);
         progDialog.show();
-
         SharedPreferences sharedPrefs = getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE);
         loggedIn = sharedPrefs.contains("username");
 

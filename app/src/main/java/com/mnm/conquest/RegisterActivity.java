@@ -238,7 +238,7 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
             userInfo.putString("email", email.getText().toString());
             userInfo.putString("marker", markerString);
 
-            Task.Register task = new Task.Register(progDialog, this, userInfo, photo);
+            Task.Register task = new Task.Register(progDialog, this, userInfo, photo, register);
             TaskManager.getTaskManager().executeAndPost(task);
         }
     }
