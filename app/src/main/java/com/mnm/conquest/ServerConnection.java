@@ -17,7 +17,8 @@ import de.tavendo.autobahn.WebSocketOptions;
 
 public class ServerConnection
 {
-    private static final String SERVER_IP = "ws://192.168.0.106:8181/";
+
+    private static final String SERVER_IP = "ws://192.168.0.103:8181/";
 
     private static ServerConnection instance = new ServerConnection();
     private static WebSocketConnection socket;
@@ -30,6 +31,7 @@ public class ServerConnection
         public static final int LOGOUT = 1;
         public static final int REGISTER = 2;
         public static final int DATA = 3;
+        public static final int UPDATE = 4;
 
         private Request() {}
     }
@@ -107,13 +109,13 @@ public class ServerConnection
         return socket.isConnected();
     }
 
-    public static void register(Bundle userInfo, Bitmap photo)
+    public static void register(Bundle userInfo, Bitmap photo, int type)
     {
         if (socket.isConnected())
         {
             try
             {
-                JSONObject json = new JSONObject().put("type", Request.REGISTER);
+                JSONObject json = new JSONObject().put("type", type);
 
                 JSONObject data = new JSONObject();
                 data.put("_id", userInfo.getString("username"));
@@ -123,6 +125,7 @@ public class ServerConnection
                 data.put("username", userInfo.getString("username"));
                 data.put("password", userInfo.getString("password"));
                 data.put("marker", userInfo.getString("marker"));
+
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);

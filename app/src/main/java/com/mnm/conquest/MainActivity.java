@@ -31,7 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener, Animator.AnimatorListener
+public class MainActivity extends ActionBarActivity implements View.OnClickListener, Animator.AnimatorListener
 {
     private Button mapButton;
     private AnimatorSet animSetLogIn;
@@ -58,7 +58,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         progDialog.setMessage("Any second now");
         progDialog.setCanceledOnTouchOutside(false);
         progDialog.show();
-
         SharedPreferences sharedPrefs = getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE);
         loggedIn = sharedPrefs.contains("username");
 
@@ -72,9 +71,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         setContentView(R.layout.activity_main);
 
                         usernameET = (EditText) findViewById(R.id.username_login);
-                        usernameET.setOnKeyListener(MainActivity.this);
                         passwordET = (EditText) findViewById(R.id.password_login);
-                        passwordET.setOnKeyListener(MainActivity.this);
 
                         Button signUpButton = (Button) findViewById(R.id.sign_up_login_button);
                         signUpButton.setOnClickListener(MainActivity.this);
@@ -313,34 +310,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             }
         }
     }
-
-    @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event)
-    {
-        int id = v.getId();
-        switch (id)
-        {
-            case R.id.username_login:
-                if (keyCode == KeyEvent.KEYCODE_ENTER)
-                {
-                    usernameET.clearFocus();
-                    passwordET.requestFocus();
-                    return true;
-                }
-                break;
-            case R.id.password_login:
-                if (passwordET.getText().toString().length() != 0 && keyCode == KeyEvent.KEYCODE_ENTER)
-                {
-                    passwordET.clearFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(passwordET.getWindowToken(), 0);
-                    return true;
-                }
-                break;
-        }
-        return false;
-    }
-
     @Override
     public void onAnimationStart(Animator animation)
     {
