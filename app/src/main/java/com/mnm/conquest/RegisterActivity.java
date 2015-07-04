@@ -83,7 +83,8 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
                 email.setText(bundle.getString("email"));
 
                 String marker = bundle.getString("marker");
-                String photoString = bundle.getString("photo");
+
+                photo = bundle.getParcelable("photo");
 
                 sign_save.setText("Save");
                 setTitle("Profile settings");
@@ -98,8 +99,6 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
                         break;
                     }
 
-                byte[] bitmap = Base64.decode(photoString, Base64.DEFAULT);
-                photo = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
                 image.setImageBitmap(photo);
             }
         }

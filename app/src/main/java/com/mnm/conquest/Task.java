@@ -134,16 +134,16 @@ public abstract class Task
         }
     }
 
-    public static class Login extends Waitable
+    public static class Login extends Data
     {
         private ProgressDialog progressDialog;
         private String username;
         private String password;
         private AnimatorSet animSetLogIn;
 
-        public Login(ProgressDialog dialog, String user, String pw, AnimatorSet animSet)
+        public Login(ProgressDialog dialog, String user, String pw, AnimatorSet animSet, DataReadyCallback callback)
         {
-            super();
+            super(user, callback);
 
             progressDialog = dialog;
             username = user;
@@ -276,9 +276,9 @@ public abstract class Task
             }
         }
 
-        private JSONArray data;
-        private String username;
-        private DataReadyCallback callback;
+        protected JSONArray data;
+        protected String username;
+        protected DataReadyCallback callback;
 
         public Data(String u, DataReadyCallback c)
         {

@@ -18,7 +18,7 @@ public class Game
 {
     private static Game instance = new Game();
     private static GameUI gameUi;
-    private static PlayerInfo playerInfo;
+    private static PlayerInfo playerInfo = null;
 
     private static EntityManager entityManager;
     private static System movement;
