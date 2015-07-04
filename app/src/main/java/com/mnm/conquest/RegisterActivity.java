@@ -26,7 +26,7 @@ import android.widget.ImageView;
 import android.widget.ViewFlipper;
 
 
-public class RegisterActivity extends ActionBarActivity implements View.OnClickListener, View.OnKeyListener
+public class RegisterActivity extends ActionBarActivity implements View.OnClickListener
 {
     private static final int CAMERA_REQUEST = 1;
     private static final int GALLERY_REQUEST = 2;
@@ -50,15 +50,10 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
         setContentView(R.layout.activity_register);
         
         name = (EditText)findViewById(R.id.name_sign_up);
-        name.setOnKeyListener(this);
         lastName = (EditText)findViewById(R.id.last_name_sign_up);
-        lastName.setOnKeyListener(this);
         userName = (EditText)findViewById(R.id.username_sign_up);
-        userName.setOnKeyListener(this);
         password = (EditText)findViewById(R.id.password_sign_up);
-        password.setOnKeyListener(this);
         email = (EditText)findViewById(R.id.email_sign_up);
-        email.setOnKeyListener(this);
         image = (ImageView)findViewById(R.id.image);
         chooseImage = (ImageView)findViewById(R.id.image);
         markerFlipper = (ViewFlipper)findViewById(R.id.marker_flipper);
@@ -275,51 +270,7 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
     }
 
 
-    @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event)
-    {
-        int id = v.getId();
 
-        if(keyCode == KeyEvent.KEYCODE_ENTER)
-        {
-            switch (id)
-            {
-                case R.id.name_sign_up:
-                {
-                    name.clearFocus();
-                    lastName.requestFocus();
-                }
-                return true;
-                case R.id.last_name_sign_up:
-                {
-                    lastName.clearFocus();
-                    if(from != null)
-                    {
-                        password.requestFocus();
-                    }
-                    else
-                        userName.requestFocus();
-                }
-                return true;
-                case R.id.username_sign_up:
-                    userName.clearFocus();
-                    password.requestFocus();
-                    return true;
-                case R.id.password_sign_up:
-                    password.clearFocus();
-                    email.requestFocus();
-                    return true;
-                case R.id.email_sign_up:
-                    if(email.getText().length() != 0)
-                    {
-                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(email.getWindowToken(), 0);
-                    }
-                    return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState)

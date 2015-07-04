@@ -17,7 +17,7 @@ import de.tavendo.autobahn.WebSocketOptions;
 
 public class ServerConnection
 {
-    private static final String SERVER_IP = "ws://192.168.0.106:8181/";
+    private static final String SERVER_IP = "ws://192.168.0.103:8181/";
 
     private static ServerConnection instance = new ServerConnection();
     private static WebSocketConnection socket;
@@ -123,6 +123,7 @@ public class ServerConnection
                 data.put("username", userInfo.getString("username"));
                 data.put("password", userInfo.getString("password"));
                 data.put("marker", userInfo.getString("marker"));
+
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
