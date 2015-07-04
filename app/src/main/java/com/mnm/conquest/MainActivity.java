@@ -1,5 +1,6 @@
 package com.mnm.conquest;
 
+import com.mnm.conquest.ecs.Game;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
@@ -41,7 +42,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     EditText usernameET;
     EditText passwordET;
 
-    private Bitmap playerImage;
     private ImageView playerImageView;
 
     private Menu menu;
@@ -112,9 +112,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         {
                             JSONObject data = getData().getJSONObject(0);
 
-                            byte[] bitmap = Base64.decode(data.getString("photo"), Base64.DEFAULT);
-                            playerImage = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
-                            playerImageView.setImageBitmap(playerImage);
+//                            byte[] bitmap = Base64.decode(data.getString("photo"), Base64.DEFAULT);
+//                            playerImage = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
+//                            playerImageView.setImageBitmap(playerImage);
+                            PlayerInfo player = new PlayerInfo(data);
+                            Game.setPlayerInfo(player);
+                            playerImageView.setImageBitmap(player.getPhoto());
                         }
                         catch (JSONException e)
                         {

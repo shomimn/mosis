@@ -113,6 +113,12 @@ public abstract class System
 
                     m.setIcon(animation.getCurrentFrame());
                 }
+                if ((mask & Component.ROTATION) == Component.ROTATION)
+                {
+                    Component.Rotation rotation = e.getComponent(Component.ROTATION);
+
+                    m.setRotation(rotation.getRotation());
+                }
             }
         }
     }

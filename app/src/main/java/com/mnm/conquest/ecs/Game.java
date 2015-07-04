@@ -1,30 +1,30 @@
 package com.mnm.conquest.ecs;
 
+import android.location.Location;
 import android.util.SparseArray;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.mnm.conquest.PlayerInfo;
 import com.mnm.conquest.Task;
 import com.mnm.conquest.TaskManager;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Game
 {
     private static Game instance = new Game();
+    private static GameUI gameUi;
+    private static PlayerInfo playerInfo;
 
     private static EntityManager entityManager;
     private static System movement;
     private static System combat;
     private static System graphics;
     private static System animation;
-
-    private static GoogleMap map;
-    private static SparseArray<Marker> markers;
 
     private static EventManager eventManager;
 
@@ -42,7 +42,7 @@ public class Game
 //                eventManager.emit(event);
 //            }
 
-            movement.update();
+//            movement.update();
             animation.update();
         }
 
@@ -80,7 +80,7 @@ public class Game
 
         entityManager = new EntityManager();
 
-        markers = new SparseArray<>();
+        gameUi = new GameUI();
 
         movement = new System.Movement();
         combat = new System.Combat();
@@ -95,8 +95,6 @@ public class Game
 
     public static void play()
     {
-        createMarkers();
-
         TaskManager.getMainHandler().post(loop);
     }
 
@@ -115,23 +113,70 @@ public class Game
             Component.Appearance appearance = e.getComponent(Component.APPEARANCE);
             Component.Health health = e.getComponent(Component.HEALTH);
 
-            Marker m = map.addMarker(new MarkerOptions().position(position.getLatLng()).icon(appearance.getIcon()).alpha((float)health.getHealth() / 100));
-            markers.put(e.getId(), m);
+            Marker m = gameUi.getMap().addMarker(new MarkerOptions().position(position.getLatLng()).icon(appearance.getIcon()).alpha((float)health.getHealth() / 100));
+            gameUi.insert(e, m);
         }
+    }
+
+    public static void createPlayer(LatLng position, float rotation)
+    {
+        Entity player = new Entity.Unit();
+        player.addComponent(new Component.Position(position))
+                .addComponent(new Component.Appearance(playerInfo.getMarkerId()))
+                .addComponent(new Component.Health(100))
+                .addComponent(new Component.Attack(10))
+                .addComponent(new Component.Rotation(rotation));
+
+        entityManager.getEntities().add(player);
+
+        MarkerOptions options = new MarkerOptions();
+        options.position(position).rotation(rotation).icon(BitmapDescriptorFactory.fromResource(playerInfo.getMarkerId())).anchor(0.5f, 0.5f);
+
+        Marker m = gameUi.getMap().addMarker(options);
+        gameUi.insert(player, m);
+
+        playerInfo.setMarker(m);
     }
 
     public static void setMap(GoogleMap m)
     {
-        map = m;
+        gameUi.setMap(m);
     }
 
     public static SparseArray<Marker> getMarkers()
     {
-        return markers;
+        return gameUi.getMarkers();
+    }
+
+    public static GameUI ui()
+    {
+        return gameUi;
     }
 
     public static EventManager getEventManager()
     {
         return eventManager;
+    }
+
+    public static PlayerInfo getPlayerInfo()
+    {
+        return playerInfo;
+    }
+
+    public static void setPlayerInfo(PlayerInfo info)
+    {
+        playerInfo = info;
+    }
+
+    public static void playerPositionChanged(Location position)
+    {
+        Marker marker = playerInfo.getMarker();
+        Entity entity = gameUi.getEntity(marker);
+
+        Component.Position cPosition = entity.getComponent(Component.POSITION);
+        Component.Rotation cRotation = entity.getComponent(Component.ROTATION);
+
+        cPosition.setLatLng(new LatLng(position.getLatitude(), position.getLongitude()));
+        cRotation.setRotation(position.getBearing());
     }
 }

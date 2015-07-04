@@ -1,13 +1,8 @@
 package com.mnm.conquest.ecs;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapRegionDecoder;
-import android.support.v7.app.AppCompatActivity;
-
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
 
@@ -18,6 +13,8 @@ public abstract class Component
     public static final int APPEARANCE = 1 << 2;
     public static final int ANIMATION = 1 << 3;
     public static final int ATTACK = 1 << 4;
+    public static final int PLAYER = 1 << 5;
+    public static final int ROTATION = 1 << 6;
 
     protected int type;
 
@@ -166,6 +163,43 @@ public abstract class Component
         public int getDamage()
         {
             return damage;
+        }
+    }
+
+    public static class Player extends Component
+    {
+        private String username;
+
+        public Player(String u)
+        {
+            type = Component.PLAYER;
+            username = u;
+        }
+
+        public String getUsername()
+        {
+            return username;
+        }
+    }
+
+    public static class Rotation extends Component
+    {
+        private float rotation;
+
+        public Rotation(float o)
+        {
+            type = Component.ROTATION;
+            setRotation(o);
+        }
+
+        public void setRotation(float o)
+        {
+            rotation = o;
+        }
+
+        public float getRotation()
+        {
+            return rotation;
         }
     }
 }

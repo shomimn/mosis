@@ -113,7 +113,7 @@ public class MapActivity extends AppCompatActivity
 
 //                circularView.setVisibility(View.VISIBLE);
 
-                Game.play();
+//                Game.play();
             }
         });
 
@@ -124,6 +124,8 @@ public class MapActivity extends AppCompatActivity
             public void onLocationChanged(Location nLocation)
             {
                 location = nLocation;
+
+                Game.playerPositionChanged(nLocation);
             }
 
             @Override
@@ -144,11 +146,14 @@ public class MapActivity extends AppCompatActivity
 
             }
         });
+
         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 14);
         map.animateCamera(yourLocation);
 
         Game.setMap(map);
+        Game.play();
+        Game.createPlayer(new LatLng(location.getLatitude(), location.getLongitude()), location.getBearing());
     }
 
     @Override
