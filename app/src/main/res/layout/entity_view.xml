@@ -96,6 +96,14 @@
                 android:progressDrawable="@drawable/health_rating_bar"
                 android:layout_gravity="center_vertical"
                 />
+
+            <com.mnm.conquest.FButton
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:text="+"
+                android:id="@+id/health_upgrade"
+                android:layout_gravity="center_vertical"/>
+
         </LinearLayout>
 
         <LinearLayout
@@ -120,6 +128,14 @@
                 android:progressDrawable="@drawable/armor_rating_bar"
                 android:layout_gravity="center_vertical"
                 />
+
+            <com.mnm.conquest.FButton
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:text="+"
+                android:id="@+id/armor_upgrade"
+                android:layout_gravity="center_vertical"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -137,13 +153,20 @@
                 android:layout_gravity="center_vertical"/>
 
             <RatingBar
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="32dp"
                 android:id="@+id/damage_rating"
                 android:isIndicator="true"
                 android:progressDrawable="@drawable/damage_rating_bar"
                 android:layout_gravity="center_vertical"
                 android:longClickable="false"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:text="+"
+                android:id="@+id/damage_upgrade"
+                />
 
         </LinearLayout>
     </LinearLayout>

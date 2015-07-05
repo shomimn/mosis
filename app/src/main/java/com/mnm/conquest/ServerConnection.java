@@ -18,7 +18,7 @@ import de.tavendo.autobahn.WebSocketOptions;
 public class ServerConnection
 {
 
-    private static final String SERVER_IP = "ws://192.168.0.10:8181/";
+    private static final String SERVER_IP = "ws://192.168.0.106:8181/";
 
     private static ServerConnection instance = new ServerConnection();
     private static WebSocketConnection socket;
@@ -32,6 +32,8 @@ public class ServerConnection
         public static final int REGISTER = 2;
         public static final int DATA = 3;
         public static final int UPDATE = 4;
+        public static final int POSITION = 6;
+        public static final int INIT = 7;
 
         private Request() {}
     }
@@ -126,7 +128,6 @@ public class ServerConnection
                 data.put("password", userInfo.getString("password"));
                 data.put("marker", userInfo.getString("marker"));
 
-
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
                 byte[] byteArray = byteArrayOutputStream .toByteArray();
@@ -150,6 +151,23 @@ public class ServerConnection
             try
             {
                 JSONObject json = new JSONObject().put("type", Request.DATA).put("data", new JSONObject().put("username", username));
+                socket.sendTextMessage(json.toString());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void sendPosition(String username, double latitude, double longitude, int type)
+    {
+        if (socket.isConnected())
+        {
+            try
+            {
+                JSONObject json = new JSONObject().put("type", type)
+                        .put("data", new JSONObject().put("username", username).put("latitude", latitude).put("longitude", longitude));
                 socket.sendTextMessage(json.toString());
             }
             catch (JSONException e)

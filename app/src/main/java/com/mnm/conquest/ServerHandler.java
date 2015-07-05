@@ -1,6 +1,9 @@
 package com.mnm.conquest;
 
 import android.util.Log;
+
+import com.mnm.conquest.ecs.Game;
+
 import de.tavendo.autobahn.WebSocketHandler;
 
 public class ServerHandler extends WebSocketHandler
@@ -34,6 +37,8 @@ public class ServerHandler extends WebSocketHandler
             }
             waitingTask = null;
         }
+        else
+            Game.asyncUpdate(payload);
     }
 
     @Override

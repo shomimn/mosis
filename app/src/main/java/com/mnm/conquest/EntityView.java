@@ -20,12 +20,14 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         public int health;
         public int defense;
         public int damage;
+        public int cost;
 
-        public UnitStats(int h, int a, int d)
+        public UnitStats(int h, int a, int d, int c)
         {
             health = h;
             defense = a;
             damage = d;
+            cost = c;
         }
     }
 
@@ -34,14 +36,17 @@ public class EntityView extends LinearLayout implements View.OnClickListener
     private RatingBar damageRating;
     private Button buyButton;
     private Button exitButton;
+    private Button healthUpgrade;
+    private Button armorUpgrade;
+    private Button damageUpgrade;
     private TextView unitName;
 
     private ViewFlipper unitFlipper;
 
-    private int[] images = new int[] { R.mipmap.fighter, R.mipmap.interceptor, R.mipmap.scout, R.mipmap.gunship, R.mipmap.bomber };
-    private String[] names = new String[] { "fighter", "interceptor", "scout", "gunship", "bomber" };
-    private UnitStats[] stats = new UnitStats[] { new UnitStats(50,  50, 70), new UnitStats(40, 50, 60), new UnitStats(30, 60, 40),
-                                                  new UnitStats(70, 80, 60), new UnitStats(70, 80, 80) };
+    private int[] images = new int[] { R.mipmap.air1, R.mipmap.fighter, R.mipmap.interceptor, R.mipmap.scout, R.mipmap.gunship, R.mipmap.bomber };
+    private String[] names = new String[] { "username", "fighter", "interceptor", "scout", "gunship", "bomber" };
+    private UnitStats[] stats = new UnitStats[] { new UnitStats(50, 60, 90, 0), new UnitStats(50,  50, 70, 50), new UnitStats(40, 50, 60, 45), new UnitStats(30, 60, 40, 30),
+                                                  new UnitStats(70, 80, 60, 60), new UnitStats(70, 80, 80, 80) };
 
     public EntityView(Context context)
     {
@@ -81,15 +86,26 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         unitFlipper = (ViewFlipper) findViewById(R.id.unit_flipper);
         buyButton = (Button) findViewById(R.id.buy_button);
         exitButton = (Button) findViewById(R.id.exit_button);
+        healthUpgrade = (Button) findViewById(R.id.health_upgrade);
+        armorUpgrade = (Button) findViewById(R.id.armor_upgrade);
+        damageUpgrade = (Button) findViewById(R.id.damage_upgrade);
         unitName = (TextView) findViewById(R.id.unit_name);
 
         unitName.setText(names[0]);
 
         exitButton.setOnClickListener(this);
 
-        healthRating.setRating((float) stats[0].health / 100 * 5);
-        armorRating.setRating((float) stats[0].defense / 100 * 5);
-        damageRating.setRating((float) stats[0].damage / 100 * 5);
+//        healthRating.setRating((float) stats[0].health / 100 * 5);
+//        armorRating.setRating((float) stats[0].defense / 100 * 5);
+//        damageRating.setRating((float) stats[0].damage / 100 * 5);
+
+        healthUpgrade.setVisibility(View.GONE);
+        armorUpgrade.setVisibility(View.GONE);
+        damageUpgrade.setVisibility(View.GONE);
+
+        healthRating.setRating(3);
+        armorRating.setRating(4);
+        damageRating.setRating(4.5f);
 
         for (int i = 0; i < images.length; ++i)
             setFlipperImage(images[i]);
@@ -116,7 +132,7 @@ public class EntityView extends LinearLayout implements View.OnClickListener
                         else if (x1 > x2)
                             unitFlipper.showPrevious();
 
-                        updateInfo();
+                        updateView();
                         return true;
                 }
                 return false;
@@ -140,9 +156,14 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         unitFlipper.addView(image);
     }
 
-    private void updateInfo()
+    private void updateView()
     {
         int index = unitFlipper.getDisplayedChild();
+        boolean upgrade = index == 0;
+
+//        healthUpgrade.setVisibility(upgrade ? View.VISIBLE : View.GONE);
+//        armorUpgrade.setVisibility(upgrade ? View.VISIBLE : View.GONE);
+//        damageUpgrade.setVisibility(upgrade ? View.VISIBLE : View.GONE);
 
         unitName.setText(names[index]);
 
@@ -155,7 +176,11 @@ public class EntityView extends LinearLayout implements View.OnClickListener
     public void onClick(View v)
     {
         int id = v.getId();
-        if (id == R.id.exit_button)
-            setVisibility(View.GONE);
+        switch (id)
+        {
+            case R.id.exit_button:
+                setVisibility(View.GONE);
+                break;
+        }
     }
 }

@@ -179,6 +179,8 @@ public class MapActivity extends AppCompatActivity
         Game.setMap(map);
         Game.play();
         Game.createPlayer(new LatLng(location.getLatitude(), location.getLongitude()), location.getBearing());
+
+        ServerConnection.sendPosition(Game.getPlayerInfo().getUsername(), location.getLatitude(), location.getLongitude(), ServerConnection.Request.INIT);
     }
 
     @Override
@@ -188,6 +190,7 @@ public class MapActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_map, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
