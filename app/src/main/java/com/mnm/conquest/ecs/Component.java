@@ -15,6 +15,7 @@ public abstract class Component
     public static final int ATTACK = 1 << 4;
     public static final int PLAYER = 1 << 5;
     public static final int ROTATION = 1 << 6;
+    public static final int DEFENSE = 1 << 7;
 
     protected int type;
 
@@ -200,6 +201,21 @@ public abstract class Component
         public float getRotation()
         {
             return rotation;
+        }
+    }
+    public static class Defense extends Component
+    {
+        private int defense;
+
+        public Defense(int def)
+        {
+            type = DEFENSE;
+            defense = def;
+        }
+
+        public int getDefense()
+        {
+            return defense;
         }
     }
 }

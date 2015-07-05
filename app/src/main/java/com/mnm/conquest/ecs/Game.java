@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mnm.conquest.PlayerInfo;
+import com.mnm.conquest.R;
 import com.mnm.conquest.Task;
 import com.mnm.conquest.TaskManager;
 
@@ -134,8 +135,21 @@ public class Game
 
         Marker m = gameUi.getMap().addMarker(options);
         gameUi.insert(player, m);
-
         playerInfo.setMarker(m);
+    }
+    public static void createBuilding(LatLng position)
+    {
+        Entity Nis = new Entity.Building();
+        Nis.addComponent(new Component.Defense(100))
+                .addComponent(new Component.Position(position))
+                .addComponent(new Component.Appearance(R.mipmap.ikonica2));
+
+        entityManager.getEntities().add(Nis);
+
+        MarkerOptions nis = new MarkerOptions();
+        nis.position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.fortress)).anchor(0.5f, 0.5f);
+        Marker ni = gameUi.getMap().addMarker(nis);
+        gameUi.insert(Nis, ni);
     }
 
     public static void setMap(GoogleMap m)
