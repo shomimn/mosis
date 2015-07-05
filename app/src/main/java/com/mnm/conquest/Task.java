@@ -222,19 +222,21 @@ public abstract class Task
         private Bundle userInfo;
         private Bitmap photo;
         private Activity activity;
+        private boolean register;
 
-        public Register(ProgressDialog dialog, Activity a, Bundle info, Bitmap p)
+        public Register(ProgressDialog dialog, Activity a, Bundle info, Bitmap p, boolean reg)
         {
             progressDialog = dialog;
             activity = a;
             userInfo = info;
             photo = p;
+            register = reg;
         }
 
         @Override
         public void executeImpl()
         {
-            ServerConnection.register(userInfo, photo);
+            ServerConnection.register(userInfo, photo, register ? ServerConnection.Request.REGISTER : ServerConnection.Request.UPDATE);
         }
 
         @Override
