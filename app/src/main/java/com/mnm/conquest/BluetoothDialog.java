@@ -24,6 +24,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.mnm.conquest.ecs.Game;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -224,7 +226,7 @@ public class BluetoothDialog extends Dialog
     {
         OutputStream outputStream;
         byte[] buffer;
-        String user = "dsa";
+        String user = Game.getPlayerInfo().getUsername();
         try
         {
             outputStream = socket.getOutputStream();

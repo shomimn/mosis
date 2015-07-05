@@ -6,8 +6,11 @@ import android.util.Base64;
 
 import com.google.android.gms.maps.model.Marker;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class PlayerInfo
 {
@@ -20,6 +23,7 @@ public class PlayerInfo
     private int markerId;
     private Bitmap photo;
     private Marker marker;
+    private List<String> allies;
 
     public PlayerInfo(JSONObject player)
     {
@@ -33,7 +37,9 @@ public class PlayerInfo
             markerName = player.getString("marker");
             markerId = ConquestApplication.getContext().getResources().
                     getIdentifier(markerName, "id", ConquestApplication.getContext().getPackageName());
-
+            JSONArray all = player.getJSONArray("allies");
+            for(int i = 0; i < all.length(); ++i)
+                allies.add(all.getJSONObject(i).toString());
             byte[] bitmap = Base64.decode(player.getString("photo"), Base64.DEFAULT);
             photo = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
         }
@@ -92,4 +98,5 @@ public class PlayerInfo
     {
         return marker;
     }
+    public List<String> getAllies() { return allies; };
 }

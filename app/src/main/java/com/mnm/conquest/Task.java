@@ -276,9 +276,9 @@ public abstract class Task
             }
         }
 
-        private JSONArray data;
-        private String username;
-        private DataReadyCallback callback;
+        protected JSONArray data;
+        protected String username;
+        protected DataReadyCallback callback;
 
         public Data(String u, DataReadyCallback c)
         {

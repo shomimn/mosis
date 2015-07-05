@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 import de.tavendo.autobahn.WebSocketConnection;
 import de.tavendo.autobahn.WebSocketException;
@@ -32,7 +33,7 @@ public class ServerConnection
         public static final int REGISTER = 2;
         public static final int DATA = 3;
         public static final int UPDATE = 4;
-
+        public static final int ALLIES = 5;
         private Request() {}
     }
 
@@ -150,6 +151,21 @@ public class ServerConnection
             try
             {
                 JSONObject json = new JSONObject().put("type", Request.DATA).put("data", new JSONObject().put("username", username));
+                socket.sendTextMessage(json.toString());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void getAllies(String username)
+    {
+        if(socket.isConnected())
+        {
+            try
+            {
+                JSONObject json = new JSONObject().put("type", Request.ALLIES).put("data", new JSONObject().put("username", username));
                 socket.sendTextMessage(json.toString());
             }
             catch (JSONException e)
