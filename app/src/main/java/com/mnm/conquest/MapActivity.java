@@ -40,6 +40,7 @@ public class MapActivity extends AppCompatActivity
     private GoogleMap map;
     private CircularView circularView;
     private Location location;
+    private EntityView entityView;
 
     public static class MySupportMapFragment extends SupportMapFragment
     {
@@ -111,6 +112,9 @@ public class MapActivity extends AppCompatActivity
         circularView = (CircularView) findViewById(R.id.circularView);
         circularView.setVisibility(View.GONE);
 
+        entityView = (EntityView) findViewById(R.id.entity_view);
+        entityView.setVisibility(View.GONE);
+
         map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener()
         {
             @Override
@@ -122,6 +126,7 @@ public class MapActivity extends AppCompatActivity
 //                circularView.setVisibility(View.VISIBLE);
 
 //                Game.play();
+                entityView.setVisibility(View.VISIBLE);
             }
         });
 

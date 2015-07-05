@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="#424242"
+              android:gravity="bottom"
+              android:alpha="0.9">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <com.mnm.conquest.FButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Exit"
+                android:id="@+id/exit_button"
+                android:layout_gravity="left"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"/>
+
+            <com.mnm.conquest.FButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Buy"
+            android:id="@+id/buy_button"
+            android:layout_gravity="right"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+            <com.mnm.conquest.FTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/unit_name"
+                android:layout_alignParentTop="false"
+                android:layout_centerHorizontal="true"
+                android:layout_alignBaseline="@+id/exit_button"/>
+
+        </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        >
+
+        <ViewFlipper
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:id="@+id/unit_flipper"
+            android:autoStart="false"
+            android:layout_gravity="center_vertical"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:layout_marginLeft="20dp"
+        android:gravity="center_vertical"
+        android:layout_marginTop="20dp"
+        android:baselineAligned="false"
+        >
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <com.mnm.conquest.FTextView
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="HP"
+                android:id="@+id/textView"
+                android:layout_gravity="center_vertical"/>
+
+            <RatingBar
+                android:layout_width="fill_parent"
+                android:layout_height="32dp"
+                android:id="@+id/health_rating"
+                android:isIndicator="true"
+                android:progressDrawable="@drawable/health_rating_bar"
+                android:layout_gravity="center_vertical"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp">
+
+            <com.mnm.conquest.FTextView
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="DEF"
+                android:id="@+id/textView2"
+                android:layout_gravity="center_vertical"/>
+
+            <RatingBar
+                android:layout_width="fill_parent"
+                android:layout_height="32dp"
+                android:id="@+id/armor_rating"
+                android:isIndicator="true"
+                android:progressDrawable="@drawable/armor_rating_bar"
+                android:layout_gravity="center_vertical"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp">
+
+            <com.mnm.conquest.FTextView
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="ATT"
+                android:id="@+id/textView3"
+                android:layout_gravity="center_vertical"/>
+
+            <RatingBar
+                android:layout_width="fill_parent"
+                android:layout_height="32dp"
+                android:id="@+id/damage_rating"
+                android:isIndicator="true"
+                android:progressDrawable="@drawable/damage_rating_bar"
+                android:layout_gravity="center_vertical"
+                android:longClickable="false"/>
+
+        </LinearLayout>
+    </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

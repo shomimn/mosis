@@ -47,7 +47,7 @@
             </LinearLayout>
 
 
-            <EditText
+            <com.mnm.conquest.FEditText
                 android:id="@+id/name_sign_up"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
                 android:hint="@string/name_label"
                 android:inputType="text"
                 android:textColorHint="#bbbbbb"/>
-            <EditText
+            <com.mnm.conquest.FEditText
                 android:id="@+id/last_name_sign_up"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
                 android:hint="@string/last_name_label"
                 android:inputType="text"
                 android:textColorHint="#bbbbbb"/>
-            <EditText
+            <com.mnm.conquest.FEditText
                 android:id="@+id/username_sign_up"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                 android:hint="@string/user_name_label"
                 android:inputType="text"
                 android:textColorHint="#bbbbbb" />
-            <EditText
+            <com.mnm.conquest.FEditText
                 android:id="@+id/password_sign_up"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
                 android:textColorHint="#bbbbbb"
                 android:inputType="textPassword"
                 android:password="true"/>
-            <EditText
+            <com.mnm.conquest.FEditText
                 android:id="@+id/email_sign_up"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
                 android:hint="@string/email_label"
                 android:inputType="text"
                 android:textColorHint="#bbbbbb"/>
-            <Button
+            <com.mnm.conquest.FButton
                 android:id="@+id/sign_up_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

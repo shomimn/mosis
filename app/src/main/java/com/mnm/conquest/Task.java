@@ -304,6 +304,9 @@ public abstract class Task
             {
                 JSONObject json = new JSONObject(r);
 
+                setResponseCode(json.getInt("code"));
+                setResponseMessage(json.getString("message"));
+
                 data = json.getJSONArray("data");
                 callback.setData(data);
                 callback.dataReady();
