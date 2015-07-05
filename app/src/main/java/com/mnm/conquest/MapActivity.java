@@ -1,11 +1,16 @@
 package com.mnm.conquest;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,7 +18,11 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsoluteLayout;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,6 +34,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.plus.model.people.Person;
 import com.mnm.conquest.ecs.Game;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
@@ -36,6 +46,7 @@ public class MapActivity extends AppCompatActivity
 {
     private GoogleMap map;
     private CircularView circularView;
+    private BuildingView buildingView;
     private Location location;
 
     public static class MySupportMapFragment extends SupportMapFragment
@@ -108,17 +119,39 @@ public class MapActivity extends AppCompatActivity
         circularView = (CircularView) findViewById(R.id.circularView);
         circularView.setVisibility(View.GONE);
 
+        buildingView = (BuildingView)findViewById(R.id.fortress);
+        buildingView.setVisibility(View.GONE);
+
         map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener()
         {
             @Override
-            public void onMapLongClick(LatLng latLng)
+            public void onMapLongClick(final LatLng latLng)
             {
                 CameraUpdate clickLocation = CameraUpdateFactory.newLatLngZoom(latLng, map.getCameraPosition().zoom);
-//                map.animateCamera(clickLocation);
+                map.animateCamera(clickLocation);
 
 //                circularView.setVisibility(View.VISIBLE);
 
 //                Game.play();
+
+                buildingView.setVisibility(View.VISIBLE);
+                buildingView.setYesListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        buildingView.setVisibility(View.GONE);
+                        Game.createBuilding(latLng);
+                    }
+                });
+                buildingView.setNoListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        buildingView.setVisibility(View.GONE);
+                    }
+                });
             }
         });
 
@@ -130,7 +163,7 @@ public class MapActivity extends AppCompatActivity
             {
                 location = nLocation;
 
-                Game.playerPositionChanged(nLocation);
+                //Game.playerPositionChanged(nLocation);
             }
 
             @Override
@@ -158,7 +191,7 @@ public class MapActivity extends AppCompatActivity
 
         Game.setMap(map);
         Game.play();
-        Game.createPlayer(new LatLng(location.getLatitude(), location.getLongitude()), location.getBearing());
+        //Game.createPlayer(new LatLng(location.getLatitude(), location.getLongitude()), location.getBearing());
     }
 
     @Override

@@ -35,4 +35,7 @@
     <string name="progress_signing_up_title">Signing up...</string>
     <string name="progress_wait_message">Please Wait!</string>
     <string name="progress_editing_title">Editing profile...</string>
+    <string name="building_dialog">Do you want to create buiding?</string>
+    <string name="building_dialog_yes_button">Yes</string>
+    <string name="building_dialog_no_button">No</string>
 </resources>
