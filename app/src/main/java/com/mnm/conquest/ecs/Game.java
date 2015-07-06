@@ -147,7 +147,7 @@ public class Game
         entityManager.getEntities().add(Nis);
 
         MarkerOptions nis = new MarkerOptions();
-        nis.position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.fortress)).anchor(0.5f, 0.5f);
+        nis.position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.fortress)).anchor(0.5f, 0.5f).title(String.valueOf(R.mipmap.fortress));
         Marker ni = gameUi.getMap().addMarker(nis);
         gameUi.insert(Nis, ni);
     }

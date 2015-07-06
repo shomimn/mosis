@@ -26,7 +26,7 @@ import com.google.android.gms.maps.model.Circle;
  */
 public class CircularView extends View implements View.OnTouchListener {
 
-    int count = 5;
+    int count = 3;
     int currentRadius;
     Rect[] rect= new Rect[count];
 
@@ -43,19 +43,18 @@ public class CircularView extends View implements View.OnTouchListener {
 
     private int mInnerRadius;
     private int mOuterRadius;
-    private Bitmap mCenterIcon;
+    private Bitmap[] mIcons = {BitmapFactory.decodeResource(getResources(), R.mipmap.exit), BitmapFactory.decodeResource(getResources(), R.mipmap.attack), BitmapFactory.decodeResource(getResources(), R.mipmap.info), null};
     private int[] mColors = {getResources().getColor(R.color.transparent_gray), getResources().getColor(R.color.transparent_gray), getResources().getColor(R.color.transparent_gray),
             getResources().getColor(R.color.transparent_gray),getResources().getColor(R.color.transparent_gray)};
 
+
     public CircularView(Context context) {
         this(context, null);
-
     }
 
 
     public CircularView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
-
     }
 
     public CircularView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -76,8 +75,6 @@ public class CircularView extends View implements View.OnTouchListener {
 
 
         currentRadius = mOuterRadius;
-
-        mCenterIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
 
         setOnTouchListener(this);
     }
@@ -125,19 +122,19 @@ public class CircularView extends View implements View.OnTouchListener {
                 createAnimation(canvas, width/2, height/2);
 
             //canvas.drawCircle(width / 2 + centerX - mCenterIcon.getWidth() / 2 + mCenterIcon.getWidth() / 2, height / 2 + centerY - mCenterIcon.getHeight() / 2 + mCenterIcon.getHeight() / 2, mCenterIcon.getWidth(), mPaint);
-            canvas.drawBitmap(mCenterIcon, width / 2 + centerX - mCenterIcon.getWidth() / 2, height / 2 + centerY - mCenterIcon.getHeight() / 2, null);
+            canvas.drawBitmap(mIcons[i], width / 2 + centerX - mIcons[i].getWidth() / 2, height / 2 + centerY - mIcons[i].getHeight() / 2, null);
 
             if(rect[i] == null)
-            rect[i] = new Rect(width / 2 + centerX - mCenterIcon.getWidth() / 2-10, height / 2 + centerY - mCenterIcon.getHeight() / 2-10,
-                    width / 2 + centerX - mCenterIcon.getWidth() / 2+mCenterIcon.getWidth()+10, height / 2 + centerY - mCenterIcon.getHeight() / 2+mCenterIcon.getHeight()+10);
+            rect[i] = new Rect(width / 2 + centerX - mIcons[i].getWidth() / 2-10, height / 2 + centerY - mIcons[i].getHeight() / 2-10,
+                    width / 2 + centerX - mIcons[i].getWidth() / 2+mIcons[i].getWidth()+10, height / 2 + centerY - mIcons[i].getHeight() / 2+mIcons[i].getHeight()+10);
             else
-                rect[i].set(width / 2 + centerX - mCenterIcon.getWidth() / 2-10, height / 2 + centerY - mCenterIcon.getHeight() / 2-10,
-                        width / 2 + centerX - mCenterIcon.getWidth() / 2+mCenterIcon.getWidth()+10, height / 2 + centerY - mCenterIcon.getHeight() / 2+mCenterIcon.getHeight()+10);
+                rect[i].set(width / 2 + centerX - mIcons[i].getWidth() / 2-10, height / 2 + centerY - mIcons[i].getHeight() / 2-10,
+                        width / 2 + centerX - mIcons[i].getWidth() / 2+mIcons[i].getWidth()+10, height / 2 + centerY - mIcons[i].getHeight() / 2+mIcons[i].getHeight()+10);
         }
         mPaint.setColor(Color.WHITE);
         mPaint.setStyle(Paint.Style.FILL);
         canvas.drawCircle(width / 2, height / 2, mInnerRadius, mPaint);
-        canvas.drawBitmap(mCenterIcon, width / 2 - mCenterIcon.getWidth() / 2, height / 2 - mCenterIcon.getHeight() / 2, null);
+        canvas.drawBitmap(mIcons[count], width / 2 - mIcons[count].getWidth() / 2, height / 2 - mIcons[count].getHeight() / 2, null);
 
         super.onDraw(canvas);
 
@@ -181,8 +178,8 @@ public class CircularView extends View implements View.OnTouchListener {
         }
         return true;
     }
-    public void setAnimNull()
+    public void setCentraIcon(int im)
     {
-        anim = null;
+        mIcons[count] = BitmapFactory.decodeResource(getResources(), im);
     }
 }
