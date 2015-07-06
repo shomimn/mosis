@@ -17,6 +17,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.mnm.conquest.ecs.Component;
+import com.mnm.conquest.ecs.Entity;
+
 public class EntityView extends LinearLayout implements View.OnClickListener
 {
     private static class UnitStats
@@ -46,6 +49,8 @@ public class EntityView extends LinearLayout implements View.OnClickListener
     private TextView unitName;
 
     private ViewFlipper unitFlipper;
+
+    private Entity displayedEntity;
 
     private int[] images = new int[] { R.mipmap.air1, R.mipmap.fighter, R.mipmap.interceptor, R.mipmap.scout, R.mipmap.gunship, R.mipmap.bomber };
     private String[] names = new String[] { "username", "fighter", "interceptor", "scout", "gunship", "bomber" };
@@ -85,6 +90,27 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         init();
     }
 
+    public void setEntity(Entity entity)
+    {
+        displayedEntity = entity;
+
+        Component.Appearance appearance = entity.getComponent(Component.APPEARANCE);
+        Component.Army army = entity.getComponent(Component.ARMY);
+        Component.Player player = entity.getComponent(Component.PLAYER);
+
+        names[0] = player.getUsername();
+        images[0] = appearance.getIconId();
+
+        ImageView view = (ImageView) unitFlipper.getChildAt(0);
+
+        unitName.setText(names[0]);
+        view.setBackgroundResource(images[0]);
+
+        healthRating.setRating(2);
+        armorRating.setRating(3);
+        damageRating.setRating(4);
+    }
+
     private void init()
     {
         healthRating = (RatingBar) findViewById(R.id.health_rating);
@@ -104,23 +130,13 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         armyLp.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
         armyLp.width = LayoutParams.MATCH_PARENT;
 
-        unitName.setText(names[0]);
-
         exitButton.setOnClickListener(this);
-
-//        healthRating.setRating((float) stats[0].health / 100 * 5);
-//        armorRating.setRating((float) stats[0].defense / 100 * 5);
-//        damageRating.setRating((float) stats[0].damage / 100 * 5);
-
-        healthRating.setRating(3);
-        armorRating.setRating(4);
-        damageRating.setRating(4.5f);
-
-        for (int i = 0; i < images.length; ++i)
-            setFlipperImage(images[i]);
 
         unitFlipper.setInAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.abc_grow_fade_in_from_bottom));
         unitFlipper.setOutAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.abc_shrink_fade_out_from_bottom));
+
+        for (int i = 0; i < images.length; ++i)
+            setFlipperImage(images[i]);
 
         unitFlipper.setOnTouchListener(new OnTouchListener()
         {

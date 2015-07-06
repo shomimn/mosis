@@ -127,14 +127,6 @@ public class Game
 
     public static void createPlayer(LatLng position, float rotation)
     {
-//        Entity player = new Entity.Unit();
-//        player.addComponent(new Component.Position(position))
-//                .addComponent(new Component.Appearance(playerInfo.getMarkerId()))
-//                .addComponent(new Component.Health(100))
-//                .addComponent(new Component.Attack(10))
-//                .addComponent(new Component.Rotation(rotation));
-//
-//        entityManager.getEntities().add(player);
         try
         {
             Entity player = entityManager.createUnit(position, rotation, playerInfo.getData());
@@ -147,7 +139,7 @@ public class Game
 
             playerInfo.setMarker(m);
         }
-        catch (JSONException e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }

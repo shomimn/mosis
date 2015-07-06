@@ -126,7 +126,7 @@ public class MapActivity extends AppCompatActivity
 //                circularView.setVisibility(View.VISIBLE);
 
 //                Game.play();
-                entityView.setVisibility(View.VISIBLE);
+//                entityView.setVisibility(View.VISIBLE);
             }
         });
 
@@ -136,7 +136,10 @@ public class MapActivity extends AppCompatActivity
             public boolean onMarkerClick(Marker marker)
             {
                 Entity entity = Game.ui().getEntity(marker);
-                Toast.makeText(MapActivity.this, "id: " + String.valueOf(entity.getId()), Toast.LENGTH_SHORT).show();
+                entityView.setEntity(entity);
+                entityView.setVisibility(View.VISIBLE);
+
+//                Toast.makeText(MapActivity.this, "id: " + String.valueOf(entity.getId()), Toast.LENGTH_SHORT).show();
 
                 return true;
             }

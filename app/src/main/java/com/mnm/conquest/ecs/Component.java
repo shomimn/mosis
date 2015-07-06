@@ -15,6 +15,7 @@ public abstract class Component
     public static final int ATTACK = 1 << 4; //16
     public static final int PLAYER = 1 << 5; //32
     public static final int ROTATION = 1 << 6; //64
+    public static final int ARMY = 1 << 7; // 128
 
     protected int type;
 
@@ -105,6 +106,7 @@ public abstract class Component
     public static class Appearance extends Component
     {
         private BitmapDescriptor icon;
+        private int iconId;
 
         public Appearance()
         {
@@ -115,16 +117,23 @@ public abstract class Component
         {
             this();
             icon = BitmapDescriptorFactory.fromResource(i);
+            iconId = i;
         }
 
         public void setIcon(int i)
         {
             icon = BitmapDescriptorFactory.fromResource(i);
+            iconId = i;
         }
 
         public BitmapDescriptor getIcon()
         {
             return icon;
+        }
+
+        public int getIconId()
+        {
+            return iconId;
         }
     }
 
@@ -235,6 +244,57 @@ public abstract class Component
         public float getRotation()
         {
             return rotation;
+        }
+    }
+
+    public static class Army extends Component
+    {
+        public static int INTERCEPTOR = 0;
+        public static int SCOUT = 1;
+        public static int FIGHTER = 2;
+        public static int GUNSHIP = 4;
+        public static int BOMBER = 5;
+
+        private static int INTERCEPTOR_DAMAGE = 2;
+        private static int SCOUT_DAMAGE = 1;
+        private static int FIGHTER_DAMAGE = 3;
+        private static int GUNSHIP_DAMAGE = 4;
+        private static int BOMBER_DAMAGE = 5;
+
+        private int[] units = new int[5];
+
+        public Army()
+        {
+            type = Component.ARMY;
+        }
+
+        public Army(int i, int s, int f, int g, int b)
+        {
+            this();
+            units[INTERCEPTOR] = i;
+            units[SCOUT] = s;
+            units[FIGHTER] = f;
+            units[GUNSHIP] = g;
+            units[BOMBER] = b;
+        }
+
+        public void setUnit(int unit, int n)
+        {
+            units[unit] = n;
+        }
+
+        public int getUnit(int unit)
+        {
+            return units[unit];
+        }
+
+        public int combinedDamage()
+        {
+            return units[INTERCEPTOR] * INTERCEPTOR_DAMAGE
+                    + units[SCOUT] * SCOUT_DAMAGE
+                    + units[FIGHTER] * FIGHTER_DAMAGE
+                    + units[GUNSHIP] * GUNSHIP_DAMAGE
+                    + units[BOMBER] * BOMBER_DAMAGE;
         }
     }
 }
