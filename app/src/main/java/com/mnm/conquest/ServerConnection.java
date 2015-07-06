@@ -34,7 +34,9 @@ public class ServerConnection
         public static final int UPDATE = 4;
         public static final int POSITION = 6;
         public static final int INIT = 7;
-        public static final int UPDATE_FIELDS = 8;
+        public static final int UPDATE_FIELDS_INT = 8;
+        public static final int UPDATE_FIELDS_STRING = 9;
+        public static final int NEW_FORTRESS = 10;
 
         private Request() {}
     }
@@ -130,6 +132,7 @@ public class ServerConnection
                 data.put("marker", userInfo.getString("marker"));
                 data.put("health", 100);
                 data.put("attack", 10);
+                data.put("defense", 10);
                 data.put("interceptors", 2);
                 data.put("scouts", 3);
                 data.put("fighters", 1);
@@ -186,11 +189,11 @@ public class ServerConnection
         }
     }
 
-    public static void updateField(String username, String field, String value, int type)
+    public static void updateField(String username, String field, String value)
     {
         try
         {
-            JSONObject json = new JSONObject().put("type", type)
+            JSONObject json = new JSONObject().put("type", Request.UPDATE_FIELDS_STRING)
                     .put("data", new JSONObject().put("username", username).put("field", field).put("value", value));
             socket.sendTextMessage(json.toString());
         }
@@ -199,12 +202,41 @@ public class ServerConnection
             e.printStackTrace();
         }
     }
-    public static void updateField(String username, String field, int value, int type)
+    public static void updateField(String username, String field, int value)
     {
         try
         {
-            JSONObject json = new JSONObject().put("type", type)
+            JSONObject json = new JSONObject().put("type", Request.UPDATE_FIELDS_INT)
                     .put("data", new JSONObject().put("username", username).put("field", field).put("value", value));
+            socket.sendTextMessage(json.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void sendFortress(String username, double latitude, double longitude, String markerName)
+    {
+        try
+        {
+            JSONObject json = new JSONObject().put("type", Request.NEW_FORTRESS);
+
+            JSONObject fortress = new JSONObject();
+            fortress.put("latitude", latitude);
+            fortress.put("longitude", longitude);
+            fortress.put("marker", markerName);
+            fortress.put("health", 100);
+            fortress.put("defense", 10);
+            fortress.put("attack", 10);
+            fortress.put("interceptors", 2);
+            fortress.put("scouts", 3);
+            fortress.put("fighters", 1);
+            fortress.put("gunships", 1);
+            fortress.put("bombers", 1);
+
+            json.put("data", fortress);
+
             socket.sendTextMessage(json.toString());
         }
         catch (JSONException e)

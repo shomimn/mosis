@@ -148,18 +148,37 @@ public class Game
 
     public static void createFortress(LatLng position)
     {
-        Entity Nis = new Entity.Fortress();
-        Nis.addComponent(new Component.Defense(100))
+        final double lat = position.latitude;
+        final double lng = position.longitude;
+
+        final String markerName = playerInfo.getMarkerName().substring(0, playerInfo.getMarkerName().length() - 1) + "fortress";
+
+        int markerId = ConquestApplication.getContext().getResources().getIdentifier(markerName, "id", ConquestApplication.getContext().getPackageName());
+
+        Entity fortress = new Entity.Fortress();
+        fortress.addComponent(new Component.Health(100))
+                .addComponent(new Component.Defense(10))
+                .addComponent(new Component.Attack(10))
                 .addComponent(new Component.Position(position))
-                .addComponent(new Component.Appearance(R.mipmap.fortress1))
+                .addComponent(new Component.Appearance(markerId))
                 .addComponent(new Component.Army(2, 3, 1, 1, 1));
 
-        entityManager.getEntities().add(Nis);
+        entityManager.getEntities().add(fortress);
 
-        MarkerOptions nis = new MarkerOptions();
-        nis.position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.fortress)).anchor(0.5f, 0.5f).title(String.valueOf(R.mipmap.fortress));
-        Marker ni = gameUi.getMap().addMarker(nis);
-        gameUi.insert(Nis, ni);
+        MarkerOptions options = new MarkerOptions();
+        options.position(position).icon(BitmapDescriptorFactory.fromResource(markerId)).anchor(0.5f, 0.5f).title(String.valueOf(markerId));
+        Marker marker = gameUi.getMap().addMarker(options);
+
+        gameUi.insert(fortress, marker);
+
+        TaskManager.getTaskManager().execute(new Task(Task.SERVER)
+        {
+            @Override
+            public void execute()
+            {
+                ServerConnection.sendFortress(playerInfo.getUsername(), lat, lng, markerName);
+            }
+        });
     }
 
     public static void setMap(GoogleMap m)
@@ -194,14 +213,26 @@ public class Game
 
     public static void playerPositionChanged(Location position)
     {
+        final double lat = position.getLatitude();
+        final double lng = position.getLongitude();
+
         Marker marker = playerInfo.getMarker();
         Entity entity = gameUi.getEntity(marker);
 
         Component.Position cPosition = entity.getComponent(Component.POSITION);
         Component.Rotation cRotation = entity.getComponent(Component.ROTATION);
 
-        cPosition.setLatLng(new LatLng(position.getLatitude(), position.getLongitude()));
+        cPosition.setLatLng(new LatLng(lat, lng));
         cRotation.setRotation(position.getBearing());
+
+        TaskManager.getTaskManager().execute(new Task(Task.SERVER)
+        {
+            @Override
+            public void execute()
+            {
+                ServerConnection.sendPosition(playerInfo.getUsername(), lat, lng, ServerConnection.Request.POSITION);
+            }
+        });
     }
 
     public static void asyncUpdate(String payload)

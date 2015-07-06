@@ -170,14 +170,14 @@ public class MapActivity extends AppCompatActivity
         });
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new android.location.LocationListener()
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, new android.location.LocationListener()
         {
             @Override
             public void onLocationChanged(Location nLocation)
             {
                 location = nLocation;
 
-                //Game.playerPositionChanged(nLocation);
+                Game.playerPositionChanged(nLocation);
             }
 
             @Override
