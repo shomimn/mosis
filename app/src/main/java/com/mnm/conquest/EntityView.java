@@ -98,13 +98,15 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         Component.Army army = entity.getComponent(Component.ARMY);
         Component.Player player = entity.getComponent(Component.PLAYER);
 
-        names[0] = player.getUsername();
+        names[0] = player != null ? player.getUsername() : "Fortress";
         images[0] = appearance.getIconId();
 
         ImageView view = (ImageView) unitFlipper.getChildAt(0);
 
         unitName.setText(names[0]);
         view.setBackgroundResource(images[0]);
+
+        unitFlipper.setDisplayedChild(0);
 
         healthRating.setRating(2);
         armorRating.setRating(3);

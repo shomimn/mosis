@@ -253,8 +253,8 @@ public abstract class Component
         public static int INTERCEPTOR = 0;
         public static int SCOUT = 1;
         public static int FIGHTER = 2;
-        public static int GUNSHIP = 4;
-        public static int BOMBER = 5;
+        public static int GUNSHIP = 3;
+        public static int BOMBER = 4;
 
         private static int INTERCEPTOR_DAMAGE = 2;
         private static int SCOUT_DAMAGE = 1;

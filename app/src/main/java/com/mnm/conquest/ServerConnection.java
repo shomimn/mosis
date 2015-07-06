@@ -18,7 +18,7 @@ import de.tavendo.autobahn.WebSocketOptions;
 public class ServerConnection
 {
 
-    private static final String SERVER_IP = "ws://192.168.1.2:8181/";
+    private static final String SERVER_IP = "ws://192.168.1.3:8181/";
 
     private static ServerConnection instance = new ServerConnection();
     private static WebSocketConnection socket;
@@ -132,8 +132,8 @@ public class ServerConnection
                 data.put("interceptors", 2);
                 data.put("scouts", 3);
                 data.put("fighters", 1);
-                data.put("gunship", 1);
-                data.put("bomber", 1);
+                data.put("gunships", 1);
+                data.put("bombers", 1);
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);

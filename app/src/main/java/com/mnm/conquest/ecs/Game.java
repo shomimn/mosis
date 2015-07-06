@@ -151,7 +151,8 @@ public class Game
         Entity Nis = new Entity.Fortress();
         Nis.addComponent(new Component.Defense(100))
                 .addComponent(new Component.Position(position))
-                .addComponent(new Component.Appearance(R.mipmap.ikonica2));
+                .addComponent(new Component.Appearance(R.mipmap.fortress1))
+                .addComponent(new Component.Army(2, 3, 1, 1, 1));
 
         entityManager.getEntities().add(Nis);
 
