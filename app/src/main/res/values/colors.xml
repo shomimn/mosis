@@ -4,4 +4,7 @@
     <item name="transparent_orange" type="color">#A5FFA500</item>
     <item name="transparent" type="color">#00FFFFFF</item>
     <item name="white" type="color">#FFFFFF</item>
+    <item name="black" type="color">#000000</item>
+    <item name="dark_grey" type="color">#EF424242</item>
+    <item name="neon_green" type="color">#A5397D02</item>
 </resources>

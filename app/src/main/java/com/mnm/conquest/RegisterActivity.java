@@ -62,7 +62,7 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
 
         photo = BitmapFactory.decodeResource(getResources(), R.mipmap.player_default);
 
-        markerIds = new int[]{R.mipmap.blue_marker, R.mipmap.red_marker, R.mipmap.green_marker, R.mipmap.purple_marker, R.mipmap.air1};
+        markerIds = new int[]{R.mipmap.red, R.mipmap.green, R.mipmap.blue, R.mipmap.orange};
 
         for(int i=0; i<markerIds.length; i++)
             setFlipperImage(markerIds[i]);

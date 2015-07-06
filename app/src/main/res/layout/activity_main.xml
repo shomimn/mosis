@@ -8,24 +8,23 @@
                     xmlns:tools="http://schemas.android.com/tools"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin"
-                    android:paddingTop="@dimen/activity_vertical_margin"
-                    android:paddingBottom="@dimen/activity_vertical_margin"
-                    tools:context=".MainActivity"
-        android:background="#ffffff">
+                    tools:context=".MainActivity">
+
         <ImageView
             android:id="@+id/background"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"/>
-
+            android:layout_height="fill_parent"
+            android:background="@mipmap/background"
+            android:scaleType="centerCrop"/>
 
         <LinearLayout
             android:id="@+id/login_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:paddingLeft="15dip"
+            android:paddingRight="15dip">
             <com.mnm.conquest.FEditText
                 android:id="@+id/username_login"
                 android:layout_width="match_parent"
@@ -54,6 +53,10 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:padding="10dp"
+                    android:text="@string/sign_in"
+                    android:layout_margin="5dip"
+                    android:background="@drawable/button_background"
+                    android:textColor="@color/white"/>
                     android:text="@string/sign_in"/>
                 <com.mnm.conquest.FButton
                     android:id="@+id/sign_up_login_button"
@@ -61,7 +64,10 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:padding="10dp"
-                    android:text="@string/sign_up"/>
+                    android:text="@string/sign_up"
+                    android:background="@drawable/button_background"
+                    android:layout_margin="5dip"
+                    android:textColor="@color/white"/>
                 </LinearLayout>
         </LinearLayout>
 
@@ -76,7 +82,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingLeft="15dip"
+                android:paddingRight="15dip">
 
                 <ImageView
                     android:id="@+id/player_image"
@@ -110,12 +118,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="@string/player_settings"/>
-
                 </LinearLayout>
-
-
-
             </LinearLayout>
-
     </RelativeLayout>
 </ScrollView>

@@ -104,6 +104,17 @@ public class MapActivity extends AppCompatActivity
 
         buildingView = (BuildingView)findViewById(R.id.fortress);
         buildingView.setVisibility(View.GONE);
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
+        {
+            @Override
+            public boolean onMarkerClick(Marker marker)
+            {
+                int aaa = Integer.parseInt(marker.getTitle());
+                circularView.setCentraIcon(aaa);
+                circularView.setVisibility(View.VISIBLE);
+                return true;
+            }
+        });
 
         buildingView.setNoListener(new View.OnClickListener()
         {
@@ -121,6 +132,9 @@ public class MapActivity extends AppCompatActivity
             {
                 CameraUpdate clickLocation = CameraUpdateFactory.newLatLngZoom(latLng, map.getCameraPosition().zoom);
                 map.animateCamera(clickLocation);
+
+//                circularView.setVisibility(View.VISIBLE);
+//                Game.play();
 
                 buildingView.setVisibility(View.VISIBLE);
                 buildingView.setYesListener(new View.OnClickListener()
