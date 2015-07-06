@@ -1,46 +1,25 @@
 package com.mnm.conquest;
 
-import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsoluteLayout;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.plus.model.people.Person;
+import com.mnm.conquest.ecs.Entity;
 import com.mnm.conquest.ecs.Game;
-import com.nineoldandroids.view.ViewPropertyAnimator;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-
 
 public class MapActivity extends AppCompatActivity
 {
@@ -48,6 +27,7 @@ public class MapActivity extends AppCompatActivity
     private CircularView circularView;
     private BuildingView buildingView;
     private Location location;
+    private EntityView entityView;
 
     public static class MySupportMapFragment extends SupportMapFragment
     {
@@ -119,6 +99,9 @@ public class MapActivity extends AppCompatActivity
         circularView = (CircularView) findViewById(R.id.circularView);
         circularView.setVisibility(View.GONE);
 
+        entityView = (EntityView) findViewById(R.id.entity_view);
+        entityView.setVisibility(View.GONE);
+
         buildingView = (BuildingView)findViewById(R.id.fortress);
         buildingView.setVisibility(View.GONE);
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
@@ -130,6 +113,15 @@ public class MapActivity extends AppCompatActivity
                 circularView.setCentraIcon(aaa);
                 circularView.setVisibility(View.VISIBLE);
                 return true;
+            }
+        });
+
+        buildingView.setNoListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                buildingView.setVisibility(View.GONE);
             }
         });
 
@@ -151,21 +143,33 @@ public class MapActivity extends AppCompatActivity
                     public void onClick(View v)
                     {
                         buildingView.setVisibility(View.GONE);
-                        Game.createBuilding(latLng);
+                        Game.createFortress(latLng);
                     }
                 });
-                buildingView.setNoListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        buildingView.setVisibility(View.GONE);
-                    }
-                });
+
+//                circularView.setVisibility(View.VISIBLE);
+
+//                Game.play();
+//                entityView.setVisibility(View.VISIBLE);
             }
         });
 
-        LocationManager  locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
+        {
+            @Override
+            public boolean onMarkerClick(Marker marker)
+            {
+                Entity entity = Game.ui().getEntity(marker);
+                entityView.setEntity(entity);
+                entityView.setVisibility(View.VISIBLE);
+
+//                Toast.makeText(MapActivity.this, "id: " + String.valueOf(entity.getId()), Toast.LENGTH_SHORT).show();
+
+                return true;
+            }
+        });
+
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new android.location.LocationListener()
         {
             @Override
@@ -201,7 +205,9 @@ public class MapActivity extends AppCompatActivity
 
         Game.setMap(map);
         Game.play();
-        //Game.createPlayer(new LatLng(location.getLatitude(), location.getLongitude()), location.getBearing());
+        Game.createPlayer(new LatLng(location.getLatitude(), location.getLongitude()), location.getBearing());
+
+        ServerConnection.sendPosition(Game.getPlayerInfo().getUsername(), location.getLatitude(), location.getLongitude(), ServerConnection.Request.INIT);
     }
 
     @Override
@@ -211,6 +217,7 @@ public class MapActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_map, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {

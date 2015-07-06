@@ -20,6 +20,7 @@ public class PlayerInfo
     private int markerId;
     private Bitmap photo;
     private Marker marker;
+    private JSONObject data;
 
     public PlayerInfo(JSONObject player)
     {
@@ -36,6 +37,9 @@ public class PlayerInfo
 
             byte[] bitmap = Base64.decode(player.getString("photo"), Base64.DEFAULT);
             photo = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
+
+            player.remove("photo");
+            data = player;
         }
         catch (JSONException e)
         {
@@ -91,5 +95,10 @@ public class PlayerInfo
     public Marker getMarker()
     {
         return marker;
+    }
+
+    public JSONObject getData()
+    {
+        return data;
     }
 }

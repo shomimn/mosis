@@ -57,9 +57,9 @@ public abstract class Entity
         }
     }
 
-    public static class Building extends Entity
+    public static class Fortress extends Entity
     {
-        public Building()
+        public Fortress()
         {
             super();
         }

@@ -32,6 +32,8 @@ public class ServerConnection
         public static final int REGISTER = 2;
         public static final int DATA = 3;
         public static final int UPDATE = 4;
+        public static final int POSITION = 6;
+        public static final int INIT = 7;
 
         private Request() {}
     }
@@ -125,7 +127,13 @@ public class ServerConnection
                 data.put("username", userInfo.getString("username"));
                 data.put("password", userInfo.getString("password"));
                 data.put("marker", userInfo.getString("marker"));
-
+                data.put("health", 100);
+                data.put("attack", 10);
+                data.put("interceptors", 2);
+                data.put("scouts", 3);
+                data.put("fighters", 1);
+                data.put("gunship", 1);
+                data.put("bomber", 1);
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
@@ -150,6 +158,23 @@ public class ServerConnection
             try
             {
                 JSONObject json = new JSONObject().put("type", Request.DATA).put("data", new JSONObject().put("username", username));
+                socket.sendTextMessage(json.toString());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void sendPosition(String username, double latitude, double longitude, int type)
+    {
+        if (socket.isConnected())
+        {
+            try
+            {
+                JSONObject json = new JSONObject().put("type", type)
+                        .put("data", new JSONObject().put("username", username).put("latitude", latitude).put("longitude", longitude));
                 socket.sendTextMessage(json.toString());
             }
             catch (JSONException e)

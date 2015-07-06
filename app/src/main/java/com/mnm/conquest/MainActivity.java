@@ -48,70 +48,70 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     private boolean loggedIn;
 
+    private Task.Data task;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main);
+
+        SharedPreferences sharedPrefs = getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE);
+        loggedIn = sharedPrefs.contains("username");
 
         final ProgressDialog progDialog = new ProgressDialog(this);
         progDialog.setTitle("Initializing");
         progDialog.setMessage("Any second now");
         progDialog.setCanceledOnTouchOutside(false);
         progDialog.show();
-        SharedPreferences sharedPrefs = getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE);
-        loggedIn = sharedPrefs.contains("username");
 
-        final Task.Data task = new Task.Data(sharedPrefs.getString("username", ""),
+        usernameET = (EditText) findViewById(R.id.username_login);
+        passwordET = (EditText) findViewById(R.id.password_login);
+
+        Button signUpButton = (Button) findViewById(R.id.sign_up_login_button);
+        signUpButton.setOnClickListener(MainActivity.this);
+
+        Button signInButton = (Button) findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(MainActivity.this);
+
+        Button alliance = (Button) findViewById(R.id.alliance_button);
+        alliance.setOnClickListener(MainActivity.this);
+
+        Button profileSet = (Button) findViewById(R.id.player_settings);
+        profileSet.setOnClickListener(MainActivity.this);
+
+        mapButton = (Button) findViewById(R.id.map_button);
+        mapButton.setOnClickListener(MainActivity.this);
+
+        playerImageView = (ImageView) findViewById(R.id.player_image);
+
+        animSetLogIn = new AnimatorSet();
+        animSetLogOut = new AnimatorSet();
+
+        animSetLogIn.addListener(MainActivity.this);
+        animSetLogOut.addListener(MainActivity.this);
+
+        layoutLogin = (LinearLayout) findViewById(R.id.login_layout);
+        layoutLogged = (LinearLayout) findViewById(R.id.loged_layout);
+
+        animSetLogIn.play(ObjectAnimator.ofFloat(layoutLogin, "alpha", 1.0f, 0.0f).setDuration(loggedIn ? 0 : 500))
+                .before(ObjectAnimator.ofFloat(layoutLogged, "alpha", 0.0f, 1.0f).setDuration(loggedIn ? 0 : 500));
+
+        animSetLogOut.play(ObjectAnimator.ofFloat(layoutLogged, "alpha", 1.0f, 0.0f).setDuration(loggedIn ? 0 : 500))
+                .before(ObjectAnimator.ofFloat(layoutLogin, "alpha", 0.0f, 1.0f).setDuration(loggedIn ? 0 : 500));
+
+        task = new Task.Data(sharedPrefs.getString("username", ""),
                 new Task.Data.DataReadyCallback()
                 {
                     @Override
                     public void dataReady()
                     {
                         progDialog.dismiss();
-                        setContentView(R.layout.activity_main);
-
-                        usernameET = (EditText) findViewById(R.id.username_login);
-                        passwordET = (EditText) findViewById(R.id.password_login);
-
-                        Button signUpButton = (Button) findViewById(R.id.sign_up_login_button);
-                        signUpButton.setOnClickListener(MainActivity.this);
-
-                        Button signInButton = (Button) findViewById(R.id.sign_in_button);
-                        signInButton.setOnClickListener(MainActivity.this);
-
-                        Button alliance = (Button) findViewById(R.id.alliance_button);
-                        alliance.setOnClickListener(MainActivity.this);
-
-                        Button profileSet = (Button) findViewById(R.id.player_settings);
-                        profileSet.setOnClickListener(MainActivity.this);
-
-                        mapButton = (Button) findViewById(R.id.map_button);
-                        mapButton.setOnClickListener(MainActivity.this);
-
-                        playerImageView = (ImageView) findViewById(R.id.player_image);
-
-                        animSetLogIn = new AnimatorSet();
-                        animSetLogOut = new AnimatorSet();
-
-                        animSetLogIn.addListener(MainActivity.this);
-                        animSetLogOut.addListener(MainActivity.this);
-
-                        layoutLogin = (LinearLayout) findViewById(R.id.login_layout);
-                        layoutLogged = (LinearLayout) findViewById(R.id.loged_layout);
-
-                        animSetLogIn.play(ObjectAnimator.ofFloat(layoutLogin, "alpha", 1.0f, 0.0f).setDuration(loggedIn ? 0 : 500))
-                                .before(ObjectAnimator.ofFloat(layoutLogged, "alpha", 0.0f, 1.0f).setDuration(loggedIn ? 0 : 500));
-
-                        animSetLogOut.play(ObjectAnimator.ofFloat(layoutLogged, "alpha", 1.0f, 0.0f).setDuration(loggedIn ? 0 : 500))
-                                .before(ObjectAnimator.ofFloat(layoutLogin, "alpha", 0.0f, 1.0f).setDuration(loggedIn ? 0 : 500));
-
                         try
                         {
                             JSONObject data = getData().getJSONObject(0);
 
-//                            byte[] bitmap = Base64.decode(data.getString("photo"), Base64.DEFAULT);
-//                            playerImage = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
-//                            playerImageView.setImageBitmap(playerImage);
                             PlayerInfo player = new PlayerInfo(data);
                             Game.setPlayerInfo(player);
                             playerImageView.setImageBitmap(player.getPhoto());
@@ -120,9 +120,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         {
                             e.printStackTrace();
                         }
-
-                        if (loggedIn)
-                            animSetLogIn.start();
                     }
                 });
 
@@ -155,8 +152,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         getMenuInflater().inflate(R.menu.menu_main, menu);
         this.menu = menu;
 
-//        if (loggedIn)
-//            animSetLogIn.start();
+        if (loggedIn)
+            animSetLogIn.start();
 
         return true;
     }
@@ -255,7 +252,25 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     progDialog.setCanceledOnTouchOutside(false);
                     progDialog.show();
 
-                    TaskManager.getTaskManager().executeAndPost(new Task.Login(progDialog, username, password, animSetLogIn));
+                    TaskManager.getTaskManager().executeAndPost(new Task.Login(progDialog, username, password, animSetLogIn, new Task.Data.DataReadyCallback()
+                    {
+                        @Override
+                        public void dataReady()
+                        {
+                            try
+                            {
+                                JSONObject data = getData().getJSONObject(0);
+
+                                PlayerInfo player = new PlayerInfo(data);
+                                Game.setPlayerInfo(player);
+                                playerImageView.setImageBitmap(player.getPhoto());
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    }));
 
                     loggedIn = true;
                 }
@@ -270,43 +285,18 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 break;
             case R.id.player_settings:
             {
-                final ProgressDialog progDialog = new ProgressDialog(this);
-                progDialog.setTitle("Retrieving data");
-                progDialog.setMessage("Please wait");
-                progDialog.setCanceledOnTouchOutside(false);
-                progDialog.show();
+                Intent profSettings = new Intent(ConquestApplication.getContext(), RegisterActivity.class);
+                String button = "profile_settings";
+                profSettings.putExtra("from", button);
+                profSettings.putExtra("username", Game.getPlayerInfo().getUsername());
+                profSettings.putExtra("name", Game.getPlayerInfo().getName());
+                profSettings.putExtra("lastname", Game.getPlayerInfo().getLastname());
+                profSettings.putExtra("password", Game.getPlayerInfo().getPassword());
+                profSettings.putExtra("email", Game.getPlayerInfo().getEmail());
+                profSettings.putExtra("marker", Game.getPlayerInfo().getMarkerName());
+                profSettings.putExtra("photo", Game.getPlayerInfo().getPhoto());
 
-                final Task.Data task = new Task.Data(getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE).getString("username", ""),
-                        new Task.Data.DataReadyCallback()
-                        {
-                            @Override
-                            public void dataReady()
-                            {
-                                progDialog.dismiss();
-
-                                JSONArray dataArray = getData();
-                                Intent profSettings = new Intent(ConquestApplication.getContext(), RegisterActivity.class);
-                                String button = "profile_settings";
-                                profSettings.putExtra("from", button);
-                                try
-                                {
-                                    JSONObject data = dataArray.getJSONObject(0);
-                                    profSettings.putExtra("username", data.getString("username"));
-                                    profSettings.putExtra("name", data.getString("name"));
-                                    profSettings.putExtra("lastname", data.getString("lastname"));
-                                    profSettings.putExtra("password", data.getString("password"));
-                                    profSettings.putExtra("email", data.getString("email"));
-                                    profSettings.putExtra("marker", data.getString("marker"));
-                                    profSettings.putExtra("photo", data.getString("photo"));
-                                }
-                                catch (JSONException e)
-                                {
-                                    e.printStackTrace();
-                                }
-                                startActivity(profSettings);
-                            }
-                        });
-                TaskManager.getTaskManager().executeAndPost(task);
+                startActivity(profSettings);
             }
         }
     }

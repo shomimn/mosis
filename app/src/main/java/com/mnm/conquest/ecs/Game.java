@@ -1,6 +1,7 @@
 package com.mnm.conquest.ecs;
 
 import android.location.Location;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -8,10 +9,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.mnm.conquest.ConquestApplication;
 import com.mnm.conquest.PlayerInfo;
+import com.mnm.conquest.ServerConnection;
 import com.mnm.conquest.R;
 import com.mnm.conquest.Task;
 import com.mnm.conquest.TaskManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -19,7 +26,7 @@ public class Game
 {
     private static Game instance = new Game();
     private static GameUI gameUi;
-    private static PlayerInfo playerInfo;
+    private static PlayerInfo playerInfo = null;
 
     private static EntityManager entityManager;
     private static System movement;
@@ -121,25 +128,27 @@ public class Game
 
     public static void createPlayer(LatLng position, float rotation)
     {
-        Entity player = new Entity.Unit();
-        player.addComponent(new Component.Position(position))
-                .addComponent(new Component.Appearance(playerInfo.getMarkerId()))
-                .addComponent(new Component.Health(100))
-                .addComponent(new Component.Attack(10))
-                .addComponent(new Component.Rotation(rotation));
+        try
+        {
+            Entity player = entityManager.createUnit(position, rotation, playerInfo.getData());
 
-        entityManager.getEntities().add(player);
+            MarkerOptions options = new MarkerOptions();
+            options.position(position).rotation(rotation).icon(BitmapDescriptorFactory.fromResource(playerInfo.getMarkerId())).anchor(0.5f, 0.5f);
 
-        MarkerOptions options = new MarkerOptions();
-        options.position(position).rotation(rotation).icon(BitmapDescriptorFactory.fromResource(playerInfo.getMarkerId())).anchor(0.5f, 0.5f);
+            Marker m = gameUi.getMap().addMarker(options);
+            gameUi.insert(player, m);
 
-        Marker m = gameUi.getMap().addMarker(options);
-        gameUi.insert(player, m);
-        playerInfo.setMarker(m);
+            playerInfo.setMarker(m);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
-    public static void createBuilding(LatLng position)
+
+    public static void createFortress(LatLng position)
     {
-        Entity Nis = new Entity.Building();
+        Entity Nis = new Entity.Fortress();
         Nis.addComponent(new Component.Defense(100))
                 .addComponent(new Component.Position(position))
                 .addComponent(new Component.Appearance(R.mipmap.ikonica2));
@@ -192,5 +201,59 @@ public class Game
 
         cPosition.setLatLng(new LatLng(position.getLatitude(), position.getLongitude()));
         cRotation.setRotation(position.getBearing());
+    }
+
+    public static void asyncUpdate(String payload)
+    {
+        try
+        {
+            JSONObject object = new JSONObject(payload);
+            int type = object.getInt("type");
+
+            Log.d("async", payload);
+
+            switch(type)
+            {
+                case ServerConnection.Request.INIT:
+                    createEntities(object.getJSONArray("data"));
+                    break;
+                case ServerConnection.Request.POSITION:
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void createEntities(JSONArray objects)
+    {
+        try
+        {
+            for (int i = 0; i < objects.length(); ++i)
+            {
+                JSONObject object = objects.getJSONObject(i);
+
+                double lat = object.getDouble("latitude");
+                double lng = object.getDouble("longitude");
+                String markerString = object.getString("marker");
+
+                int id = ConquestApplication.getContext().getResources().getIdentifier(markerString, "id", ConquestApplication.getContext().getPackageName());
+                LatLng position = new LatLng(lat, lng);
+
+                Entity player = entityManager.createUnit(position, 0, object);
+
+                MarkerOptions options = new MarkerOptions();
+                options.position(position).icon(BitmapDescriptorFactory.fromResource(id)).anchor(0.5f, 0.5f);
+
+                Marker m = gameUi.getMap().addMarker(options);
+                gameUi.insert(player, m);
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

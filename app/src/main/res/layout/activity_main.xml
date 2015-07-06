@@ -25,16 +25,15 @@
             android:orientation="vertical"
             android:paddingLeft="15dip"
             android:paddingRight="15dip">
-            <EditText
+            <com.mnm.conquest.FEditText
                 android:id="@+id/username_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:hint="@string/user_name_label"
                 android:inputType="text"
-                android:textColorHint="#bbbbbb"
-                android:textColor="@color/white"/>
-            <EditText
+                android:textColorHint="#bbbbbb"/>
+            <com.mnm.conquest.FEditText
                 android:id="@+id/password_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -42,14 +41,13 @@
                 android:hint="@string/password_label"
                 android:textColorHint="#bbbbbb"
                 android:password="true"
-                android:inputType="textPassword"
-                android:textColor="@color/white"/>
+                android:inputType="textPassword"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-                <Button
+                <com.mnm.conquest.FButton
                     android:id="@+id/sign_in_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -59,7 +57,8 @@
                     android:layout_margin="5dip"
                     android:background="@drawable/button_background"
                     android:textColor="@color/white"/>
-                <Button
+                    android:text="@string/sign_in"/>
+                <com.mnm.conquest.FButton
                     android:id="@+id/sign_up_login_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -94,46 +93,31 @@
                     android:layout_width="150dip"
                     android:layout_height="150dip"
                     android:src="@mipmap/player_default"/>
-                <Button
+                <com.mnm.conquest.FButton
                     android:id="@+id/map_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="@string/play_button"
-                    android:background="@drawable/button_background"
-                    android:layout_margin="3dip"
-                    android:textColor="@color/white"/>
-                <Button
+                    android:text="@string/play_button"/>
+                <com.mnm.conquest.FButton
                     android:id="@+id/alliance_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/alliances_button"
-                    android:background="@drawable/button_background"
-                    android:layout_margin="3dip"
-                    android:textColor="@color/white"/>
-                <Button
+                    android:text="@string/alliances_button"/>
+                <com.mnm.conquest.FButton
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="@string/highScoresButton"
-                    android:id="@+id/high_scores"
-                    android:background="@drawable/button_background"
-                    android:layout_margin="3dip"
-                    android:textColor="@color/white"/>
-                <Button
+                    android:id="@+id/high_scores"/>
+                <com.mnm.conquest.FButton
                     android:id="@+id/game_settings"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="@string/game_settings"
-                    android:background="@drawable/button_background"
-                    android:layout_margin="3dip"
-                    android:textColor="@color/white"/>
-                <Button
+                    android:text="@string/game_settings"/>
+                <com.mnm.conquest.FButton
                     android:id="@+id/player_settings"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="@string/player_settings"
-                    android:background="@drawable/button_background"
-                    android:layout_margin="3dip"
-                    android:textColor="@color/white"/>
+                    android:text="@string/player_settings"/>
                 </LinearLayout>
             </LinearLayout>
     </RelativeLayout>
