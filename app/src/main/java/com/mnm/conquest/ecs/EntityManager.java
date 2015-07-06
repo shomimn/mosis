@@ -19,6 +19,7 @@ public class EntityManager
 {
     private ArrayList<Entity> entities = new ArrayList<Entity>();
     private SparseArray<Class<?>> componentClasses = new SparseArray<>();
+    private HashMap<String, Entity> userToEntity = new HashMap<>();
 
     public EntityManager()
     {
@@ -128,7 +129,10 @@ public class EntityManager
 //            anim.addFrame(ConquestApplication.getContext().getResources()
 //                    .getIdentifier(marker + String.valueOf(i), "id", ConquestApplication.getContext().getPackageName()));
 
+        if (!data.getString("username").equals("m"))
+            entity.removeComponent(Component.PLAYER);
         entities.add(entity);
+        userToEntity.put(data.getString("username"), entity);
 
         return entity;
     }
@@ -147,5 +151,10 @@ public class EntityManager
         entities.add(entity);
 
         return entity;
+    }
+
+    public Entity getEntity(String username)
+    {
+        return userToEntity.get(username);
     }
 }

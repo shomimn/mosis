@@ -30,7 +30,8 @@ public abstract class System
         {
             for (Entity e : Game.getEntityManager().getEntities())
             {
-                if ((e.getComponentMask() & Component.POSITION) == Component.POSITION)
+                if ((e.getComponentMask() & Component.POSITION) == Component.POSITION &&
+                        (e.getComponentMask() & Component.PLAYER) == Component.PLAYER)
                 {
                     Component.Position c = e.getComponent(Component.POSITION);
                     LatLng oldPos = c.getLatLng();

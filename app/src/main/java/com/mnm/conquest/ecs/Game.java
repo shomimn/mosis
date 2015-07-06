@@ -50,7 +50,7 @@ public class Game
 //                eventManager.emit(event);
 //            }
 
-//            movement.update();
+            movement.update();
             animation.update();
         }
 
@@ -213,8 +213,8 @@ public class Game
 
     public static void playerPositionChanged(Location position)
     {
-        final double lat = position.getLatitude();
-        final double lng = position.getLongitude();
+//        final double lat = position.getLatitude();
+//        final double lng = position.getLongitude();
 
         Marker marker = playerInfo.getMarker();
         Entity entity = gameUi.getEntity(marker);
@@ -222,7 +222,10 @@ public class Game
         Component.Position cPosition = entity.getComponent(Component.POSITION);
         Component.Rotation cRotation = entity.getComponent(Component.ROTATION);
 
-        cPosition.setLatLng(new LatLng(lat, lng));
+        final double lat = cPosition.getLatLng().latitude;
+        final double lng = cPosition.getLatLng().longitude;
+
+//        cPosition.setLatLng(new LatLng(lat, lng));
         cRotation.setRotation(position.getBearing());
 
         TaskManager.getTaskManager().execute(new Task(Task.SERVER)
@@ -250,6 +253,7 @@ public class Game
                     createEntities(object.getJSONArray("data"));
                     break;
                 case ServerConnection.Request.POSITION:
+                    updatePosition(object.getJSONObject("data"));
                     break;
             }
         }
@@ -282,6 +286,20 @@ public class Game
                 Marker m = gameUi.getMap().addMarker(options);
                 gameUi.insert(player, m);
             }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void updatePosition(JSONObject object)
+    {
+        try
+        {
+            Entity entity = entityManager.getEntity(object.getString("username"));
+            Component.Position position = entity.getComponent(Component.POSITION);
+            position.setLatLng(new LatLng(object.getDouble("latitude"), object.getDouble("longitude")));
         }
         catch (JSONException e)
         {

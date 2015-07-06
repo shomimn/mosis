@@ -223,6 +223,7 @@ public class ServerConnection
             JSONObject json = new JSONObject().put("type", Request.NEW_FORTRESS);
 
             JSONObject fortress = new JSONObject();
+            fortress.put("username", username);
             fortress.put("latitude", latitude);
             fortress.put("longitude", longitude);
             fortress.put("marker", markerName);
