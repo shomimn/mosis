@@ -89,7 +89,7 @@
                 android:layout_gravity="center_vertical"/>
 
             <RatingBar
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:id="@+id/health_rating"
                 android:isIndicator="true"
@@ -102,7 +102,7 @@
                 android:layout_height="42dp"
                 android:text="+"
                 android:id="@+id/health_upgrade"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical|right"/>
 
         </LinearLayout>
 
@@ -110,7 +110,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp">
+            >
 
             <com.mnm.conquest.FTextView
                 android:layout_width="50dp"
@@ -121,7 +121,7 @@
                 android:layout_gravity="center_vertical"/>
 
             <RatingBar
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:id="@+id/armor_rating"
                 android:isIndicator="true"
@@ -134,7 +134,7 @@
                 android:layout_height="42dp"
                 android:text="+"
                 android:id="@+id/armor_upgrade"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="center_vertical|right"
                 />
         </LinearLayout>
 
@@ -142,7 +142,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp">
+            >
 
             <com.mnm.conquest.FTextView
                 android:layout_width="50dp"
@@ -153,7 +153,7 @@
                 android:layout_gravity="center_vertical"/>
 
             <RatingBar
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:id="@+id/damage_rating"
                 android:isIndicator="true"
@@ -166,7 +166,7 @@
                 android:layout_height="42dp"
                 android:text="+"
                 android:id="@+id/damage_upgrade"
-                />
+                android:layout_gravity="center_vertical|right"/>
 
         </LinearLayout>
     </LinearLayout>

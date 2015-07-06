@@ -2,14 +2,18 @@ package com.mnm.conquest;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -47,6 +51,9 @@ public class EntityView extends LinearLayout implements View.OnClickListener
     private String[] names = new String[] { "username", "fighter", "interceptor", "scout", "gunship", "bomber" };
     private UnitStats[] stats = new UnitStats[] { new UnitStats(50, 60, 90, 0), new UnitStats(50,  50, 70, 50), new UnitStats(40, 50, 60, 45), new UnitStats(30, 60, 40, 30),
                                                   new UnitStats(70, 80, 60, 60), new UnitStats(70, 80, 80, 80) };
+
+    private LinearLayout.LayoutParams entityLp;
+    private LinearLayout.LayoutParams armyLp;
 
     public EntityView(Context context)
     {
@@ -91,6 +98,12 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         damageUpgrade = (Button) findViewById(R.id.damage_upgrade);
         unitName = (TextView) findViewById(R.id.unit_name);
 
+        entityLp = new LinearLayout.LayoutParams(healthRating.getLayoutParams());
+        entityLp.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+        armyLp = new LinearLayout.LayoutParams(healthRating.getLayoutParams());
+        armyLp.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+        armyLp.width = LayoutParams.MATCH_PARENT;
+
         unitName.setText(names[0]);
 
         exitButton.setOnClickListener(this);
@@ -98,10 +111,6 @@ public class EntityView extends LinearLayout implements View.OnClickListener
 //        healthRating.setRating((float) stats[0].health / 100 * 5);
 //        armorRating.setRating((float) stats[0].defense / 100 * 5);
 //        damageRating.setRating((float) stats[0].damage / 100 * 5);
-
-        healthUpgrade.setVisibility(View.GONE);
-        armorUpgrade.setVisibility(View.GONE);
-        damageUpgrade.setVisibility(View.GONE);
 
         healthRating.setRating(3);
         armorRating.setRating(4);
@@ -161,9 +170,13 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         int index = unitFlipper.getDisplayedChild();
         boolean upgrade = index == 0;
 
-//        healthUpgrade.setVisibility(upgrade ? View.VISIBLE : View.GONE);
-//        armorUpgrade.setVisibility(upgrade ? View.VISIBLE : View.GONE);
-//        damageUpgrade.setVisibility(upgrade ? View.VISIBLE : View.GONE);
+        healthUpgrade.setVisibility(upgrade ? View.VISIBLE : View.INVISIBLE);
+        armorUpgrade.setVisibility(upgrade ? View.VISIBLE : View.INVISIBLE);
+        damageUpgrade.setVisibility(upgrade ? View.VISIBLE : View.INVISIBLE);
+
+        healthRating.setLayoutParams(upgrade ? entityLp : armyLp);
+        armorRating.setLayoutParams(upgrade ? entityLp : armyLp);
+        damageRating.setLayoutParams(upgrade ? entityLp : armyLp);
 
         unitName.setText(names[index]);
 

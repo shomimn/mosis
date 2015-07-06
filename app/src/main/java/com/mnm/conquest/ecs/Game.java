@@ -127,22 +127,30 @@ public class Game
 
     public static void createPlayer(LatLng position, float rotation)
     {
-        Entity player = new Entity.Unit();
-        player.addComponent(new Component.Position(position))
-                .addComponent(new Component.Appearance(playerInfo.getMarkerId()))
-                .addComponent(new Component.Health(100))
-                .addComponent(new Component.Attack(10))
-                .addComponent(new Component.Rotation(rotation));
+//        Entity player = new Entity.Unit();
+//        player.addComponent(new Component.Position(position))
+//                .addComponent(new Component.Appearance(playerInfo.getMarkerId()))
+//                .addComponent(new Component.Health(100))
+//                .addComponent(new Component.Attack(10))
+//                .addComponent(new Component.Rotation(rotation));
+//
+//        entityManager.getEntities().add(player);
+        try
+        {
+            Entity player = entityManager.createUnit(position, rotation, playerInfo.getData());
 
-        entityManager.getEntities().add(player);
+            MarkerOptions options = new MarkerOptions();
+            options.position(position).rotation(rotation).icon(BitmapDescriptorFactory.fromResource(playerInfo.getMarkerId())).anchor(0.5f, 0.5f);
 
-        MarkerOptions options = new MarkerOptions();
-        options.position(position).rotation(rotation).icon(BitmapDescriptorFactory.fromResource(playerInfo.getMarkerId())).anchor(0.5f, 0.5f);
+            Marker m = gameUi.getMap().addMarker(options);
+            gameUi.insert(player, m);
 
-        Marker m = gameUi.getMap().addMarker(options);
-        gameUi.insert(player, m);
-
-        playerInfo.setMarker(m);
+            playerInfo.setMarker(m);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public static void setMap(GoogleMap m)
@@ -226,13 +234,7 @@ public class Game
                 int id = ConquestApplication.getContext().getResources().getIdentifier(markerString, "id", ConquestApplication.getContext().getPackageName());
                 LatLng position = new LatLng(lat, lng);
 
-                Entity player = new Entity.Unit();
-                player.addComponent(new Component.Position(position))
-                        .addComponent(new Component.Appearance(id))
-                        .addComponent(new Component.Health(100))
-                        .addComponent(new Component.Attack(10));
-
-                entityManager.getEntities().add(player);
+                Entity player = entityManager.createUnit(position, 0, object);
 
                 MarkerOptions options = new MarkerOptions();
                 options.position(position).icon(BitmapDescriptorFactory.fromResource(id)).anchor(0.5f, 0.5f);

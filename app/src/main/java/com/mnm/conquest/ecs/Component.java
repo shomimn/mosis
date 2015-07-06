@@ -8,13 +8,13 @@ import java.util.ArrayList;
 
 public abstract class Component
 {
-    public static final int POSITION = 1 << 0;
-    public static final int HEALTH = 1 << 1;
-    public static final int APPEARANCE = 1 << 2;
-    public static final int ANIMATION = 1 << 3;
-    public static final int ATTACK = 1 << 4;
-    public static final int PLAYER = 1 << 5;
-    public static final int ROTATION = 1 << 6;
+    public static final int POSITION = 1 << 0; //1
+    public static final int HEALTH = 1 << 1; //2
+    public static final int APPEARANCE = 1 << 2; //4
+    public static final int ANIMATION = 1 << 3; //8
+    public static final int ATTACK = 1 << 4; //16
+    public static final int PLAYER = 1 << 5; //32
+    public static final int ROTATION = 1 << 6; //64
 
     protected int type;
 
@@ -29,9 +29,14 @@ public abstract class Component
         private float screenY;
         private LatLng latLng;
 
-        public Position(LatLng l)
+        public Position()
         {
             type = POSITION;
+        }
+
+        public Position(LatLng l)
+        {
+            this();
             latLng = l;
         }
 
@@ -70,9 +75,14 @@ public abstract class Component
     {
         private int health;
 
-        public Health(int h)
+        public Health()
         {
             type = HEALTH;
+        }
+
+        public Health(int h)
+        {
+            this();
             health = h;
         }
 
@@ -96,15 +106,20 @@ public abstract class Component
     {
         private BitmapDescriptor icon;
 
-        public Appearance(int i)
+        public Appearance()
         {
             type = APPEARANCE;
+        }
+
+        public Appearance(int i)
+        {
+            this();
             icon = BitmapDescriptorFactory.fromResource(i);
         }
 
-        public void setIcon(BitmapDescriptor icon)
+        public void setIcon(int i)
         {
-            this.icon = icon;
+            icon = BitmapDescriptorFactory.fromResource(i);
         }
 
         public BitmapDescriptor getIcon()
@@ -154,10 +169,20 @@ public abstract class Component
     {
         private int damage;
 
-        public Attack(int dmg)
+        public Attack()
         {
             type = ATTACK;
+        }
+
+        public Attack(int dmg)
+        {
+            this();
             damage = dmg;
+        }
+
+        public void setDamage(int d)
+        {
+            damage = d;
         }
 
         public int getDamage()
@@ -170,9 +195,14 @@ public abstract class Component
     {
         private String username;
 
-        public Player(String u)
+        public Player()
         {
             type = Component.PLAYER;
+        }
+
+        public Player(String u)
+        {
+            this();
             username = u;
         }
 
@@ -186,15 +216,20 @@ public abstract class Component
     {
         private float rotation;
 
-        public Rotation(float o)
+        public Rotation()
         {
             type = Component.ROTATION;
-            setRotation(o);
         }
 
-        public void setRotation(float o)
+        public Rotation(float r)
         {
-            rotation = o;
+            this();
+            setRotation(r);
+        }
+
+        public void setRotation(float r)
+        {
+            rotation = r;
         }
 
         public float getRotation()
