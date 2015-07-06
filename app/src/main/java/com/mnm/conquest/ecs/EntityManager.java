@@ -114,16 +114,19 @@ public class EntityManager
                 .addComponent(new Component.Health(data.getInt("health")))
                 .addComponent(new Component.Attack(data.getInt("attack")))
                 .addComponent(new Component.Rotation(rotation))
-                .addComponent(new Component.Player(data.getString("username")));
+                .addComponent(new Component.Player(data.getString("username")))
+                .addComponent(new Component.Army(data.getInt("interceptors"), data.getInt("scouts"),
+                                data.getInt("fighters"), data.getInt("gunships"), data.getInt("bombers")))
+                .addComponent(new Component.Coins(data.getInt("coins")));
 
-        String marker = data.getString("marker");
-        marker = marker.substring(0, marker.length() - 1);
-        Component.Animation anim = new Component.Animation();
-        entity.addComponent(anim);
-
-        for (int i = 1; i <= 5; ++i)
-            anim.addFrame(ConquestApplication.getContext().getResources()
-                    .getIdentifier(marker + String.valueOf(i), "id", ConquestApplication.getContext().getPackageName()));
+//        String marker = data.getString("marker");
+//        marker = marker.substring(0, marker.length() - 1);
+//        Component.Animation anim = new Component.Animation();
+//        entity.addComponent(anim);
+//
+//        for (int i = 1; i <= 5; ++i)
+//            anim.addFrame(ConquestApplication.getContext().getResources()
+//                    .getIdentifier(marker + String.valueOf(i), "id", ConquestApplication.getContext().getPackageName()));
 
         entities.add(entity);
 

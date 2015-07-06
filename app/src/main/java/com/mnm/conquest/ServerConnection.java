@@ -18,7 +18,7 @@ import de.tavendo.autobahn.WebSocketOptions;
 public class ServerConnection
 {
 
-    private static final String SERVER_IP = "ws://192.168.1.2:8181/";
+    private static final String SERVER_IP = "ws://192.168.1.3:8181/";
 
     private static ServerConnection instance = new ServerConnection();
     private static WebSocketConnection socket;
@@ -34,6 +34,7 @@ public class ServerConnection
         public static final int UPDATE = 4;
         public static final int POSITION = 6;
         public static final int INIT = 7;
+        public static final int UPDATE_FIELDS = 8;
 
         private Request() {}
     }
@@ -132,8 +133,9 @@ public class ServerConnection
                 data.put("interceptors", 2);
                 data.put("scouts", 3);
                 data.put("fighters", 1);
-                data.put("gunship", 1);
-                data.put("bomber", 1);
+                data.put("gunships", 1);
+                data.put("bombers", 1);
+                data.put("coins", 100);
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
@@ -181,6 +183,33 @@ public class ServerConnection
             {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public static void updateField(String username, String field, String value, int type)
+    {
+        try
+        {
+            JSONObject json = new JSONObject().put("type", type)
+                    .put("data", new JSONObject().put("username", username).put("field", field).put("value", value));
+            socket.sendTextMessage(json.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    public static void updateField(String username, String field, int value, int type)
+    {
+        try
+        {
+            JSONObject json = new JSONObject().put("type", type)
+                    .put("data", new JSONObject().put("username", username).put("field", field).put("value", value));
+            socket.sendTextMessage(json.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
         }
     }
 

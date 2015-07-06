@@ -17,6 +17,7 @@ public abstract class Component
     public static final int ROTATION = 1 << 6; //64
     public static final int DEFENSE = 1 << 7; // 128
     public static final int ARMY = 1 << 8; // 256
+    public static final int COINS = 1 << 9;//512
 
     protected int type;
 
@@ -253,8 +254,8 @@ public abstract class Component
         public static int INTERCEPTOR = 0;
         public static int SCOUT = 1;
         public static int FIGHTER = 2;
-        public static int GUNSHIP = 4;
-        public static int BOMBER = 5;
+        public static int GUNSHIP = 3;
+        public static int BOMBER = 4;
 
         private static int INTERCEPTOR_DAMAGE = 2;
         private static int SCOUT_DAMAGE = 1;
@@ -323,5 +324,19 @@ public abstract class Component
         {
             return defense;
         }
+    }
+    public static class Coins extends Component
+    {
+        private int coins;
+
+        public Coins() {type = COINS;}
+
+        public Coins(int c)
+        {
+            this();
+            coins = c;
+        }
+        public void setCoins(int c) {coins = c;}
+        public int getCoins() {return coins;}
     }
 }
