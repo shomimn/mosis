@@ -1,12 +1,10 @@
 package com.mnm.conquest;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,31 +12,20 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
 import com.mnm.conquest.ecs.Entity;
 import com.mnm.conquest.ecs.Game;
-import com.nineoldandroids.view.ViewPropertyAnimator;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-
 
 public class MapActivity extends AppCompatActivity
 {
     private GoogleMap map;
     private CircularView circularView;
+    private BuildingView buildingView;
     private Location location;
     private EntityView entityView;
 
@@ -115,13 +102,36 @@ public class MapActivity extends AppCompatActivity
         entityView = (EntityView) findViewById(R.id.entity_view);
         entityView.setVisibility(View.GONE);
 
+        buildingView = (BuildingView)findViewById(R.id.fortress);
+        buildingView.setVisibility(View.GONE);
+
+        buildingView.setNoListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                buildingView.setVisibility(View.GONE);
+            }
+        });
+
         map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener()
         {
             @Override
-            public void onMapLongClick(LatLng latLng)
+            public void onMapLongClick(final LatLng latLng)
             {
                 CameraUpdate clickLocation = CameraUpdateFactory.newLatLngZoom(latLng, map.getCameraPosition().zoom);
-//                map.animateCamera(clickLocation);
+                map.animateCamera(clickLocation);
+
+                buildingView.setVisibility(View.VISIBLE);
+                buildingView.setYesListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        buildingView.setVisibility(View.GONE);
+                        Game.createFortress(latLng);
+                    }
+                });
 
 //                circularView.setVisibility(View.VISIBLE);
 
@@ -153,7 +163,7 @@ public class MapActivity extends AppCompatActivity
             {
                 location = nLocation;
 
-                Game.playerPositionChanged(nLocation);
+                //Game.playerPositionChanged(nLocation);
             }
 
             @Override

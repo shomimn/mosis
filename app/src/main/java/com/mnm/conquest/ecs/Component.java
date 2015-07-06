@@ -15,7 +15,8 @@ public abstract class Component
     public static final int ATTACK = 1 << 4; //16
     public static final int PLAYER = 1 << 5; //32
     public static final int ROTATION = 1 << 6; //64
-    public static final int ARMY = 1 << 7; // 128
+    public static final int DEFENSE = 1 << 7; // 128
+    public static final int ARMY = 1 << 8; // 256
 
     protected int type;
 
@@ -206,7 +207,7 @@ public abstract class Component
 
         public Player()
         {
-            type = Component.PLAYER;
+            type = PLAYER;
         }
 
         public Player(String u)
@@ -227,7 +228,7 @@ public abstract class Component
 
         public Rotation()
         {
-            type = Component.ROTATION;
+            type = ROTATION;
         }
 
         public Rotation(float r)
@@ -265,7 +266,7 @@ public abstract class Component
 
         public Army()
         {
-            type = Component.ARMY;
+            type = ARMY;
         }
 
         public Army(int i, int s, int f, int g, int b)
@@ -295,6 +296,32 @@ public abstract class Component
                     + units[FIGHTER] * FIGHTER_DAMAGE
                     + units[GUNSHIP] * GUNSHIP_DAMAGE
                     + units[BOMBER] * BOMBER_DAMAGE;
+        }
+    }
+
+    public static class Defense extends Component
+    {
+        private int defense;
+
+        public Defense()
+        {
+            type = DEFENSE;
+        }
+
+        public Defense(int def)
+        {
+            this();
+            defense = def;
+        }
+
+        public void setDefense(int def)
+        {
+            defense = def;
+        }
+
+        public int getDefense()
+        {
+            return defense;
         }
     }
 }

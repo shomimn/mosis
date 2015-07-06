@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="transparent_gray" type="color">#A5646464</item>
-    <item name="transparent_orange" type="color">#A505B8CC</item>
+    <item name="transparent_orange" type="color">#A5FFA500</item>
     <item name="transparent" type="color">#00FFFFFF</item>
     <item name="white" type="color">#FFFFFF</item>
 </resources>

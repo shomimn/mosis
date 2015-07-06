@@ -5,6 +5,7 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
     tools:context="com.mnm.conquest.MapActivity">
     
     <fragment
@@ -19,6 +20,14 @@
         android:layout_height="match_parent"
         android:id="@+id/circularView"
         />
+    <com.mnm.conquest.BuildingView
+        android:id="@+id/fortress"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent_orange"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
 
     <com.mnm.conquest.EntityView
         android:id="@+id/entity_view"
