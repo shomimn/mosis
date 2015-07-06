@@ -12,6 +12,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -143,7 +145,19 @@ public class MapActivity extends AppCompatActivity
                     public void onClick(View v)
                     {
                         buildingView.setVisibility(View.GONE);
-                        Game.createFortress(latLng);
+                        int coins = Game.getPlayerInfo().getCoins();
+                        if(coins < 70)
+                        {
+                            buildingView.setVisibility(View.GONE);
+                            Toast.makeText(MapActivity.this, "You don't have enough coins!", Toast.LENGTH_LONG).show();
+                        }
+                        else
+                        {
+                            Toast.makeText(MapActivity.this, "You have new building", Toast.LENGTH_SHORT).show();
+                            Game.createFortress(latLng);
+                            ServerConnection.updateField(Game.getPlayerInfo().getUsername(), "coins", coins - 70);
+                            Game.getPlayerInfo().setCoins(-70);
+                        }
                     }
                 });
 
