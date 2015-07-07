@@ -146,18 +146,18 @@ public class MapActivity extends AppCompatActivity
                     {
                         buildingView.setVisibility(View.GONE);
                         int coins = Game.getPlayerInfo().getCoins();
-                        if(coins < 70)
-                        {
-                            buildingView.setVisibility(View.GONE);
-                            Toast.makeText(MapActivity.this, "You don't have enough coins!", Toast.LENGTH_LONG).show();
-                        }
-                        else
-                        {
+//                        if(coins < 70)
+//                        {
+//                            buildingView.setVisibility(View.GONE);
+//                            Toast.makeText(MapActivity.this, "You don't have enough coins!", Toast.LENGTH_LONG).show();
+//                        }
+//                        else
+//                        {
                             Toast.makeText(MapActivity.this, "You have new building", Toast.LENGTH_SHORT).show();
                             Game.createFortress(latLng);
-                            ServerConnection.updateField(Game.getPlayerInfo().getUsername(), "coins", coins - 70);
-                            Game.getPlayerInfo().setCoins(-70);
-                        }
+                            //ServerConnection.updateField(Game.getPlayerInfo().getUsername(), "coins", coins - 70);
+                            //Game.getPlayerInfo().setCoins(-70);
+                        //}
                     }
                 });
 

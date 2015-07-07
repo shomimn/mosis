@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,7 +19,7 @@ import de.tavendo.autobahn.WebSocketOptions;
 public class ServerConnection
 {
 
-    private static final String SERVER_IP = "ws://192.168.1.3:8181/";
+    private static final String SERVER_IP = "ws://192.168.1.2:8181/";
 
     private static ServerConnection instance = new ServerConnection();
     private static WebSocketConnection socket;
@@ -139,6 +140,7 @@ public class ServerConnection
                 data.put("gunships", 1);
                 data.put("bombers", 1);
                 data.put("coins", 100);
+                data.put("fortresses", new JSONArray());
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
@@ -223,6 +225,7 @@ public class ServerConnection
             JSONObject json = new JSONObject().put("type", Request.NEW_FORTRESS);
 
             JSONObject fortress = new JSONObject();
+            fortress.put("username", username);
             fortress.put("latitude", latitude);
             fortress.put("longitude", longitude);
             fortress.put("marker", markerName);
