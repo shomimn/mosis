@@ -147,9 +147,6 @@ public class MapActivity extends AppCompatActivity
                 CameraUpdate clickLocation = CameraUpdateFactory.newLatLngZoom(latLng, map.getCameraPosition().zoom);
                 map.animateCamera(clickLocation);
 
-//                circularView.setVisibility(View.VISIBLE);
-//                Game.play();
-
                 buildingView.setVisibility(View.VISIBLE);
                 buildingView.setYesListener(new View.OnClickListener()
                 {
@@ -158,6 +155,7 @@ public class MapActivity extends AppCompatActivity
                     {
                         buildingView.setVisibility(View.GONE);
                         int coins = Game.getPlayerInfo().getCoins();
+
                         if (coins < 70)
                         {
                             buildingView.setVisibility(View.GONE);
@@ -172,11 +170,6 @@ public class MapActivity extends AppCompatActivity
                         }
                     }
                 });
-
-//                circularView.setVisibility(View.VISIBLE);
-
-//                Game.play();
-//                entityView.setVisibility(View.VISIBLE);
             }
         });
 

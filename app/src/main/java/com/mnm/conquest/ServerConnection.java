@@ -4,13 +4,10 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
-
 import de.tavendo.autobahn.WebSocketConnection;
 import de.tavendo.autobahn.WebSocketException;
 import de.tavendo.autobahn.WebSocketHandler;
@@ -33,12 +30,14 @@ public class ServerConnection
         public static final int REGISTER = 2;
         public static final int DATA = 3;
         public static final int UPDATE = 4;
+        public static final int ALLIES = 5;
         public static final int POSITION = 6;
         public static final int INIT = 7;
         public static final int UPDATE_FIELDS_INT = 8;
         public static final int UPDATE_FIELDS_STRING = 9;
         public static final int NEW_FORTRESS = 10;
-
+        public static final int DELETEALLY = 11;
+        public static final int NEWALLY = 12;
         private Request() {}
     }
 
@@ -55,8 +54,8 @@ public class ServerConnection
         socket = new WebSocketConnection();
         handler = new ServerHandler();
         options = new WebSocketOptions();
-        options.setMaxFramePayloadSize(options.getMaxFramePayloadSize() * 4);
-        options.setMaxMessagePayloadSize(options.getMaxMessagePayloadSize() * 4);
+        options.setMaxFramePayloadSize(options.getMaxFramePayloadSize() * 10);
+        options.setMaxMessagePayloadSize(options.getMaxMessagePayloadSize() * 10);
     }
 
     public static void connect()
@@ -141,6 +140,7 @@ public class ServerConnection
                 data.put("bombers", 1);
                 data.put("coins", 100);
                 data.put("fortresses", new JSONArray());
+                data.put("allies",new JSONArray() );
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
@@ -165,6 +165,54 @@ public class ServerConnection
             try
             {
                 JSONObject json = new JSONObject().put("type", Request.DATA).put("data", new JSONObject().put("username", username));
+                socket.sendTextMessage(json.toString());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void getAllies(String username)
+    {
+        if(socket.isConnected())
+        {
+            try
+            {
+                JSONObject json = new JSONObject().put("type", Request.ALLIES)
+                        .put("data", new JSONObject().put("username", username));
+                socket.sendTextMessage(json.toString());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void addAlly(String username, String ally)
+    {
+        if(socket.isConnected())
+        {
+            try
+            {
+                JSONObject json = new JSONObject().put("type", Request.NEWALLY)
+                        .put("data", new JSONObject().put("username", username).put("ally", ally));
+                socket.sendTextMessage(json.toString());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void deleteAlly(String username, String ally)
+    {
+        if(socket.isConnected())
+        {
+            try
+            {
+                JSONObject json = new JSONObject().put("type", Request.DELETEALLY)
+                        .put("data", new JSONObject().put("username", username).put("ally", ally));
                 socket.sendTextMessage(json.toString());
             }
             catch (JSONException e)

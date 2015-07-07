@@ -1,5 +1,6 @@
 package com.mnm.conquest.ecs;
 
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.util.Log;
 import android.util.SparseArray;
@@ -117,7 +118,7 @@ public class Game
             Component.Appearance appearance = e.getComponent(Component.APPEARANCE);
             Component.Health health = e.getComponent(Component.HEALTH);
 
-            Marker m = gameUi.getMap().addMarker(new MarkerOptions().position(position.getLatLng()).icon(appearance.getIcon()).alpha((float)health.getHealth() / 100));
+            Marker m = gameUi.getMap().addMarker(new MarkerOptions().position(position.getLatLng()).icon(appearance.getIcon()).alpha((float) health.getHealth() / 100));
             gameUi.insert(e, m);
         }
     }
@@ -243,13 +244,16 @@ public class Game
 
             Log.d("async", payload);
 
-            switch(type)
+            switch (type)
             {
                 case ServerConnection.Request.INIT:
                     createEntities(object.getJSONArray("data"));
                     break;
                 case ServerConnection.Request.POSITION:
                     updatePosition(object.getJSONObject("data"));
+                    break;
+                case ServerConnection.Request.NEW_FORTRESS:
+                    createFortress(object.getJSONObject("data"));
                     break;
             }
         }
@@ -296,6 +300,31 @@ public class Game
             Entity entity = entityManager.getEntity(object.getString("username"));
             Component.Position position = entity.getComponent(Component.POSITION);
             position.setLatLng(new LatLng(object.getDouble("latitude"), object.getDouble("longitude")));
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void createFortress(JSONObject object)
+    {
+        try
+        {
+            double lat = object.getDouble("latitude");
+            double lng = object.getDouble("longitude");
+
+            String markerName = object.getString("marker");
+            int markerId = ConquestApplication.getContext().getResources().getIdentifier(markerName, "id", ConquestApplication.getContext().getPackageName());
+
+            Entity entity = entityManager.createFortress(new LatLng(lat, lng), object);
+
+            MarkerOptions options = new MarkerOptions().position(new LatLng(lat, lng))
+                    .icon(BitmapDescriptorFactory.fromResource(markerId)).anchor(0.5f, 0.5f);
+
+            Marker m = gameUi.getMap().addMarker(options);
+
+            gameUi.insert(entity, m);
         }
         catch (JSONException e)
         {

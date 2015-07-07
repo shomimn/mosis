@@ -65,13 +65,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         actionBar.setTitle(s);
 
         SharedPreferences sharedPrefs = getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE);
-//        loggedIn = sharedPrefs.contains("username");
-
-//        final ProgressDialog progDialog = new ProgressDialog(this);
-//        progDialog.setTitle("Initializing");
-//        progDialog.setMessage("Any second now");
-//        progDialog.setCanceledOnTouchOutside(false);
-//        progDialog.show();
 
         usernameET = (EditText) findViewById(R.id.username_login);
         passwordET = (EditText) findViewById(R.id.password_login);

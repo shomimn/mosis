@@ -135,8 +135,11 @@ public abstract class System
                     Component.Appearance appearance = e.getComponent(Component.APPEARANCE);
                     Component.Health health = e.getComponent(Component.HEALTH);
 
-                    m.setPosition(position.getLatLng());
-                    m.setAlpha((float) health.getHealth() / 100);
+                    if (m != null)
+                    {
+                        m.setPosition(position.getLatLng());
+                        m.setAlpha((float) health.getHealth() / 100);
+                    }
                 }
                 if ((mask & Component.ANIMATION) == Component.ANIMATION)
                 {
@@ -149,7 +152,7 @@ public abstract class System
                 {
                     Component.Rotation rotation = e.getComponent(Component.ROTATION);
 
-                    m.setRotation(rotation.getRotation());
+//                    m.setRotation(rotation.getRotation());
                 }
             }
         }
