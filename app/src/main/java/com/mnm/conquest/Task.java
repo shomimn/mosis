@@ -56,8 +56,8 @@ public abstract class Task
 
     public static abstract class Waitable extends Ui
     {
-        private int responseCode;
-        private String responseMessage;
+        protected int responseCode;
+        protected String responseMessage;
 
         public Waitable()
         {
@@ -320,6 +320,61 @@ public abstract class Task
         public JSONArray getData()
         {
             return data;
+        }
+    }
+
+    public static class Ally extends Data
+    {
+        private ProgressDialog progressDialog;
+        private String ally;
+        private boolean add;
+        public Ally(String u, ProgressDialog d,String a,boolean add, DataReadyCallback callback)
+        {
+            super(u, callback);
+            progressDialog = d;
+            username = u;
+            ally = a;
+            this.add = add;
+        }
+        @Override
+        public void executeImpl()
+        {
+            if(add)
+                ServerConnection.addAlly(username,ally);
+            else
+                ServerConnection.deleteAlly(username, ally);
+        }
+
+        @Override
+        public void uiExecute()
+        {
+            progressDialog.setMessage(getResponseMessage());
+            TaskManager.getMainHandler().postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    progressDialog.dismiss();
+                }
+            }, 1000);
+        }
+        @Override
+        public void setResponse(String r)
+        {
+            try
+            {
+                JSONObject json = new JSONObject(r);
+                JSONObject obj = json.getJSONObject("data");
+                responseCode = obj.getInt("code");
+                responseMessage = obj.getString("message");
+                data = obj.getJSONArray("data");
+                callback.setData(data);
+                callback.dataReady();
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }

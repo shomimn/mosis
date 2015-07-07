@@ -58,13 +58,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         SharedPreferences sharedPrefs = getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE);
-//        loggedIn = sharedPrefs.contains("username");
-
-//        final ProgressDialog progDialog = new ProgressDialog(this);
-//        progDialog.setTitle("Initializing");
-//        progDialog.setMessage("Any second now");
-//        progDialog.setCanceledOnTouchOutside(false);
-//        progDialog.show();
 
         usernameET = (EditText) findViewById(R.id.username_login);
         passwordET = (EditText) findViewById(R.id.password_login);
@@ -102,43 +95,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         animSetLogOut.play(ObjectAnimator.ofFloat(layoutLogged, "alpha", 1.0f, 0.0f).setDuration(loggedIn ? 0 : 500))
                 .before(ObjectAnimator.ofFloat(layoutLogin, "alpha", 0.0f, 1.0f).setDuration(loggedIn ? 0 : 500));
-
-//        task = new Task.Data(sharedPrefs.getString("username", ""),
-//                new Task.Data.DataReadyCallback()
-//                {
-//                    @Override
-//                    public void dataReady()
-//                    {
-////                        progDialog.dismiss();
-//                        try
-//                        {
-//                            JSONObject data = getData().getJSONObject(0);
-//
-//                            PlayerInfo player = new PlayerInfo(data);
-//                            Game.setPlayerInfo(player);
-//                            playerImageView.setImageBitmap(player.getPhoto());
-//                        }
-//                        catch (JSONException e)
-//                        {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-//
-//        TaskManager.getMainHandler().postDelayed(new Runnable()
-//        {
-//            @Override
-//            public void run()
-//            {
-//                if (ServerConnection.isValid())
-//                {
-//                    TaskManager.getTaskManager().executeAndPost(task);
-//                    TaskManager.getMainHandler().removeCallbacks(this);
-//                }
-//                else
-//                    TaskManager.getMainHandler().postDelayed(this, 1000);
-//            }
-//        }, 1000);
 
 //        Transition exitTrans = new Slide();
 //        getWindow().setReenterTransition(exitTrans);
