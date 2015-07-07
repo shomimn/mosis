@@ -4,30 +4,30 @@ import com.mnm.conquest.ecs.Game;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.support.v4.util.LruCache;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
-import android.view.KeyEvent;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.TextPaint;
+import android.text.style.MetricAffectingSpan;
+import android.text.style.TypefaceSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,6 +56,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        SpannableString s = new SpannableString(getResources().getString(R.string.app_name));
+        s.setSpan(new FTypefaceSpan(this, "kenvector_future.ttf"), 0, s.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(s);
 
         SharedPreferences sharedPrefs = getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE);
 //        loggedIn = sharedPrefs.contains("username");
@@ -102,43 +109,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         animSetLogOut.play(ObjectAnimator.ofFloat(layoutLogged, "alpha", 1.0f, 0.0f).setDuration(loggedIn ? 0 : 500))
                 .before(ObjectAnimator.ofFloat(layoutLogin, "alpha", 0.0f, 1.0f).setDuration(loggedIn ? 0 : 500));
-
-//        task = new Task.Data(sharedPrefs.getString("username", ""),
-//                new Task.Data.DataReadyCallback()
-//                {
-//                    @Override
-//                    public void dataReady()
-//                    {
-////                        progDialog.dismiss();
-//                        try
-//                        {
-//                            JSONObject data = getData().getJSONObject(0);
-//
-//                            PlayerInfo player = new PlayerInfo(data);
-//                            Game.setPlayerInfo(player);
-//                            playerImageView.setImageBitmap(player.getPhoto());
-//                        }
-//                        catch (JSONException e)
-//                        {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-//
-//        TaskManager.getMainHandler().postDelayed(new Runnable()
-//        {
-//            @Override
-//            public void run()
-//            {
-//                if (ServerConnection.isValid())
-//                {
-//                    TaskManager.getTaskManager().executeAndPost(task);
-//                    TaskManager.getMainHandler().removeCallbacks(this);
-//                }
-//                else
-//                    TaskManager.getMainHandler().postDelayed(this, 1000);
-//            }
-//        }, 1000);
 
 //        Transition exitTrans = new Slide();
 //        getWindow().setReenterTransition(exitTrans);
@@ -324,15 +294,23 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             layoutLogin.setVisibility(View.INVISIBLE);
             MenuItem logOut = menu.findItem(R.id.log_out);
             logOut.setVisible(true);
-            getSupportActionBar().setTitle(getResources().getString(R.string.optionsActionBarName)
+
+            SpannableString s = new SpannableString(getResources().getString(R.string.optionsActionBarName)
                     + " " + username);
+            s.setSpan(new FTypefaceSpan(this, "kenvector_future.ttf"), 0, s.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            getSupportActionBar().setTitle(s);
         }
         else if(animation == animSetLogOut)
         {
             layoutLogged.setVisibility(View.INVISIBLE);
             MenuItem logOut = menu.findItem(R.id.log_out);
             logOut.setVisible(false);
-            getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
+
+            SpannableString s = new SpannableString(getResources().getString(R.string.app_name));
+            s.setSpan(new FTypefaceSpan(this, "kenvector_future.ttf"), 0, s.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            getSupportActionBar().setTitle(s);
         }
     }
 

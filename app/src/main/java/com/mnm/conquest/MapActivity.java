@@ -5,6 +5,8 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +22,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.mnm.conquest.ecs.Component;
 import com.mnm.conquest.ecs.Entity;
 import com.mnm.conquest.ecs.Game;
 
@@ -92,7 +96,15 @@ public class MapActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_map);
+
+        SpannableString s = new SpannableString("map");
+        s.setSpan(new FTypefaceSpan(this, "kenvector_future.ttf"), 0, s.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        getSupportActionBar().setTitle(s);
+
         map = ((MySupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
         map.setMyLocationEnabled(true);
 
@@ -104,7 +116,7 @@ public class MapActivity extends AppCompatActivity
         entityView = (EntityView) findViewById(R.id.entity_view);
         entityView.setVisibility(View.GONE);
 
-        buildingView = (BuildingView)findViewById(R.id.fortress);
+        buildingView = (BuildingView) findViewById(R.id.fortress);
         buildingView.setVisibility(View.GONE);
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
         {
@@ -146,17 +158,17 @@ public class MapActivity extends AppCompatActivity
                     {
                         buildingView.setVisibility(View.GONE);
                         int coins = Game.getPlayerInfo().getCoins();
-                        if(coins < 70)
+                        if (coins < 70)
                         {
                             buildingView.setVisibility(View.GONE);
                             Toast.makeText(MapActivity.this, "You don't have enough coins!", Toast.LENGTH_LONG).show();
                         }
                         else
                         {
-                            Toast.makeText(MapActivity.this, "You have new building", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MapActivity.this, "You built a fortress!", Toast.LENGTH_SHORT).show();
                             Game.createFortress(latLng);
                             ServerConnection.updateField(Game.getPlayerInfo().getUsername(), "coins", coins - 70);
-                            Game.getPlayerInfo().setCoins(-70);
+                            Game.getPlayerInfo().setCoins(coins - 70);
                         }
                     }
                 });
@@ -174,14 +186,18 @@ public class MapActivity extends AppCompatActivity
             public boolean onMarkerClick(Marker marker)
             {
                 Entity entity = Game.ui().getEntity(marker);
-                entityView.setEntity(entity);
-                entityView.setVisibility(View.VISIBLE);
+                if (entity.getComponent(Component.PLAYER) != null)
+                {
+                    entityView.setEntity(entity);
+                    entityView.setVisibility(View.VISIBLE);
+                }
 
 //                Toast.makeText(MapActivity.this, "id: " + String.valueOf(entity.getId()), Toast.LENGTH_SHORT).show();
 
                 return true;
             }
         });
+
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, new android.location.LocationListener()
@@ -210,6 +226,24 @@ public class MapActivity extends AppCompatActivity
             public void onProviderDisabled(String provider)
             {
 
+            }
+        });
+
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener()
+        {
+            @Override
+            public void onMapClick(LatLng latLng)
+            {
+                if (Game.getState() == Game.DETACHING)
+                {
+                    Entity player = Game.getEntityManager().getEntity(Game.getPlayerInfo().getUsername());
+                    Component.Position pos = player.getComponent(Component.POSITION);
+                    Component.Animation anim = player.getComponent(Component.ANIMATION);
+
+                    map.addPolyline(new PolylineOptions().add(pos.getLatLng()).add(latLng));
+
+                    Game.getEntityManager().createDetached(player, pos.getLatLng(), latLng, Entity.Detached.INTERCEPTOR);
+                }
             }
         });
 

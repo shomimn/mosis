@@ -24,6 +24,11 @@ import java.util.ArrayList;
 
 public class Game
 {
+    public static final int NORMAL = 0;
+    public static final int DETACHING = 1;
+
+    private static int state = NORMAL;
+
     private static Game instance = new Game();
     private static GameUI gameUi;
     private static PlayerInfo playerInfo = null;
@@ -41,15 +46,6 @@ public class Game
         @Override
         public void execute()
         {
-//            for (int i = 0; i < 30; i += 3)
-//            {
-//                Event.Combat event = new Event.Combat();
-//                event.attacker = getEntityManager().getEntities().get(i);
-//                event.defender = getEntityManager().getEntities().get(i + 1);
-//
-//                eventManager.emit(event);
-//            }
-
             movement.update();
             animation.update();
         }
@@ -66,16 +62,6 @@ public class Game
         @Override
         public void run()
         {
-//            Event.Combat event = new Event.Combat();
-//            event.attacker = getEntityManager().getEntities().get(0);
-//            event.defender = getEntityManager().getEntities().get(1);
-//
-//            eventManager.emit(event);
-//
-//            movement.update();
-//            animation.update();
-//            graphics.update();
-
             TaskManager.getTaskManager().executeAndPost(updateTask);
 
             TaskManager.getMainHandler().postDelayed(this, 150);
@@ -109,6 +95,16 @@ public class Game
     public static void stop()
     {
         TaskManager.getMainHandler().removeCallbacks(loop);
+    }
+
+    public static void setState(int s)
+    {
+        state = s;
+    }
+
+    public static int getState()
+    {
+        return state;
     }
 
     public static void createMarkers()
@@ -213,8 +209,8 @@ public class Game
 
     public static void playerPositionChanged(Location position)
     {
-//        final double lat = position.getLatitude();
-//        final double lng = position.getLongitude();
+        final double lat = position.getLatitude();
+        final double lng = position.getLongitude();
 
         Marker marker = playerInfo.getMarker();
         Entity entity = gameUi.getEntity(marker);
@@ -222,11 +218,11 @@ public class Game
         Component.Position cPosition = entity.getComponent(Component.POSITION);
         Component.Rotation cRotation = entity.getComponent(Component.ROTATION);
 
-        final double lat = cPosition.getLatLng().latitude;
-        final double lng = cPosition.getLatLng().longitude;
+//        final double lat = cPosition.getLatLng().latitude;
+//        final double lng = cPosition.getLatLng().longitude;
 
-//        cPosition.setLatLng(new LatLng(lat, lng));
-        cRotation.setRotation(position.getBearing());
+        cPosition.setLatLng(new LatLng(lat, lng));
+//        cRotation.setRotation(position.getBearing());
 
         TaskManager.getTaskManager().execute(new Task(Task.SERVER)
         {
@@ -281,7 +277,7 @@ public class Game
                 Entity player = entityManager.createUnit(position, 0, object);
 
                 MarkerOptions options = new MarkerOptions();
-                options.position(position).icon(BitmapDescriptorFactory.fromResource(id)).anchor(0.5f, 0.5f);
+                options.position(position).icon(BitmapDescriptorFactory.fromResource(id)).anchor(0.5f, 0.5f).flat(true);
 
                 Marker m = gameUi.getMap().addMarker(options);
                 gameUi.insert(player, m);

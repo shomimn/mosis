@@ -17,7 +17,9 @@ public abstract class Component
     public static final int ROTATION = 1 << 6; //64
     public static final int DEFENSE = 1 << 7; // 128
     public static final int ARMY = 1 << 8; // 256
-    public static final int COINS = 1 << 9;//512
+    public static final int COINS = 1 << 9; //512
+    public static final int OWNED_BY = 1 << 10; //1024
+    public static final int DESTINATION = 1 << 11; // 2048
 
     protected int type;
 
@@ -141,38 +143,86 @@ public abstract class Component
 
     public static class Animation extends Component
     {
-        private ArrayList<BitmapDescriptor> frames;
-        private int current;
-        private boolean forward;
+        public static final int NONE = 0;
+        public static final int MOVE = 1;
+        public static final int BATTLE = 2;
+
+        protected int state = NONE;
+
+        protected ArrayList<BitmapDescriptor> moveFrames;
+        protected ArrayList<BitmapDescriptor> battleFrames;
+        protected int currentMove;
+        protected int currentBattle;
+        protected boolean forward;
 
         public Animation()
         {
             type = ANIMATION;
-            frames = new ArrayList<BitmapDescriptor>();
-            current = 0;
+            moveFrames = new ArrayList<BitmapDescriptor>();
+            battleFrames = new ArrayList<BitmapDescriptor>();
+            currentMove = 0;
+            currentBattle = 0;
             forward = true;
         }
 
-        public Animation addFrame(int frame)
+        public Animation addMoveFrame(int frame)
         {
-            frames.add(BitmapDescriptorFactory.fromResource(frame));
+            moveFrames.add(BitmapDescriptorFactory.fromResource(frame));
 
             return this;
         }
 
+        public Animation addBattleFrame(int frame)
+        {
+            battleFrames.add(BitmapDescriptorFactory.fromResource(frame));
+
+            return this;
+        }
+
+        public void setState(int s)
+        {
+            state = s;
+        }
+
         public BitmapDescriptor getCurrentFrame()
         {
-            return frames.get(current);
+            if (state == MOVE)
+                return moveFrames.get(currentMove);
+            else
+                return battleFrames.get(currentBattle);
         }
 
         public void animate()
         {
-            if (current == frames.size() - 1)
+            if (state == MOVE)
+                animateMove();
+            else
+                animateBattle();
+        }
+
+        public void animateMove()
+        {
+            if (currentMove == moveFrames.size() - 1)
                 forward = false;
-            else if (current == 0)
+            else if (currentMove == 0)
                 forward = true;
 
-            current = current + (forward ? 1 : -1);
+            currentMove = currentMove + (forward ? 1 : -1);
+        }
+
+        public void animateBattle()
+        {
+            if (currentBattle == battleFrames.size() - 1)
+                forward = false;
+            else if (currentBattle == 0)
+                forward = true;
+
+            currentBattle = currentBattle + (forward ? 1 : -1);
+        }
+
+        public int getState()
+        {
+            return state;
         }
     }
 
@@ -325,18 +375,74 @@ public abstract class Component
             return defense;
         }
     }
+
     public static class Coins extends Component
     {
         private int coins;
 
-        public Coins() {type = COINS;}
+        public Coins()
+        {
+            type = COINS;
+        }
 
         public Coins(int c)
         {
             this();
             coins = c;
         }
-        public void setCoins(int c) {coins = c;}
-        public int getCoins() {return coins;}
+
+        public void setCoins(int c)
+        {
+            coins = c;
+        }
+
+        public int getCoins()
+        {
+            return coins;
+        }
+    }
+
+    public static class OwnedBy extends Component
+    {
+        private Entity owner;
+
+        public OwnedBy()
+        {
+            type = OWNED_BY;
+        }
+
+        public OwnedBy(Entity o)
+        {
+            this();
+            owner = o;
+        }
+
+        public Entity getOwner()
+        {
+            return owner;
+        }
+    }
+
+    public static class Destination extends Component
+    {
+        private LatLng position;
+        public int steps;
+
+        public Destination()
+        {
+            type = DESTINATION;
+        }
+
+        public Destination(LatLng p)
+        {
+            this();
+            position = p;
+            steps = 50;
+        }
+
+        public LatLng getLatLng()
+        {
+            return position;
+        }
     }
 }

@@ -13,8 +13,8 @@ public interface Event<T>
 
     class Combat implements Event<CombatListener>
     {
-        Entity attacker;
-        Entity defender;
+        public Entity attacker;
+        public Entity defender;
 
         @Override
         public void notify(CombatListener handler)
@@ -30,8 +30,8 @@ public interface Event<T>
 
     class Animation implements Event<AnimationListener>
     {
-        Entity animated;
-        BitmapDescriptor frame;
+        public Entity animated;
+        public BitmapDescriptor frame;
 
         @Override
         public void notify(AnimationListener handler)

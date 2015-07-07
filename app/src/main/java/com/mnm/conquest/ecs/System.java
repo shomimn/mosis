@@ -30,12 +30,28 @@ public abstract class System
         {
             for (Entity e : Game.getEntityManager().getEntities())
             {
-                if ((e.getComponentMask() & Component.POSITION) == Component.POSITION &&
-                        (e.getComponentMask() & Component.PLAYER) == Component.PLAYER)
+                int mask = e.getComponentMask();
+                if ((mask & Component.POSITION) == Component.POSITION
+                        && (mask & Component.DESTINATION) == Component.DESTINATION)
                 {
                     Component.Position c = e.getComponent(Component.POSITION);
+                    Component.Destination d = e.getComponent(Component.DESTINATION);
+
                     LatLng oldPos = c.getLatLng();
-                    LatLng newPos = new LatLng(oldPos.latitude + 0.01, oldPos.longitude);
+                    LatLng dest = d.getLatLng();
+
+                    double diffLat = dest.latitude - oldPos.latitude;
+                    double diffLng = dest.longitude - oldPos.longitude;
+
+                    double latStep = diffLat / (double) d.steps;
+                    double lngStep = diffLng / (double) d.steps;
+
+                    --d.steps;
+
+                    if (d.steps == 0)
+                        e.removeComponent(Component.DESTINATION);
+
+                    LatLng newPos = new LatLng(oldPos.latitude + latStep, oldPos.longitude + lngStep);
                     c.setLatLng(newPos);
                 }
             }
@@ -61,6 +77,19 @@ public abstract class System
             Component.Attack attack = event.attacker.getComponent(Component.ATTACK);
             Component.Health health = event.defender.getComponent(Component.HEALTH);
             health.damage(attack.getDamage());
+
+            if (health.getHealth() <= 0)
+            {
+                final Component.Position pos = event.defender.getComponent(Component.POSITION);
+                TaskManager.getMainHandler().post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        Game.getEntityManager().createExplosion(pos.getLatLng());
+                    }
+                });
+            }
         }
     }
 
@@ -75,7 +104,8 @@ public abstract class System
                 if ((mask & Component.ANIMATION) == Component.ANIMATION)
                 {
                     Component.Animation animation = e.getComponent(Component.ANIMATION);
-                    animation.animate();
+                    if (animation.getState() != Component.Animation.NONE)
+                        animation.animate();
                 }
             }
         }
@@ -112,7 +142,8 @@ public abstract class System
                 {
                     Component.Animation animation = e.getComponent(Component.ANIMATION);
 
-                    m.setIcon(animation.getCurrentFrame());
+                    if (animation.getState() != Component.Animation.NONE)
+                        m.setIcon(animation.getCurrentFrame());
                 }
                 if ((mask & Component.ROTATION) == Component.ROTATION)
                 {

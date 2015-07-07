@@ -7,7 +7,7 @@
               android:layout_gravity="center"
               android:background="#424242"
               android:alpha="0.9">
-    <TextView
+    <com.mnm.conquest.FTextView
         android:text="@string/building_dialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,13 +17,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
-        <Button
+        <com.mnm.conquest.FButton
             android:id="@+id/building_yes"
             android:text="@string/building_dialog_yes_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>
-        <Button
+        <com.mnm.conquest.FButton
             android:id="@+id/building_no"
             android:text="@string/building_dialog_no_button"
             android:layout_width="match_parent"

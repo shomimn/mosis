@@ -100,7 +100,13 @@ public class PlayerInfo
         return data;
     }
 
-    public int getCoins() { return coins; }
+    public int getCoins()
+    {
+        return coins;
+    }
 
-    public void setCoins(int c) { coins+=c; }
+    public void setCoins(int c)
+    {
+        coins = c;
+    }
 }

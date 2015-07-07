@@ -19,6 +19,8 @@ import android.widget.ViewFlipper;
 
 import com.mnm.conquest.ecs.Component;
 import com.mnm.conquest.ecs.Entity;
+import com.mnm.conquest.ecs.Event;
+import com.mnm.conquest.ecs.Game;
 
 public class EntityView extends LinearLayout implements View.OnClickListener
 {
@@ -51,6 +53,8 @@ public class EntityView extends LinearLayout implements View.OnClickListener
     private ViewFlipper unitFlipper;
 
     private Entity displayedEntity;
+
+    private boolean isPlayer;
 
     private int[] images = new int[] { R.mipmap.air1, R.mipmap.fighter, R.mipmap.interceptor, R.mipmap.scout, R.mipmap.gunship, R.mipmap.bomber };
     private String[] names = new String[] { "username", "fighter", "interceptor", "scout", "gunship", "bomber" };
@@ -101,10 +105,24 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         names[0] = player != null ? player.getUsername() : "Fortress";
         images[0] = appearance.getIconId();
 
+        isPlayer = player.getUsername().equals(Game.getPlayerInfo().getUsername());
+
         ImageView view = (ImageView) unitFlipper.getChildAt(0);
 
         unitName.setText(names[0]);
         view.setBackgroundResource(images[0]);
+
+        buyButton.setText(isPlayer ? "buy" : "attack");
+
+        healthUpgrade.setVisibility(isPlayer ? View.VISIBLE : View.INVISIBLE);
+        armorUpgrade.setVisibility(isPlayer ? View.VISIBLE : View.INVISIBLE);
+        damageUpgrade.setVisibility(isPlayer ? View.VISIBLE : View.INVISIBLE);
+
+        buyButton.setVisibility(isPlayer ? View.INVISIBLE : View.VISIBLE);
+
+        healthRating.setLayoutParams(isPlayer ? entityLp : armyLp);
+        armorRating.setLayoutParams(isPlayer ? entityLp : armyLp);
+        damageRating.setLayoutParams(isPlayer ? entityLp : armyLp);
 
         unitFlipper.setDisplayedChild(0);
 
@@ -133,6 +151,7 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         armyLp.width = LayoutParams.MATCH_PARENT;
 
         exitButton.setOnClickListener(this);
+        buyButton.setOnClickListener(this);
 
         unitFlipper.setInAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.abc_grow_fade_in_from_bottom));
         unitFlipper.setOutAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.abc_shrink_fade_out_from_bottom));
@@ -188,13 +207,15 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         int index = unitFlipper.getDisplayedChild();
         boolean upgrade = index == 0;
 
-        healthUpgrade.setVisibility(upgrade ? View.VISIBLE : View.INVISIBLE);
-        armorUpgrade.setVisibility(upgrade ? View.VISIBLE : View.INVISIBLE);
-        damageUpgrade.setVisibility(upgrade ? View.VISIBLE : View.INVISIBLE);
+        healthUpgrade.setVisibility(upgrade && isPlayer ? View.VISIBLE : View.INVISIBLE);
+        armorUpgrade.setVisibility(upgrade && isPlayer ? View.VISIBLE : View.INVISIBLE);
+        damageUpgrade.setVisibility(upgrade && isPlayer ? View.VISIBLE : View.INVISIBLE);
 
-        healthRating.setLayoutParams(upgrade ? entityLp : armyLp);
-        armorRating.setLayoutParams(upgrade ? entityLp : armyLp);
-        damageRating.setLayoutParams(upgrade ? entityLp : armyLp);
+        buyButton.setVisibility(upgrade && isPlayer ? View.INVISIBLE : View.VISIBLE);
+
+        healthRating.setLayoutParams(upgrade && isPlayer ? entityLp : armyLp);
+        armorRating.setLayoutParams(upgrade && isPlayer ? entityLp : armyLp);
+        damageRating.setLayoutParams(upgrade && isPlayer ? entityLp : armyLp);
 
         unitName.setText(names[index]);
 
@@ -211,6 +232,63 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         {
             case R.id.exit_button:
                 setVisibility(View.GONE);
+                break;
+            case R.id.buy_button:
+                if (!isPlayer)
+                {
+                    TaskManager.getTaskManager().execute(new Task(Task.GENERAL)
+                    {
+                        @Override
+                        public void execute()
+                        {
+                            Entity player = Game.getEntityManager().getEntity(Game.getPlayerInfo().getUsername());
+                            Component.Animation playerAnim = player.getComponent(Component.ANIMATION);
+                            Component.Animation enemyAnim = displayedEntity.getComponent(Component.ANIMATION);
+                            playerAnim.setState(Component.Animation.BATTLE);
+                            enemyAnim.setState(Component.Animation.BATTLE);
+
+                            Event.Combat event = new Event.Combat();
+                            event.attacker = player;
+                            event.defender = displayedEntity;
+
+                            Event.Combat event1 = new Event.Combat();
+                            event1.attacker = displayedEntity;
+                            event1.defender = player;
+
+                            try
+                            {
+
+                                for (int i = 0; i < 10; ++i)
+                                {
+                                    Game.getEventManager().emit(event);
+                                    Thread.currentThread().sleep(500, 0);
+//                                    Game.getEventManager().emit(event1);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+                else
+                {
+                    Game.setState(Game.DETACHING);
+
+//                    TaskManager.getMainHandler().post(new Runnable()
+//                    {
+//                        @Override
+//                        public void run()
+//                        {
+//                            Entity player = Game.getEntityManager().getEntity(Game.getPlayerInfo().getUsername());
+//                            Component.Position position = player.getComponent(Component.POSITION);
+//
+//                            Game.getEntityManager().createDetached(player, position.getLatLng(), Entity.Detached.INTERCEPTOR);
+//                        }
+//                    });
+                }
                 break;
         }
     }
