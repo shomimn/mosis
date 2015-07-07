@@ -23,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.mnm.conquest.ecs.Game;
 
@@ -237,10 +238,12 @@ public class BluetoothDialog extends Dialog
         {
 
         }
-
-
+        Toast.makeText(context, "Request sent!",1500).show();
     }
 
-
-
+    @Override
+    public void setOnDismissListener(OnDismissListener listener)
+    {
+        super.setOnDismissListener(listener);
+    }
 }

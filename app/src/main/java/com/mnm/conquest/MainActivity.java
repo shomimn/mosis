@@ -110,8 +110,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                             JSONObject data = getData().getJSONObject(0);
 
 //                            byte[] bitmap = Base64.decode(data.getString("photo"), Base64.DEFAULT);
-//                            playerImage = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
-//                            playerImageView.setImageBitmap(playerImage);
+//                            Bitmap playerImage = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
                             PlayerInfo player = new PlayerInfo(data);
                             Game.setPlayerInfo(player);
                             playerImageView.setImageBitmap(player.getPhoto());

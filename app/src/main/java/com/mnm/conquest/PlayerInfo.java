@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerInfo
@@ -23,7 +24,7 @@ public class PlayerInfo
     private int markerId;
     private Bitmap photo;
     private Marker marker;
-    private List<String> allies;
+    private ArrayList<String> allies;
 
     public PlayerInfo(JSONObject player)
     {
@@ -37,11 +38,13 @@ public class PlayerInfo
             markerName = player.getString("marker");
             markerId = ConquestApplication.getContext().getResources().
                     getIdentifier(markerName, "id", ConquestApplication.getContext().getPackageName());
-            JSONArray all = player.getJSONArray("allies");
-            for(int i = 0; i < all.length(); ++i)
-                allies.add(all.getJSONObject(i).toString());
+
             byte[] bitmap = Base64.decode(player.getString("photo"), Base64.DEFAULT);
             photo = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
+            JSONArray all = player.getJSONArray("allies");
+            allies = new ArrayList<>();
+            for(int i = 0; i < all.length(); ++i)
+                allies.add(all.get(i).toString());
         }
         catch (JSONException e)
         {
@@ -98,5 +101,6 @@ public class PlayerInfo
     {
         return marker;
     }
-    public List<String> getAllies() { return allies; };
+    public ArrayList<String> getAllies() { return allies; }
+    public void addAlly(String ally) { allies.add(ally); }
 }

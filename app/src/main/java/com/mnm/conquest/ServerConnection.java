@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 
+import com.mnm.conquest.ecs.Game;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,6 +37,8 @@ public class ServerConnection
         public static final int DATA = 3;
         public static final int UPDATE = 4;
         public static final int ALLIES = 5;
+        public static final int NEWALLY = 10;
+        public static final int DELETEALLY = 11;
         private Request() {}
     }
 
@@ -50,8 +55,8 @@ public class ServerConnection
         socket = new WebSocketConnection();
         handler = new ServerHandler();
         options = new WebSocketOptions();
-        options.setMaxFramePayloadSize(options.getMaxFramePayloadSize() * 4);
-        options.setMaxMessagePayloadSize(options.getMaxMessagePayloadSize() * 4);
+        options.setMaxFramePayloadSize(options.getMaxFramePayloadSize() * 10);
+        options.setMaxMessagePayloadSize(options.getMaxMessagePayloadSize() * 10);
     }
 
     public static void connect()
@@ -126,7 +131,7 @@ public class ServerConnection
                 data.put("username", userInfo.getString("username"));
                 data.put("password", userInfo.getString("password"));
                 data.put("marker", userInfo.getString("marker"));
-
+                data.put("allies",new JSONArray() );
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
@@ -165,7 +170,40 @@ public class ServerConnection
         {
             try
             {
-                JSONObject json = new JSONObject().put("type", Request.ALLIES).put("data", new JSONObject().put("username", username));
+                JSONObject json = new JSONObject().put("type", Request.ALLIES)
+                        .put("data", new JSONObject().put("username", username));
+                socket.sendTextMessage(json.toString());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void addAlly(String username, String ally)
+    {
+        if(socket.isConnected())
+        {
+            try
+            {
+                JSONObject json = new JSONObject().put("type", Request.NEWALLY)
+                        .put("data", new JSONObject().put("username", username).put("ally", ally));
+                socket.sendTextMessage(json.toString());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void deleteAlly(String username, String ally)
+    {
+        if(socket.isConnected())
+        {
+            try
+            {
+                JSONObject json = new JSONObject().put("type", Request.DELETEALLY)
+                        .put("data", new JSONObject().put("username", username).put("ally", ally));
                 socket.sendTextMessage(json.toString());
             }
             catch (JSONException e)

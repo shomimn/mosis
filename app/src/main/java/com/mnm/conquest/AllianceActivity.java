@@ -1,13 +1,14 @@
 package com.mnm.conquest;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,8 +20,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +33,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 public class AllianceActivity extends ActionBarActivity
@@ -42,72 +45,121 @@ public class AllianceActivity extends ActionBarActivity
     private final static int DISCOVERABLE_BT = 2;
     private Menu menu;
     private boolean bluetoothEnabled;
-    private BluetoothDialog d;
+    private BluetoothDialog dialog;
     private BluetoothAdapter btAdapter;
     private BluetoothServerSocket serverSocket;
-    private List<PlayerInfo> playerInfoList;
-
+    private ArrayList<PlayerInfo> playerInfoList;
+    private ArrayList<String> allies;
+    private ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alliance);
 
-        ListView listView = (ListView) findViewById(R.id.ally_list_view);
+        listView = (ListView) findViewById(R.id.ally_list_view);
+        playerInfoList = new ArrayList<>();
 
-        Task.Data task = new Task.Data(Game.getPlayerInfo().getUsername(), new Task.Data.DataReadyCallback()
+        contactServer();
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
-
-
             @Override
-            public void dataReady()
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
             {
-                JSONArray data = getData();
-                try
+                Dialog dialog = new Dialog(AllianceActivity.this);
+                dialog.setTitle(playerInfoList.get(i).getUsername() + ":");
+                ImageView img = new ImageView(dialog.getContext());
+                img.setImageBitmap(playerInfoList.get(i).getPhoto());
+                dialog.setContentView(img, new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT));
+                dialog.show();
+            }
+        });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+        {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, final View view, int i, long l)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(AllianceActivity.this);
+                builder.setTitle(R.string.confirm_title);
+                builder.setMessage(R.string.confirm_message_delete);
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener()
                 {
-                    for (int i = 0; i < data.length(); ++i)
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
                     {
-                        JSONObject obj = (JSONObject)data.get(i);
-                        playerInfoList.add(new PlayerInfo(obj));
+                        final ProgressDialog progDialog = new ProgressDialog(AllianceActivity.this);
+                        progDialog.setTitle(R.string.deleting_ally);
+                        progDialog.setMessage(getResources().getString(R.string.progress_wait_message));
+                        progDialog.setCanceledOnTouchOutside(false);
+                        progDialog.show();
+                        Task.Ally task = new Task.Ally(Game.getPlayerInfo().getUsername(), progDialog,
+                                ((TextView) view.findViewById(R.id.ally_username)).getText().toString(), false,
+                                new Task.Ally.DataReadyCallback()
+                                {
+                                    @Override
+                                    public void dataReady()
+                                    {
+                                        JSONArray data = getData();
+                                        try
+                                        {
+                                            AllianceActivity.this.playerInfoList.clear();
+                                            allies = new ArrayList<>();
+                                            for (int i = 0; i < data.length(); ++i)
+                                            {
+                                                JSONObject obj = (JSONObject)data.get(i);
+                                                allies.add(obj.get("username").toString());
+                                                AllianceActivity.this.playerInfoList.add(new PlayerInfo(obj));
+                                            }
+                                            if(allies != null )
+                                            {
+                                                AlliancesAdapter adapter = new AlliancesAdapter(AllianceActivity.this, allies);
+                                                listView.setAdapter(adapter);
+                                            }
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+
+                        TaskManager.getTaskManager().executeAndPost(task);
                     }
-                }
-                catch (JSONException e)
+                });
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener()
                 {
-                    e.printStackTrace();
-                }
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        dialogInterface.dismiss();
+                    }
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+
+                return true;
             }
-        })
-        {
-            @Override
-            public void executeImpl()
-            {
-                ServerConnection.getAllies(username);
-            }
-        };
-
-        List<String> allies = Game.getPlayerInfo().getAllies();
-        if(allies != null && allies.size() > 0)
-        {
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-            {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
-                {
-
-                }
-            });
-            AlliancesAdapter adapter = new AlliancesAdapter(this, allies);
-            listView.setAdapter(adapter);
-        }
-
+        });
         Button newAlly = (Button)findViewById(R.id.make_alliance_button);
         newAlly.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-                d = new BluetoothDialog(AllianceActivity.this);
-                d.show();
+                dialog = new BluetoothDialog(AllianceActivity.this);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener()
+                {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface)
+                    {
+                        contactServer();
+                    }
+                });
             }
         });
         bluetoothEnabled = false;
@@ -119,7 +171,7 @@ public class AllianceActivity extends ActionBarActivity
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == REQUEST_ENABLE_BT)
             if(resultCode == RESULT_OK)
-                d.findDevices();
+                dialog.findDevices();
             else
             {
 
@@ -201,38 +253,128 @@ public class AllianceActivity extends ActionBarActivity
         }
         MenuItem m = menu.findItem(R.id.bluetooth_enable);
         m.setIcon(R.mipmap.ic_action_bluetooth_connected);
-        try
+
+
+        final ProgressDialog progDialog = new ProgressDialog(AllianceActivity.this);
+        progDialog.setTitle(R.string.adding_ally);
+        progDialog.setMessage(getResources().getString(R.string.progress_wait_message));
+        progDialog.setCanceledOnTouchOutside(false);
+        progDialog.show();
+
+        Task.Ui task = new Task.Ui(Task.SERVER)
         {
-            serverSocket = btAdapter.listenUsingRfcommWithServiceRecord(getResources().getString(R.string.app_name),
-                    java.util.UUID.fromString("28078c90-1c1f-11e5-9a21-1697f925ec7b"));
-            BluetoothSocket socket;
-            while(true)
-            {
-                try{
-                    socket = serverSocket.accept();
-                }
+                @Override
+                public void execute()
+                {
+                    try
+                    {
+                        serverSocket = btAdapter.listenUsingRfcommWithServiceRecord(getResources().getString(R.string.app_name),
+                                UUID.fromString("28078c90-1c1f-11e5-9a21-1697f925ec7b"));
+                        BluetoothSocket socket;
+                        try{
+                            socket = serverSocket.accept();
+                        }
+                        catch (IOException e)
+                        {
+                            e.printStackTrace();
+                            return;
+                        }
+                        if(socket != null)
+                        {
+                            InputStream inputStream = socket.getInputStream();
+                            byte[] buffer = new byte[1024];
+                            int num = inputStream.read(buffer);
+                            String ally = new String(buffer, 0, num);
+                            Game.getPlayerInfo().addAlly(ally);
+
+                            Task.Ally task = new Task.Ally(Game.getPlayerInfo().getUsername(),progDialog, ally, true,
+                                    new Ally.DataReadyCallback()
+                                    {
+                                        @Override
+                                        public void dataReady()
+                                        {
+                                            JSONArray data = getData();
+                                            try
+                                            {
+                                                AllianceActivity.this.playerInfoList.clear();
+                                                allies = new ArrayList<>();
+                                                for (int i = 0; i < data.length(); ++i)
+                                                {
+                                                    JSONObject obj = (JSONObject)data.get(i);
+                                                    allies.add(obj.get("username").toString());
+                                                    AllianceActivity.this.playerInfoList.add(new PlayerInfo(obj));
+                                                }
+                                                if(allies != null )
+                                                {
+                                                    AlliancesAdapter adapter = new AlliancesAdapter(AllianceActivity.this, allies);
+                                                    listView.setAdapter(adapter);
+                                                }
+                                            }
+                                            catch (JSONException e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                            TaskManager.getTaskManager().executeAndPost(task);
+
+                            socket.close();
+                         }
+                    }
                 catch (IOException e)
                 {
-                    break;
-                }
-
-                if(socket != null)
-                {
-                    InputStream inputStream = socket.getInputStream();
-                    byte[] buffer = new byte[1024];
-                    int bytes = inputStream.read(buffer);
-                    Toast.makeText(this,"The new alliance made with " + new String(buffer),1000).show();
-                    socket.close();
-                    break;
+                    e.printStackTrace();
                 }
             }
-        }
-        catch (IOException e)
-        {
 
-        }
+
+            @Override
+            public void uiExecute()
+            {
+
+            }
+        };
+        TaskManager.getTaskManager().executeAndPost(task);
     }
-
+    private void contactServer()
+    {
+        final Task.Data task = new Task.Data(Game.getPlayerInfo().getUsername(), new Task.Data.DataReadyCallback()
+        {
+            @Override
+            public void dataReady()
+            {
+                JSONArray data = getData();
+                try
+                {
+                    AllianceActivity.this.playerInfoList.clear();
+                    allies = new ArrayList<>();
+                    for (int i = 0; i < data.length(); ++i)
+                    {
+                        JSONObject obj = (JSONObject)data.get(i);
+                        allies.add(obj.get("username").toString());
+                        AllianceActivity.this.playerInfoList.add(new PlayerInfo(obj));
+                    }
+                    if(allies != null )
+                    {
+                        AlliancesAdapter adapter = new AlliancesAdapter(AllianceActivity.this, allies);
+                        listView.setAdapter(adapter);
+                    }
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        })
+        {
+            @Override
+            public void executeImpl()
+            {
+                ServerConnection.getAllies(username);
+            }
+        };
+        TaskManager.getTaskManager().executeAndPost(task);
+    }
     public class AlliancesAdapter extends ArrayAdapter<String>
     {
         private final Context context;
@@ -243,21 +385,19 @@ public class AllianceActivity extends ActionBarActivity
             this.context = context;
             this.values = values;
         }
-
         @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
-            LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View rowView = inflater.inflate(R.layout.list_view_alliances, parent);
-            TextView username = (TextView)findViewById(R.id.ally_username);
+            LayoutInflater inflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View rowView = inflater.inflate(R.layout.list_view_alliances, parent, false);
+            TextView username = (TextView)rowView.findViewById(R.id.ally_username);
             username.setText(values.get(position));
 
-            ImageView image = (ImageView)findViewById(R.id.ally_image);
-            image.setImageBitmap(playerInfoList.get(position).getPhoto());
+            ImageView image = (ImageView)rowView.findViewById(R.id.ally_image);
+            image.setBackgroundResource(playerInfoList.get(position).getMarkerId());
 
             return rowView;
         }
     }
-
-
 }
