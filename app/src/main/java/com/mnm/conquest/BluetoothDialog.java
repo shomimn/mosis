@@ -23,6 +23,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.mnm.conquest.ecs.Game;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -224,7 +227,7 @@ public class BluetoothDialog extends Dialog
     {
         OutputStream outputStream;
         byte[] buffer;
-        String user = "dsa";
+        String user = Game.getPlayerInfo().getUsername();
         try
         {
             outputStream = socket.getOutputStream();
@@ -235,10 +238,12 @@ public class BluetoothDialog extends Dialog
         {
 
         }
-
-
+        Toast.makeText(context, "Request sent!",1500).show();
     }
 
-
-
+    @Override
+    public void setOnDismissListener(OnDismissListener listener)
+    {
+        super.setOnDismissListener(listener);
+    }
 }

@@ -38,4 +38,8 @@
     <string name="building_dialog">Do you want to create buiding?</string>
     <string name="building_dialog_yes_button">Yes</string>
     <string name="building_dialog_no_button">No</string>
+    <string name="adding_ally">Adding new ally!</string>
+    <string name="deleting_ally">Deleting ally!</string>
+    <string name="confirm_title">Confirm</string>
+    <string name="confirm_message_delete">Are you sure you want to delete?</string>
 </resources>
