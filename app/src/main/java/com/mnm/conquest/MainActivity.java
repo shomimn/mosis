@@ -24,6 +24,7 @@ import android.text.style.TypefaceSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -82,6 +83,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         Button profileSet = (Button) findViewById(R.id.player_settings);
         profileSet.setOnClickListener(MainActivity.this);
+
+        Button highScore = (Button) findViewById(R.id.high_scores);
+        highScore.setOnClickListener(MainActivity.this);
 
         mapButton = (Button) findViewById(R.id.map_button);
         mapButton.setOnClickListener(MainActivity.this);
@@ -262,6 +266,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 profSettings.putExtra("photo", Game.getPlayerInfo().getPhoto());
 
                 startActivity(profSettings);
+                break;
+            }
+            case R.id.high_scores:
+            {
+                Intent ihs = new Intent(this, HighScoreActivity.class);
+                startActivity(ihs);
             }
         }
     }
