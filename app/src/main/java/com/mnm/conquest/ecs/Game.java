@@ -1,5 +1,6 @@
 package com.mnm.conquest.ecs;
 
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.util.Log;
 import android.util.SparseArray;
@@ -251,6 +252,9 @@ public class Game
                     break;
                 case ServerConnection.Request.POSITION:
                     break;
+                case ServerConnection.Request.NEW_FORTRESS:
+                    createFortress(object.getJSONObject("data"));
+                    break;
             }
         }
         catch (Exception e)
@@ -282,6 +286,31 @@ public class Game
                 Marker m = gameUi.getMap().addMarker(options);
                 gameUi.insert(player, m);
             }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void createFortress(JSONObject object)
+    {
+        try
+        {
+            double lat = object.getDouble("latitude");
+            double lng = object.getDouble("longitude");
+
+            String markerName = object.getString("marker");
+            int markerId = ConquestApplication.getContext().getResources().getIdentifier(markerName, "id", ConquestApplication.getContext().getPackageName());
+
+            Entity entity = entityManager.createFortress(new LatLng(lat, lng), object);
+
+            MarkerOptions options = new MarkerOptions().position(new LatLng(lat, lng))
+                    .icon(BitmapDescriptorFactory.fromResource(markerId)).anchor(0.5f, 0.5f);
+
+            Marker m = gameUi.getMap().addMarker(options);
+
+            gameUi.insert(entity, m);
         }
         catch (JSONException e)
         {
