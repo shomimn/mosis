@@ -18,7 +18,7 @@ import de.tavendo.autobahn.WebSocketOptions;
 public class ServerConnection
 {
 
-    private static final String SERVER_IP = "ws://192.168.1.3:8181/";
+    private static final String SERVER_IP = "ws://192.168.1.2:8181/";
 
     private static ServerConnection instance = new ServerConnection();
     private static WebSocketConnection socket;
@@ -34,7 +34,8 @@ public class ServerConnection
         public static final int UPDATE = 4;
         public static final int POSITION = 6;
         public static final int INIT = 7;
-        public static final int UPDATE_FIELDS = 8;
+        public static final int UPDATE_FIELDS_INT = 8;
+        public static final int UPDATE_FIELDS_STRING = 9;
 
         private Request() {}
     }
@@ -186,11 +187,11 @@ public class ServerConnection
         }
     }
 
-    public static void updateField(String username, String field, String value, int type)
+    public static void updateField(String username, String field, String value)
     {
         try
         {
-            JSONObject json = new JSONObject().put("type", type)
+            JSONObject json = new JSONObject().put("type", Request.UPDATE_FIELDS_STRING)
                     .put("data", new JSONObject().put("username", username).put("field", field).put("value", value));
             socket.sendTextMessage(json.toString());
         }
@@ -199,11 +200,11 @@ public class ServerConnection
             e.printStackTrace();
         }
     }
-    public static void updateField(String username, String field, int value, int type)
+    public static void updateField(String username, String field, int value)
     {
         try
         {
-            JSONObject json = new JSONObject().put("type", type)
+            JSONObject json = new JSONObject().put("type", Request.UPDATE_FIELDS_INT)
                     .put("data", new JSONObject().put("username", username).put("field", field).put("value", value));
             socket.sendTextMessage(json.toString());
         }

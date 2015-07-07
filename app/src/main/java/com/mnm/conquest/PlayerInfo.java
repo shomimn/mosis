@@ -21,6 +21,7 @@ public class PlayerInfo
     private Bitmap photo;
     private Marker marker;
     private JSONObject data;
+    private int coins;
 
     public PlayerInfo(JSONObject player)
     {
@@ -32,8 +33,8 @@ public class PlayerInfo
             password = player.getString("password");
             email = player.getString("email");
             markerName = player.getString("marker");
-            markerId = ConquestApplication.getContext().getResources().
-                    getIdentifier(markerName, "id", ConquestApplication.getContext().getPackageName());
+            markerId = ConquestApplication.getContext().getResources().getIdentifier(markerName, "id", ConquestApplication.getContext().getPackageName());
+            coins = player.getInt("coins");
 
             byte[] bitmap = Base64.decode(player.getString("photo"), Base64.DEFAULT);
             photo = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
@@ -47,10 +48,7 @@ public class PlayerInfo
         }
     }
 
-    public String getName()
-    {
-        return name;
-    }
+    public String getName() { return name; }
 
     public String getLastname()
     {
@@ -101,4 +99,8 @@ public class PlayerInfo
     {
         return data;
     }
+
+    public int getCoins() { return coins; }
+
+    public void setCoins(int c) { coins+=c; }
 }
