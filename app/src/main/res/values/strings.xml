@@ -54,4 +54,5 @@
     <string name="send_text">Send</string>
     <string name="title_activity_chat">ChatActivity</string>
     <string name="title_activity_high_score">HighScoreActivity</string>
+    <string name="detach">Detach</string>
 </resources>

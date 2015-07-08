@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -22,6 +23,8 @@ import com.mnm.conquest.ecs.Component;
 import com.mnm.conquest.ecs.Entity;
 import com.mnm.conquest.ecs.Event;
 import com.mnm.conquest.ecs.Game;
+
+import org.json.JSONException;
 
 public class EntityView extends LinearLayout implements View.OnClickListener
 {
@@ -49,7 +52,15 @@ public class EntityView extends LinearLayout implements View.OnClickListener
     private Button healthUpgrade;
     private Button armorUpgrade;
     private Button damageUpgrade;
+    private Button healthB;
+    private Button armourB;
+    private Button damageB;
     private TextView unitName;
+    private LinearLayout seekPart;
+    private SeekBar seekBar;
+    private Button detachButton;
+    private TextView seekValue;
+    private TextView armySize;
 
     private ViewFlipper unitFlipper;
 
@@ -57,7 +68,7 @@ public class EntityView extends LinearLayout implements View.OnClickListener
 
     private boolean isPlayer;
 
-    private int[] images = new int[] { R.mipmap.air1, R.mipmap.fighter, R.mipmap.interceptor, R.mipmap.scout, R.mipmap.gunship, R.mipmap.bomber };
+    private int[] images = new int[] { R.mipmap.air1, R.mipmap.interceptor, R.mipmap.scout, R.mipmap.fighter, R.mipmap.gunship, R.mipmap.bomber };
     private String[] names = new String[] { "username", "fighter", "interceptor", "scout", "gunship", "bomber" };
     private UnitStats[] stats = new UnitStats[] { new UnitStats(50, 60, 90, 0), new UnitStats(50,  50, 70, 50), new UnitStats(40, 50, 60, 45), new UnitStats(30, 60, 40, 30),
                                                   new UnitStats(70, 80, 60, 60), new UnitStats(70, 80, 80, 80) };
@@ -130,6 +141,11 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         healthRating.setRating(2);
         armorRating.setRating(3);
         damageRating.setRating(4);
+
+        if(!isPlayer)
+        {
+            seekPart.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void init()
@@ -144,6 +160,17 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         armorUpgrade = (Button) findViewById(R.id.armor_upgrade);
         damageUpgrade = (Button) findViewById(R.id.damage_upgrade);
         unitName = (TextView) findViewById(R.id.unit_name);
+        detachButton = (Button)findViewById(R.id.detach);
+        seekValue = (TextView)findViewById(R.id.seek_value);
+        seekBar = (SeekBar)findViewById(R.id.seekBar);
+        armySize = (TextView)findViewById(R.id.armySize);
+        healthB = (Button)findViewById(R.id.health_upgrade);
+        armorUpgrade = (Button)findViewById(R.id.armor_upgrade);
+        damageUpgrade = (Button)findViewById(R.id.damage_upgrade);
+
+        healthB.setOnClickListener(EntityView.this);
+        armorUpgrade.setOnClickListener(EntityView.this);
+        damageUpgrade.setOnClickListener(EntityView.this);
 
         entityLp = new LinearLayout.LayoutParams(healthRating.getLayoutParams());
         entityLp.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
@@ -156,6 +183,21 @@ public class EntityView extends LinearLayout implements View.OnClickListener
 
         unitFlipper.setInAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.abc_grow_fade_in_from_bottom));
         unitFlipper.setOutAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.abc_shrink_fade_out_from_bottom));
+
+        try
+        {
+            int health = Game.getPlayerInfo().getData().getInt("health");
+            int damage = Game.getPlayerInfo().getData().getInt("attack");
+            int armor = Game.getPlayerInfo().getData().getInt("defense");
+
+            healthRating.setMax(100);
+            healthRating.setRating(health);
+            damageRating.setMax(10);
+            damageRating.setRating(damage);
+            armorRating.setMax(50);
+            armorRating.setRating(armor);
+        }
+        catch (JSONException e) {e.printStackTrace();}
 
         for (int i = 0; i < images.length; ++i)
             setFlipperImage(images[i]);
@@ -194,6 +236,30 @@ public class EntityView extends LinearLayout implements View.OnClickListener
                 return true;
             }
         });
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+            {
+                seekValue.setText(String.valueOf(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar)
+            {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar)
+            {
+
+            }
+        });
+
+        seekPart = (LinearLayout)findViewById(R.id.seekPart);
+        seekPart.setVisibility(View.INVISIBLE);
     }
 
     private void setFlipperImage(int res)
@@ -223,6 +289,27 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         healthRating.setRating((float) stats[index].health / 100 * 5);
         armorRating.setRating((float) stats[index].defense / 100 * 5);
         damageRating.setRating((float) stats[index].damage / 100 * 5);
+
+        if(!upgrade && isPlayer)
+        {
+            seekPart.setVisibility(View.VISIBLE);
+            try
+            {
+                int tmp = Game.getPlayerInfo().getData().getInt(names[unitFlipper.getDisplayedChild()] + "s");
+                seekBar.setMax(tmp);
+                armySize.setText("/"+ String.valueOf(tmp));
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+            String bt = "BUY" +":"+ String.valueOf(stats[index].cost);
+            buyButton.setText(bt);
+        }
+        else if(upgrade && isPlayer)
+        {
+            seekPart.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -233,66 +320,73 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         {
             case R.id.exit_button:
                 setVisibility(View.GONE);
+                seekPart.setVisibility(View.INVISIBLE);
                 break;
             case R.id.buy_button:
-                if (!isPlayer)
+            {
+                seekBar.setMax(seekBar.getMax() + 1);
+                int cost = stats[unitFlipper.getDisplayedChild()].cost;
+
+                //seekValue.setText(String.valueOf(seekBar.getProgress()) + "/" + String.valueOf(seekBar.getMax()));
+                Component.Army a = displayedEntity.getComponent(Component.ARMY);
+                a.addUnit(unitFlipper.getDisplayedChild() - 1);
+
+                int n = 0;
+                String name = names[unitFlipper.getDisplayedChild()] + "s";
+                try
                 {
-                    TaskManager.getTaskManager().execute(new Task(Task.GENERAL)
-                    {
-                        @Override
-                        public void execute()
-                        {
-                            Entity player = Game.getEntityManager().getEntity(Game.getPlayerInfo().getUsername());
-                            Component.Animation playerAnim = player.getComponent(Component.ANIMATION);
-                            Component.Animation enemyAnim = displayedEntity.getComponent(Component.ANIMATION);
-                            playerAnim.setState(Component.Animation.BATTLE);
-                            enemyAnim.setState(Component.Animation.BATTLE);
 
-                            Event.Combat event = new Event.Combat();
-                            event.attacker = player;
-                            event.defender = displayedEntity;
+                    n = Game.getPlayerInfo().getData().getInt(name);
+                    Game.getPlayerInfo().getData().put(name, n + 1);
 
-                            Event.Combat event1 = new Event.Combat();
-                            event1.attacker = displayedEntity;
-                            event1.defender = player;
-                            Projection p = Game.ui().getMap().getProjection();
-                            Utils.findRotation(player,displayedEntity,p);
-
-                            try
-                            {
-
-                                for (int i = 0; i < 10; ++i)
-                                {
-                                    Game.getEventManager().emit(event);
-                                    Thread.currentThread().sleep(500, 0);
-//                                    Game.getEventManager().emit(event1);
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-
+                    armySize.setText("/" + String.valueOf(n+1));
                 }
-                else
+                catch (JSONException e)
                 {
-                    Game.setState(Game.DETACHING);
-
-//                    TaskManager.getMainHandler().post(new Runnable()
-//                    {
-//                        @Override
-//                        public void run()
-//                        {
-//                            Entity player = Game.getEntityManager().getEntity(Game.getPlayerInfo().getUsername());
-//                            Component.Position position = player.getComponent(Component.POSITION);
-//
-//                            Game.getEntityManager().createDetached(player, position.getLatLng(), Entity.Detached.INTERCEPTOR);
-//                        }
-//                    });
+                    e.printStackTrace();
                 }
-                break;
+                updateUnitiesDB(name, n+1);
+            }
+            break;
+            case R.id.health_upgrade:
+            {
+                healthRating.setRating(healthRating.getRating() + 1);
+            }
+            break;
+            case R.id.armor_upgrade:
+            {
+                armorRating.setRating(armorRating.getRating() + 1);
+            }
+            break;
+            case R.id.damage_upgrade:
+            {
+                damageRating.setRating(damageRating.getRating() + 1);
+            }
+            break;
         }
     }
+
+    public void updateUnitiesDB(final String unit, final int value)
+    {
+        Task task = new Task()
+        {
+            @Override
+            public void execute()
+            {
+                ServerConnection.updateField(Game.getPlayerInfo().getUsername(), unit, value);
+            }
+        };
+        TaskManager.getTaskManager().execute(task);
+    }
+//    public void seekViewEnemy(int val)
+//    {
+//        seekBar.setVisibility(View.GONE);
+//        detachButton.setVisibility(View.GONE);
+//        seekValue.setText("Number of units: "+String.valueOf(val));
+//    }
+//    public void seekViewMe()
+//    {
+//        seekBar.setVisibility(View.VISIBLE);
+//        detachButton.setVisibility(View.VISIBLE);
+//    }
 }

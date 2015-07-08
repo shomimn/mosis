@@ -17,7 +17,7 @@ public class ServerConnection
 {
 
 
-    private static final String SERVER_IP = "ws://192.168.0.103:8181/";
+    private static final String SERVER_IP = "ws://192.168.0.16:8181/";
 
     private static ServerConnection instance = new ServerConnection();
     private static WebSocketConnection socket;

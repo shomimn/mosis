@@ -25,6 +25,11 @@ public class PlayerInfo
     private int level;
     private int kills;
     private int deaths;
+    private int bomber;
+    private int fighters;
+    private int interceptors;
+    private int scouts;
+    private int gunships;
     private Bitmap photo;
     private Marker marker;
 
@@ -48,6 +53,12 @@ public class PlayerInfo
             level = player.getInt("level");
             kills = player.getInt("kills");
             deaths = player.getInt("deaths");
+
+            bomber = player.getInt("bombers");
+            gunships = player.getInt("gunships");
+            fighters = player.getInt("fighters");
+            scouts = player.getInt("scouts");
+            interceptors = player.getInt("interceptors");
 
             byte[] bitmap = Base64.decode(player.getString("photo"), Base64.DEFAULT);
             photo = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
@@ -145,5 +156,10 @@ public class PlayerInfo
 
     public int getDeaths() { return deaths; }
     public void setDeaths(int d) {deaths += d; }
+
+    public void addUnit(int index)
+    {
+
+    }
 
 }

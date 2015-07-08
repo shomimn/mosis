@@ -2,8 +2,11 @@ package com.mnm.conquest;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -95,7 +98,10 @@ public class HighScoreActivity extends ActionBarActivity
                         else score = 0;
 
                         //playerStats.add(object.get("username").toString()+" "+String.valueOf(score));
-                        playerStats.add(new Score(score, object.getString("username")));
+                        byte[] bitmap = Base64.decode(object.getString("photo"), Base64.DEFAULT);
+                        Bitmap photo = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
+
+                        playerStats.add(new Score(score, object.getString("username"), photo));
                         HighScoreActivity.this.players.add(new PlayerInfo(object));
                     }
                     if(playerStats != null)
@@ -147,19 +153,9 @@ public class HighScoreActivity extends ActionBarActivity
             username.setText(values.get(position).getUsername());
             highScore.setText(String.valueOf(values.get(position).getScore()));
 
-            //Collections.sort(players, new ScoreComparator());
-
-//            Collections.sort(playerStats, new Comparator<Score>()
-//            {
-//                @Override
-//                public int compare(Score lhs, Score rhs)
-//                {
-//                    return lhs.score > rhs.score ? lhs.score : rhs.score;
-//                }
-//            });
-
             ImageView image = (ImageView)rowView.findViewById(R.id.high_score_photo);
-            image.setImageBitmap(players.get(position).getPhoto());
+            //image.setImageBitmap(getResources().getDrawable(values.get(position).getPhoto(), null));
+            image.setImageBitmap(values.get(position).getPhoto());
             //image.setImageResource(players.get(position).getMarkerId());
 
             return rowView;
@@ -169,14 +165,16 @@ public class HighScoreActivity extends ActionBarActivity
     {
         int score;
         String username;
+        Bitmap photo;
 
-        public Score(int i, String s)
+        public Score(int i, String s, Bitmap b)
         {
             score = i;
             username = s;
+            photo = b;
         }
         public int getScore(){return score;}
         public String getUsername() {return username;}
-        public String getScoreStr() {return String.valueOf(score);}
+        public Bitmap getPhoto() {return photo;}
     }
 }

@@ -49,7 +49,8 @@
         android:layout_height="wrap_content">
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         >
@@ -65,10 +66,11 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="fill_parent"
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
         android:layout_height="match_parent"
         android:layout_gravity="right"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="5dp"
         android:gravity="center_vertical"
         android:layout_marginTop="20dp"
         android:baselineAligned="false"
@@ -81,28 +83,28 @@
             >
 
             <com.mnm.conquest.FTextView
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
+                android:layout_width="35dp"
+                android:layout_height="32dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="HP"
                 android:id="@+id/textView"
                 android:layout_gravity="center_vertical"/>
 
             <RatingBar
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="32dp"
                 android:id="@+id/health_rating"
                 android:isIndicator="true"
+                android:max="100"
                 android:progressDrawable="@drawable/health_rating_bar"
                 android:layout_gravity="center_vertical"
                 />
 
             <com.mnm.conquest.FButton
-                android:layout_width="wrap_content"
-                android:layout_height="42dp"
+                android:layout_width="40dp"
+                android:layout_height="32dp"
                 android:text="+"
-                android:id="@+id/health_upgrade"
-                android:layout_gravity="center_vertical|right"/>
+                android:id="@+id/health_upgrade"/>
 
         </LinearLayout>
 
@@ -113,25 +115,26 @@
             >
 
             <com.mnm.conquest.FTextView
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
+                android:layout_width="35dp"
+                android:layout_height="32dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="DEF"
                 android:id="@+id/textView2"
                 android:layout_gravity="center_vertical"/>
 
             <RatingBar
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="32dp"
                 android:id="@+id/armor_rating"
                 android:isIndicator="true"
+                android:max="100"
                 android:progressDrawable="@drawable/armor_rating_bar"
                 android:layout_gravity="center_vertical"
                 />
 
             <com.mnm.conquest.FButton
-                android:layout_width="wrap_content"
-                android:layout_height="42dp"
+                android:layout_width="40dp"
+                android:layout_height="32dp"
                 android:text="+"
                 android:id="@+id/armor_upgrade"
                 android:layout_gravity="center_vertical|right"
@@ -145,15 +148,15 @@
             >
 
             <com.mnm.conquest.FTextView
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
+                android:layout_width="35dp"
+                android:layout_height="32dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="ATT"
                 android:id="@+id/textView3"
                 android:layout_gravity="center_vertical"/>
 
             <RatingBar
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="32dp"
                 android:id="@+id/damage_rating"
                 android:isIndicator="true"
@@ -161,15 +164,51 @@
                 android:layout_gravity="center_vertical"
                 android:longClickable="false"/>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="42dp"
+            <com.mnm.conquest.FButton
+                android:layout_width="40dp"
+                android:layout_height="32dp"
                 android:text="+"
                 android:id="@+id/damage_upgrade"
                 android:layout_gravity="center_vertical|right"/>
 
         </LinearLayout>
     </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/seekPart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:visibility="invisible">
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"/>
+        <TextView
+            android:id="@+id/seek_value"
+            android:layout_width="0dp"
+            android:layout_weight="0.15"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="@color/white"
+            android:textSize="25dp"
+            android:layout_marginLeft="2dip"/>
+        <TextView
+            android:id="@+id/armySize"
+            android:text = "/"
+            android:textSize="25dp"
+            android:layout_width="0dp"
+            android:layout_weight="0.15"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2dip"/>
+        <Button
+            android:id="@+id/detach"
+            android:layout_weight="0.3"
+            android:text="@string/detach"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
 
 </LinearLayout>
