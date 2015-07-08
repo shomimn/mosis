@@ -42,4 +42,16 @@
     <string name="deleting_ally">Deleting ally!</string>
     <string name="confirm_title">Confirm</string>
     <string name="confirm_message_delete">Are you sure you want to delete?</string>
+    <string name="title_activity_bonus">BonusActivity</string>
+    <string name="date_picker_label_from">Date from:</string>
+    <string name="date_picker_label_to">Date to:</string>
+    <string name="time_picker_label_from">Time from:</string>
+    <string name="time_picker_label_to">Time to:</string>
+    <string name="bonus_info">Bonus information</string>
+    <string name="click_pick">Click to pick</string>
+    <string name="database_button">Get result!</string>
+    <string name="write_text">Write message here..</string>
+    <string name="send_text">Send</string>
+    <string name="title_activity_chat">ChatActivity</string>
+
 </resources>
