@@ -359,6 +359,8 @@ public abstract class Component
             units[unit] = n;
         }
 
+        public void addUnit(int unit) { units[unit]++; }
+
         public int getUnit(int unit)
         {
             return units[unit];

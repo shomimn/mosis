@@ -225,11 +225,6 @@ public abstract class System
                 {
                     Component.OwnedBy ownedBy = e.getComponent(Component.OWNED_BY);
 
-//                    Entity owner = ownedBy.getOwner();
-//
-//                    Component.Player player = owner.getComponent(Component.PLAYER);
-//                    Component.Position position = owner.getComponent(Component.POSITION);
-
                     ownedBy.updateOwnership();
                 }
             }

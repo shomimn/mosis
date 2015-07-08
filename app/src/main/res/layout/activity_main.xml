@@ -108,10 +108,10 @@
                     android:text="@string/highScoresButton"
                     android:id="@+id/high_scores"/>
                 <com.mnm.conquest.FButton
-                    android:id="@+id/game_settings"
+                    android:id="@+id/bonus_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="@string/game_settings"/>
+                    android:text="@string/bonus_info"/>
                 <com.mnm.conquest.FButton
                     android:id="@+id/player_settings"
                     android:layout_width="match_parent"

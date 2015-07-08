@@ -19,6 +19,7 @@ import de.tavendo.autobahn.WebSocketOptions;
 public class ServerConnection
 {
 
+
     private static final String SERVER_IP = "ws://192.168.0.10:8181/";
 
     private static ServerConnection instance = new ServerConnection();
@@ -41,7 +42,9 @@ public class ServerConnection
         public static final int NEW_FORTRESS = 10;
         public static final int DELETEALLY = 11;
         public static final int NEWALLY = 12;
+        public static final int FORTRESSES = 13;
         public static final int START_ATTACK = 14;
+        public static final int GET_ALL_PLAYERS = 15;
         public static final int DETACHED_ATTACK = 16;
         public static final int DETACHED_MOVE = 17;
 
@@ -110,7 +113,21 @@ public class ServerConnection
             }
         }
     }
-
+    public static void logout(String username)
+    {
+        if (socket.isConnected())
+        {
+            try
+            {
+                JSONObject json = new JSONObject().put("type", Request.LOGOUT).put("data", new JSONObject().put("username", username));
+                socket.sendTextMessage(json.toString());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
     public static ServerHandler getHandler()
     {
         return handler;
@@ -148,6 +165,9 @@ public class ServerConnection
                 data.put("coins", 100);
                 data.put("fortresses", new JSONArray());
                 data.put("allies",new JSONArray() );
+                data.put("level", 5);
+                data.put("kills", 6);
+                data.put("deaths", 3);
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
@@ -295,6 +315,31 @@ public class ServerConnection
 
             json.put("data", fortress);
 
+            socket.sendTextMessage(json.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    public static void getFortresses()
+    {
+        try
+        {
+            JSONObject json = new JSONObject().put("type", Request.FORTRESSES);
+            socket.sendTextMessage(json.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    public static void getAllPlayers()
+    {
+        try
+        {
+            JSONObject json = new JSONObject().put("type", Request.GET_ALL_PLAYERS)
+                    .put("data", new JSONObject());
             socket.sendTextMessage(json.toString());
         }
         catch (JSONException e)

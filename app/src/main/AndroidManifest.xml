@@ -8,8 +8,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
@@ -31,9 +32,12 @@
         </activity>
         <activity
             android:name=".RegisterActivity"
-            android:label="@string/title_activity_register"
             android:configChanges="orientation"
+            android:label="@string/title_activity_register" />
             android:parentActivityName=".MainActivity"/>
+            android:label="@string/title_activity_register"
+            android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".MapActivity"
             android:label="@string/title_activity_map"
@@ -49,10 +53,20 @@
 
         <activity
             android:name=".AllianceActivity"
-            android:label="@string/title_activity_alliance"
-            android:parentActivityName=".MainActivity" >
+            android:label="@string/title_activity_alliance" >
         </activity>
-
+        <activity
+            android:name=".BonusActivity"
+            android:label="@string/title_activity_bonus" >
+        </activity>
+        <activity
+            android:name=".ChatActivity"
+            android:label="@string/title_activity_chat" >
+        </activity>
+        <activity
+            android:name=".HighScoreActivity"
+            android:label="High score">
+        </activity>
     </application>
 
 </manifest>

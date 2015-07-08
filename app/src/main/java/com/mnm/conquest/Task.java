@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.EditText;
 
+import com.mnm.conquest.ecs.Game;
 import com.nineoldandroids.animation.AnimatorSet;
 
 import org.json.JSONArray;
@@ -200,12 +201,14 @@ public abstract class Task
         @Override
         public void execute()
         {
+            ServerConnection.logout(Game.getPlayerInfo().getUsername());
             username.setText("");
             password.setText("");
             SharedPreferences.Editor editor = ConquestApplication.getContext()
                     .getSharedPreferences(ConquestApplication.SHARED_PREF_KEY, Context.MODE_PRIVATE).edit();
             editor.remove("username");
             editor.commit();
+
         }
 
         @Override
@@ -214,6 +217,7 @@ public abstract class Task
             animSetLogOut.setDuration(500);
             animSetLogOut.start();
         }
+
     }
 
     public static class Register extends Waitable
@@ -321,6 +325,7 @@ public abstract class Task
         {
             return data;
         }
+
     }
 
     public static class Ally extends Data

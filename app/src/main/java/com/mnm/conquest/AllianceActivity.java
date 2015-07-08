@@ -9,6 +9,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.shapes.Shape;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +53,7 @@ public class AllianceActivity extends ActionBarActivity
     private ArrayList<PlayerInfo> playerInfoList;
     private ArrayList<String> allies;
     private ListView listView;
+    private ArrayList<Boolean> online_users;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -107,10 +110,12 @@ public class AllianceActivity extends ActionBarActivity
                                         {
                                             AllianceActivity.this.playerInfoList.clear();
                                             allies = new ArrayList<>();
+                                            online_users = new ArrayList<>();
                                             for (int i = 0; i < data.length(); ++i)
                                             {
                                                 JSONObject obj = (JSONObject)data.get(i);
-                                                allies.add(obj.get("username").toString());
+                                                allies.add(obj.getString("username"));
+                                                online_users.add(obj.getBoolean("online"));
                                                 AllianceActivity.this.playerInfoList.add(new PlayerInfo(obj));
                                             }
                                             if(allies != null )
@@ -298,10 +303,12 @@ public class AllianceActivity extends ActionBarActivity
                                             {
                                                 AllianceActivity.this.playerInfoList.clear();
                                                 allies = new ArrayList<>();
+                                                online_users = new ArrayList<>();
                                                 for (int i = 0; i < data.length(); ++i)
                                                 {
                                                     JSONObject obj = (JSONObject)data.get(i);
-                                                    allies.add(obj.get("username").toString());
+                                                    allies.add(obj.getString("username"));
+                                                    online_users.add(obj.getBoolean("online"));
                                                     AllianceActivity.this.playerInfoList.add(new PlayerInfo(obj));
                                                 }
                                                 if(allies != null )
@@ -348,10 +355,12 @@ public class AllianceActivity extends ActionBarActivity
                 {
                     AllianceActivity.this.playerInfoList.clear();
                     allies = new ArrayList<>();
+                    online_users = new ArrayList<>();
                     for (int i = 0; i < data.length(); ++i)
                     {
                         JSONObject obj = (JSONObject)data.get(i);
-                        allies.add(obj.get("username").toString());
+                        allies.add(obj.getString("username"));
+                        online_users.add(obj.getBoolean("online"));
                         AllianceActivity.this.playerInfoList.add(new PlayerInfo(obj));
                     }
                     if(allies != null )
@@ -396,6 +405,10 @@ public class AllianceActivity extends ActionBarActivity
 
             ImageView image = (ImageView)rowView.findViewById(R.id.ally_image);
             image.setBackgroundResource(playerInfoList.get(position).getMarkerId());
+
+            RadioButton user = (RadioButton)rowView.findViewById(R.id.user_online);
+            user.setChecked(online_users.get(position));
+            user.setEnabled(false);
 
             return rowView;
         }

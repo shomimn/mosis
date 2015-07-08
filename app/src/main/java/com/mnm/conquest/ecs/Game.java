@@ -175,12 +175,6 @@ public class Game
 
         entityManager.getEntities().add(fortress);
 
-        MarkerOptions options = new MarkerOptions();
-        options.position(position).icon(BitmapDescriptorFactory.fromResource(markerId)).anchor(0.5f, 0.5f).title(String.valueOf(markerId));
-        Marker marker = gameUi.getMap().addMarker(options);
-
-        gameUi.insert(fortress, marker);
-
         TaskManager.getTaskManager().execute(new Task(Task.SERVER)
         {
             @Override

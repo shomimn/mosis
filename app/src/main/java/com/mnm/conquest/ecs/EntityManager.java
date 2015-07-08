@@ -175,14 +175,22 @@ public class EntityManager implements Event.EntityDeadListener, Event.DetachedDe
     {
         Entity entity = new Entity.Fortress();
 
+        int markerId = ConquestApplication.getContext().getResources()
+                .getIdentifier(data.getString("marker"), "id", ConquestApplication.getContext().getPackageName());
+
         entity.addComponent(new Component.Position(position))
-                .addComponent(new Component.Appearance(ConquestApplication.getContext().getResources()
-                        .getIdentifier(data.getString("marker"), "id", ConquestApplication.getContext().getPackageName())))
+                .addComponent(new Component.Appearance(markerId))
                 .addComponent(new Component.Health(data.getInt("health")))
                 .addComponent(new Component.Attack(data.getInt("attack")))
                 .addComponent(new Component.Player(data.getString("username")));
 
         entities.add(entity);
+
+        MarkerOptions options = new MarkerOptions();
+        options.position(position).icon(BitmapDescriptorFactory.fromResource(markerId)).anchor(0.5f, 0.5f).title(String.valueOf(markerId));
+        Marker marker = Game.ui().getMap().addMarker(options);
+
+        Game.ui().insert(entity, marker);
 
         return entity;
     }
@@ -347,11 +355,11 @@ public class EntityManager implements Event.EntityDeadListener, Event.DetachedDe
                 {
                     attacker.addComponent(new Component.Attacking(defender));
                     Component.Animation anim = attacker.getComponent(Component.ANIMATION);
-                    anim.setState(Component.Animation.BATTLE);
+//                    anim.setState(Component.Animation.BATTLE);
 
                     defender.addComponent(new Component.Attacking(attacker, true));
                     anim = defender.getComponent(Component.ANIMATION);
-                    anim.setState(Component.Animation.BATTLE);
+//                    anim.setState(Component.Animation.BATTLE);
                 }
             };
 

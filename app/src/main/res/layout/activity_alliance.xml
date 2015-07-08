@@ -25,7 +25,7 @@
 
         </ListView>
      <!--</ScrollView>-->
-    <Button
+    <com.mnm.conquest.FButton
         android:id="@+id/make_alliance_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
