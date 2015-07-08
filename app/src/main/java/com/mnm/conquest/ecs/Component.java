@@ -3,8 +3,10 @@ package com.mnm.conquest.ecs;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Component
 {
@@ -20,6 +22,8 @@ public abstract class Component
     public static final int COINS = 1 << 9; //512
     public static final int OWNED_BY = 1 << 10; //1024
     public static final int DESTINATION = 1 << 11; // 2048
+    public static final int DEFENDING = 1 << 12; // 4096
+    public static final int ATTACKING = 1 << 13; // 8192
 
     protected int type;
 
@@ -78,6 +82,7 @@ public abstract class Component
 
     public static class Health extends Component
     {
+        private int maxHealth;
         private int health;
 
         public Health()
@@ -89,6 +94,7 @@ public abstract class Component
         {
             this();
             health = h;
+            maxHealth = h;
         }
 
         public int getHealth()
@@ -104,6 +110,16 @@ public abstract class Component
         public void damage(int damage)
         {
             health -= damage;
+        }
+
+        public void setMaxHealth(int h)
+        {
+            maxHealth = h;
+        }
+
+        public int getMaxHealth()
+        {
+            return maxHealth;
         }
     }
 
@@ -146,6 +162,7 @@ public abstract class Component
         public static final int NONE = 0;
         public static final int MOVE = 1;
         public static final int BATTLE = 2;
+        public static final int RESET = 3;
 
         protected int state = NONE;
 
@@ -224,11 +241,18 @@ public abstract class Component
         {
             return state;
         }
+
+        public void reset()
+        {
+            state = RESET;
+            currentBattle = 0;
+            currentMove = 0;
+        }
     }
 
     public static class Attack extends Component
     {
-        private int damage;
+        protected int damage;
 
         public Attack()
         {
@@ -340,13 +364,18 @@ public abstract class Component
             return units[unit];
         }
 
-        public int combinedDamage()
+        public int getCombinedDamage()
         {
             return units[INTERCEPTOR] * INTERCEPTOR_DAMAGE
                     + units[SCOUT] * SCOUT_DAMAGE
                     + units[FIGHTER] * FIGHTER_DAMAGE
                     + units[GUNSHIP] * GUNSHIP_DAMAGE
                     + units[BOMBER] * BOMBER_DAMAGE;
+        }
+
+        public void removeUnits(int unit, int n)
+        {
+            units[unit] -= n;
         }
     }
 
@@ -405,21 +434,32 @@ public abstract class Component
     public static class OwnedBy extends Component
     {
         private Entity owner;
+        private Polyline line;
 
         public OwnedBy()
         {
             type = OWNED_BY;
         }
 
-        public OwnedBy(Entity o)
+        public OwnedBy(Entity o, Polyline l)
         {
             this();
             owner = o;
+            line = l;
         }
 
         public Entity getOwner()
         {
             return owner;
+        }
+
+        public void updateOwnership()
+        {
+            Component.Position position = owner.getComponent(Component.POSITION);
+
+            List<LatLng> list = line.getPoints();
+            list.set(0, position.getLatLng());
+            line.setPoints(list);
         }
     }
 
@@ -443,6 +483,67 @@ public abstract class Component
         public LatLng getLatLng()
         {
             return position;
+        }
+    }
+
+    public static class Defending extends Component
+    {
+        private Entity attacker;
+
+        public Defending()
+        {
+            type = DEFENDING;
+        }
+
+        public Defending(Entity a)
+        {
+            this();
+            attacker = a;
+        }
+
+        public Entity getAttacker()
+        {
+            return attacker;
+        }
+    }
+
+    public static class Attacking extends Component
+    {
+        protected Entity defender;
+        protected boolean delayed;
+
+        public Attacking()
+        {
+            type = ATTACKING;
+        }
+
+        public Attacking(Entity d)
+        {
+            this();
+            defender = d;
+            delayed = false;
+        }
+
+        public Attacking(Entity d, boolean delay)
+        {
+            this();
+            defender = d;
+            delayed = delay;
+        }
+
+        public Entity getDefender()
+        {
+            return defender;
+        }
+
+        public boolean isDelayed()
+        {
+            return delayed;
+        }
+
+        public void setDelayed(boolean d)
+        {
+            delayed = d;
         }
     }
 }

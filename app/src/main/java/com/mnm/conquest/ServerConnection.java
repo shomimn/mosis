@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +41,10 @@ public class ServerConnection
         public static final int NEW_FORTRESS = 10;
         public static final int DELETEALLY = 11;
         public static final int NEWALLY = 12;
+        public static final int START_ATTACK = 14;
+        public static final int DETACHED_ATTACK = 16;
+        public static final int DETACHED_MOVE = 17;
+
         private Request() {}
     }
 
@@ -287,6 +294,58 @@ public class ServerConnection
             fortress.put("bombers", 1);
 
             json.put("data", fortress);
+
+            socket.sendTextMessage(json.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void startAttack(String attacker, String defender)
+    {
+        try
+        {
+            JSONObject json = new JSONObject().put("type", Request.START_ATTACK);
+            json.put("data", new JSONObject().put("attacker", attacker).put("defender", defender));
+
+            Log.d("GAME", json.toString());
+
+            socket.sendTextMessage(json.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void startDetachedAttack(String attacker, String defender, LatLng dest)
+    {
+        try
+        {
+            JSONObject json = new JSONObject().put("type", Request.START_ATTACK);
+            json.put("data", new JSONObject().put("attacker", attacker).put("defender", defender))
+            .put("latitude", dest.latitude).put("longitude", dest.longitude);
+
+            Log.d("GAME", json.toString());
+
+            socket.sendTextMessage(json.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void detachedMove(String username, LatLng dest)
+    {
+        try
+        {
+            JSONObject json = new JSONObject().put("type", Request.START_ATTACK);
+            json.put("data", new JSONObject().put("username", username).put("latitude", dest.latitude).put("longitude", dest.longitude));
+
+            Log.d("GAME", json.toString());
 
             socket.sendTextMessage(json.toString());
         }

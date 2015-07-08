@@ -6,17 +6,18 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GameUI
 {
     private GoogleMap map;
     private SparseArray<Marker> markers;
-    private HashMap<Marker, Entity> entities;
+    private ConcurrentHashMap<Marker, Entity> entities;
 
     public GameUI()
     {
         markers = new SparseArray<>();
-        entities = new HashMap<>();
+        entities = new ConcurrentHashMap<>();
     }
 
     public void setMap(GoogleMap m)
@@ -54,12 +55,19 @@ public class GameUI
     {
         Entity entity = entities.remove(marker);
         markers.remove(entity.getId());
+
+        marker.remove();
     }
 
     public void remove(int id)
     {
         Marker marker = markers.get(id);
-        markers.remove(id); 
-        entities.remove(marker);
+        markers.remove(id);
+
+        if (marker != null)
+        {
+            entities.remove(marker);
+            marker.remove();
+        }
     }
 }

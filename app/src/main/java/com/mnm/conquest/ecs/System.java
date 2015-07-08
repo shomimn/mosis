@@ -11,14 +11,14 @@ public abstract class System
 {
     public void update()
     {
-        TaskManager.getTaskManager().execute(new Task(Task.GENERAL)
-        {
-            @Override
-            public void execute()
-            {
+//        TaskManager.getTaskManager().execute(new Task(Task.GENERAL)
+//        {
+//            @Override
+//            public void execute()
+//            {
                 updateImpl();
-            }
-        });
+//            }
+//        });
     }
 
     public abstract void updateImpl();
@@ -66,9 +66,55 @@ public abstract class System
         }
 
         @Override
+        public void update()
+        {
+            updateImpl();
+        }
+
+        @Override
         public void updateImpl()
         {
+            for (Entity e : Game.getEntityManager().getEntities())
+            {
+                int mask = e.getComponentMask();
+                if ((mask & Component.ATTACK) == Component.ATTACK
+                        && (mask & Component.ATTACKING) == Component.ATTACKING && (mask & Component.DESTINATION) != Component.DESTINATION)
+                {
+                    Component.Attack attack = e.getComponent(Component.ATTACK);
+                    Component.Attacking behavior = e.getComponent(Component.ATTACKING);
+                    Component.Army army = e.getComponent(Component.ARMY);
 
+                    if (behavior.isDelayed())
+                    {
+                        behavior.setDelayed(false);
+                    }
+                    else
+                    {
+                        int dmg = attack.getDamage() + army.getCombinedDamage();
+
+                        Entity defender = behavior.getDefender();
+
+                        if ((defender.getComponentMask() & Component.DESTINATION) != Component.DESTINATION)
+                        {
+                            Component.Health health = defender.getComponent(Component.HEALTH);
+                            health.damage(dmg);
+
+                            if (health.getHealth() <= 0)
+                            {
+                                Component.Animation anim = e.getComponent(Component.ANIMATION);
+                                anim.reset();
+
+                                Component.Position pos = defender.getComponent(Component.POSITION);
+
+                                e.removeComponent(Component.ATTACKING);
+
+                                Game.getEntityManager().createExplosion(pos.getLatLng());
+                                Game.getEventManager().emit(new Event.EntityDead(defender));
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         @Override
@@ -89,6 +135,24 @@ public abstract class System
                         Game.getEntityManager().createExplosion(pos.getLatLng());
                     }
                 });
+            }
+        }
+    }
+
+    public static class Heal extends System
+    {
+        @Override
+        public void updateImpl()
+        {
+            for (Entity e : Game.getEntityManager().getEntities())
+            {
+                int mask = e.getComponentMask();
+                if ((mask & Component.HEALTH) == Component.HEALTH &&
+                        (mask & Component.ATTACKING) != Component.ATTACKING)
+                {
+                    Component.Health pHealth = e.getComponent(Component.HEALTH);
+                    pHealth.setHealth(pHealth.getMaxHealth());
+                }
             }
         }
     }
@@ -135,24 +199,38 @@ public abstract class System
                     Component.Appearance appearance = e.getComponent(Component.APPEARANCE);
                     Component.Health health = e.getComponent(Component.HEALTH);
 
-                    if (m != null)
-                    {
-                        m.setPosition(position.getLatLng());
-                        m.setAlpha((float) health.getHealth() / 100);
-                    }
+                    m.setPosition(position.getLatLng());
+                    m.setAlpha((float) health.getHealth() / 100);
                 }
                 if ((mask & Component.ANIMATION) == Component.ANIMATION)
                 {
                     Component.Animation animation = e.getComponent(Component.ANIMATION);
+                    Component.Appearance appearance = e.getComponent(Component.APPEARANCE);
 
-                    if (animation.getState() != Component.Animation.NONE)
+                    if (animation.getState() != Component.Animation.NONE && animation.getState() != Component.Animation.RESET)
                         m.setIcon(animation.getCurrentFrame());
+                    else if (animation.getState() == Component.Animation.RESET)
+                    {
+                        animation.setState(Component.Animation.NONE);
+                        m.setIcon(animation.getCurrentFrame());
+                    }
                 }
                 if ((mask & Component.ROTATION) == Component.ROTATION)
                 {
                     Component.Rotation rotation = e.getComponent(Component.ROTATION);
 
-//                    m.setRotation(rotation.getRotation());
+                    m.setRotation(rotation.getRotation());
+                }
+                if ((mask & Component.OWNED_BY) == Component.OWNED_BY)
+                {
+                    Component.OwnedBy ownedBy = e.getComponent(Component.OWNED_BY);
+
+//                    Entity owner = ownedBy.getOwner();
+//
+//                    Component.Player player = owner.getComponent(Component.PLAYER);
+//                    Component.Position position = owner.getComponent(Component.POSITION);
+
+                    ownedBy.updateOwnership();
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.mnm.conquest;
 
 import android.content.Context;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -14,18 +15,28 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.MarkerManager;
+import com.google.maps.android.PolyUtil;
 import com.mnm.conquest.ecs.Component;
 import com.mnm.conquest.ecs.Entity;
 import com.mnm.conquest.ecs.Game;
+
+import org.w3c.dom.Text;
 
 public class MapActivity extends AppCompatActivity
 {
@@ -34,6 +45,7 @@ public class MapActivity extends AppCompatActivity
     private BuildingView buildingView;
     private Location location;
     private EntityView entityView;
+    private TextView coinTextView;
 
     public static class MySupportMapFragment extends SupportMapFragment
     {
@@ -118,17 +130,6 @@ public class MapActivity extends AppCompatActivity
 
         buildingView = (BuildingView) findViewById(R.id.fortress);
         buildingView.setVisibility(View.GONE);
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
-        {
-            @Override
-            public boolean onMarkerClick(Marker marker)
-            {
-                int aaa = Integer.parseInt(marker.getTitle());
-                circularView.setCentraIcon(aaa);
-                circularView.setVisibility(View.VISIBLE);
-                return true;
-            }
-        });
 
         buildingView.setNoListener(new View.OnClickListener()
         {
@@ -179,10 +180,34 @@ public class MapActivity extends AppCompatActivity
             public boolean onMarkerClick(Marker marker)
             {
                 Entity entity = Game.ui().getEntity(marker);
-                if (entity.getComponent(Component.PLAYER) != null)
+
+                if (Game.getState() == Game.NORMAL)
                 {
-                    entityView.setEntity(entity);
-                    entityView.setVisibility(View.VISIBLE);
+                    if (entity.getComponent(Component.PLAYER) != null)
+                    {
+                        entityView.setEntity(entity);
+                        entityView.setVisibility(View.VISIBLE);
+                    }
+                }
+                else
+                {
+                    if (!entity.equals(Game.getEntityManager().getEntity(Game.getPlayerInfo().getUsername())))
+                    {
+                        Entity player = Game.getEntityManager().getEntity(Game.getPlayerInfo().getUsername());
+                        Component.Position pos = player.getComponent(Component.POSITION);
+
+                        Component.Position enemyPos = entity.getComponent(Component.POSITION);
+                        LatLng newPos = new LatLng(enemyPos.getLatLng().latitude - 0.01, enemyPos.getLatLng().longitude);
+
+                        Polyline line = map.addPolyline(new PolylineOptions().add(pos.getLatLng()).add(newPos).color(R.color.white));
+                        line.setWidth(2);
+
+                        Entity.Detached detached = Game.getEntityManager().createDetached(player, pos.getLatLng(), newPos, line, R.mipmap.interceptor, 3);
+
+                        Game.getEntityManager().startAttack(detached, entity);
+
+                        Game.setState(Game.NORMAL);
+                    }
                 }
 
 //                Toast.makeText(MapActivity.this, "id: " + String.valueOf(entity.getId()), Toast.LENGTH_SHORT).show();
@@ -191,9 +216,15 @@ public class MapActivity extends AppCompatActivity
             }
         });
 
-
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, new android.location.LocationListener()
+
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setAltitudeRequired(true);
+        criteria.setBearingRequired(true);
+        String provider = locationManager.getBestProvider(criteria, true);
+
+        locationManager.requestLocationUpdates(provider, 1000, 0, new android.location.LocationListener()
         {
             @Override
             public void onLocationChanged(Location nLocation)
@@ -231,11 +262,13 @@ public class MapActivity extends AppCompatActivity
                 {
                     Entity player = Game.getEntityManager().getEntity(Game.getPlayerInfo().getUsername());
                     Component.Position pos = player.getComponent(Component.POSITION);
-                    Component.Animation anim = player.getComponent(Component.ANIMATION);
 
-                    map.addPolyline(new PolylineOptions().add(pos.getLatLng()).add(latLng));
+                    Polyline line = map.addPolyline(new PolylineOptions().add(pos.getLatLng()).add(latLng).color(R.color.white));
+                    line.setWidth(2);
 
-                    Game.getEntityManager().createDetached(player, pos.getLatLng(), latLng, Entity.Detached.INTERCEPTOR);
+                    Game.getEntityManager().createDetached(player, pos.getLatLng(), latLng, line, R.mipmap.interceptor, 3);
+
+                    Game.setState(Game.NORMAL);
                 }
             }
         });
@@ -256,6 +289,22 @@ public class MapActivity extends AppCompatActivity
     {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_map, menu);
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+
+        coinTextView = new FTextView(this);
+        coinTextView.setText(String.valueOf(Game.getPlayerInfo().getCoins()));
+
+        ImageView image = new ImageView(this);
+        image.setBackgroundResource(R.mipmap.coin);
+
+        layout.addView(image);
+        layout.addView(coinTextView);
+
+        MenuItem item  = menu.getItem(0);
+        item.setActionView(layout);
+
         return true;
     }
 
@@ -267,20 +316,22 @@ public class MapActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onStop()
     {
-        Game.stop();
+//        Game.stop();
 
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        Game.stop();
+
+        super.onDestroy();
     }
 }

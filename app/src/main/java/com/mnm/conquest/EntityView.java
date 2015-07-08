@@ -102,7 +102,7 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         Component.Army army = entity.getComponent(Component.ARMY);
         Component.Player player = entity.getComponent(Component.PLAYER);
 
-        names[0] = player != null ? player.getUsername() : "Fortress";
+        names[0] = player != null && (entity instanceof Entity.Unit)  ? player.getUsername() : "Fortress";
         images[0] = appearance.getIconId();
 
         isPlayer = player.getUsername().equals(Game.getPlayerInfo().getUsername());
@@ -241,53 +241,13 @@ public class EntityView extends LinearLayout implements View.OnClickListener
                         @Override
                         public void execute()
                         {
-                            Entity player = Game.getEntityManager().getEntity(Game.getPlayerInfo().getUsername());
-                            Component.Animation playerAnim = player.getComponent(Component.ANIMATION);
-                            Component.Animation enemyAnim = displayedEntity.getComponent(Component.ANIMATION);
-                            playerAnim.setState(Component.Animation.BATTLE);
-                            enemyAnim.setState(Component.Animation.BATTLE);
-
-                            Event.Combat event = new Event.Combat();
-                            event.attacker = player;
-                            event.defender = displayedEntity;
-
-                            Event.Combat event1 = new Event.Combat();
-                            event1.attacker = displayedEntity;
-                            event1.defender = player;
-
-                            try
-                            {
-
-                                for (int i = 0; i < 10; ++i)
-                                {
-                                    Game.getEventManager().emit(event);
-                                    Thread.currentThread().sleep(500, 0);
-//                                    Game.getEventManager().emit(event1);
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                e.printStackTrace();
-                            }
+                            Game.getEntityManager().playerAttack(displayedEntity);
                         }
                     });
-
                 }
                 else
                 {
                     Game.setState(Game.DETACHING);
-
-//                    TaskManager.getMainHandler().post(new Runnable()
-//                    {
-//                        @Override
-//                        public void run()
-//                        {
-//                            Entity player = Game.getEntityManager().getEntity(Game.getPlayerInfo().getUsername());
-//                            Component.Position position = player.getComponent(Component.POSITION);
-//
-//                            Game.getEntityManager().createDetached(player, position.getLatLng(), Entity.Detached.INTERCEPTOR);
-//                        }
-//                    });
                 }
                 break;
         }

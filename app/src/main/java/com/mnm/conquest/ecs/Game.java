@@ -22,11 +22,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Game
 {
     public static final int NORMAL = 0;
     public static final int DETACHING = 1;
+
+    public static final int TICK = 200;
 
     private static int state = NORMAL;
 
@@ -39,6 +42,7 @@ public class Game
     private static System combat;
     private static System graphics;
     private static System animation;
+    private static System heal;
 
     private static EventManager eventManager;
 
@@ -54,6 +58,8 @@ public class Game
         @Override
         public void uiExecute()
         {
+            combat.update();
+            heal.update();
             graphics.update();
         }
     };
@@ -65,7 +71,12 @@ public class Game
         {
             TaskManager.getTaskManager().executeAndPost(updateTask);
 
-            TaskManager.getMainHandler().postDelayed(this, 150);
+//            movement.update();
+//            animation.update();
+//            combat.update();
+//            graphics.update();
+
+            TaskManager.getMainHandler().postDelayed(this, TICK);
         }
     };
 
@@ -81,6 +92,7 @@ public class Game
         combat = new System.Combat();
         graphics = new System.Graphics();
         animation = new System.Animation();
+        heal = new System.Heal();
     }
 
     public static EntityManager getEntityManager()
@@ -110,7 +122,7 @@ public class Game
 
     public static void createMarkers()
     {
-        ArrayList<Entity> entities = entityManager.getEntities();
+        CopyOnWriteArrayList<Entity> entities = entityManager.getEntities();
 
         for (Entity e : entities)
         {
@@ -158,7 +170,8 @@ public class Game
                 .addComponent(new Component.Attack(10))
                 .addComponent(new Component.Position(position))
                 .addComponent(new Component.Appearance(markerId))
-                .addComponent(new Component.Army(2, 3, 1, 1, 1));
+                .addComponent(new Component.Army(2, 3, 1, 1, 1))
+                .addComponent(new Component.Player(playerInfo.getUsername()));
 
         entityManager.getEntities().add(fortress);
 
@@ -223,7 +236,7 @@ public class Game
 //        final double lng = cPosition.getLatLng().longitude;
 
         cPosition.setLatLng(new LatLng(lat, lng));
-//        cRotation.setRotation(position.getBearing());
+        cRotation.setRotation(position.getBearing());
 
         TaskManager.getTaskManager().execute(new Task(Task.SERVER)
         {
@@ -255,6 +268,8 @@ public class Game
                 case ServerConnection.Request.NEW_FORTRESS:
                     createFortress(object.getJSONObject("data"));
                     break;
+                case ServerConnection.Request.START_ATTACK:
+                    startAttack(object.getJSONObject("data"));
             }
         }
         catch (Exception e)
@@ -325,6 +340,21 @@ public class Game
             Marker m = gameUi.getMap().addMarker(options);
 
             gameUi.insert(entity, m);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void startAttack(JSONObject object)
+    {
+        try
+        {
+            String attacker = object.getString("attacker");
+            String defender = object.getString("defender");
+
+            entityManager.startAttack(entityManager.getEntity(attacker), entityManager.getEntity(defender));
         }
         catch (JSONException e)
         {

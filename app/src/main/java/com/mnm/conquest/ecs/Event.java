@@ -39,4 +39,46 @@ public interface Event<T>
             handler.onReceive(this);
         }
     }
+
+    interface EntityDeadListener
+    {
+        void onReceive(EntityDead event);
+    }
+
+    class EntityDead implements Event<EntityDeadListener>
+    {
+        public Entity entity;
+
+        public EntityDead(Entity dead)
+        {
+            entity = dead;
+        }
+
+        @Override
+        public void notify(EntityDeadListener handler)
+        {
+            handler.onReceive(this);
+        }
+    }
+
+    interface DetachedDeadListener
+    {
+        void onReceive(DetachedDead event);
+    }
+
+    class DetachedDead implements Event<DetachedDeadListener>
+    {
+        public Entity.Detached detached;
+
+        public DetachedDead(Entity.Detached dead)
+        {
+            detached = dead;
+        }
+
+        @Override
+        public void notify(DetachedDeadListener handler)
+        {
+            handler.onReceive(this);
+        }
+    }
 }

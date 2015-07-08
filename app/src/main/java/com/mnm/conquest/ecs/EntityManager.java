@@ -4,60 +4,34 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.mnm.conquest.ConquestApplication;
 import com.mnm.conquest.R;
-
+import com.mnm.conquest.ServerConnection;
+import com.mnm.conquest.Task;
+import com.mnm.conquest.TaskManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class EntityManager
+public class EntityManager implements Event.EntityDeadListener, Event.DetachedDeadListener
 {
-    private ArrayList<Entity> entities = new ArrayList<Entity>();
+    private CopyOnWriteArrayList<Entity> entities = new CopyOnWriteArrayList<Entity>();
     private SparseArray<Class<?>> componentClasses = new SparseArray<>();
-    private HashMap<String, Entity> userToEntity = new HashMap<>();
+    private ConcurrentHashMap<String, Entity> userToEntity = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, ArrayList<Entity.Detached>> userToDetached = new ConcurrentHashMap<>();
 
     public EntityManager()
     {
-//        Entity green = new Entity.Unit();
-//        Entity red = new Entity.Unit();
-//        Entity blue = new Entity.Unit();
-//
-//        entities.add(green);
-//        entities.add(red);
-//        entities.add(blue);
-//
-//        green.addComponent(new Component.Health(100))
-//                .addComponent(new Component.Attack(1))
-//                .addComponent(new Component.Position(new LatLng(43.3, 21.1)))
-//                .addComponent(new Component.Appearance(R.mipmap.air1));
-//
-//        green.addComponent(new Component.Animation().addFrame(R.mipmap.air1)
-//                .addFrame(R.mipmap.air2).addFrame(R.mipmap.air3)
-//                .addFrame(R.mipmap.air4).addFrame(R.mipmap.air5));
-//
-//        red.addComponent(new Component.Health(100)).addComponent(new Component.Attack(5))
-//                .addComponent(new Component.Position(new LatLng(43.3, 22.0)))
-//                .addComponent(new Component.Appearance(R.mipmap.red_marker));
-//
-//        red.addComponent(new Component.Animation().addFrame(R.mipmap.air1)
-//                .addFrame(R.mipmap.air2).addFrame(R.mipmap.air3)
-//                .addFrame(R.mipmap.air4).addFrame(R.mipmap.air5));
-//
-//        blue.addComponent(new Component.Health(100)).addComponent(new Component.Attack(1))
-//                .addComponent(new Component.Position(new LatLng(43.3, 23.0)))
-//                .addComponent(new Component.Appearance(R.mipmap.blue_marker));
-//
-//        blue.addComponent(new Component.Animation().addFrame(R.mipmap.air1)
-//                .addFrame(R.mipmap.air2).addFrame(R.mipmap.air3)
-//                .addFrame(R.mipmap.air4).addFrame(R.mipmap.air5));
-
         componentClasses.put(Component.ANIMATION, Component.Animation.class);
         componentClasses.put(Component.APPEARANCE, Component.Appearance.class);
         componentClasses.put(Component.ATTACK, Component.Attack.class);
@@ -65,9 +39,12 @@ public class EntityManager
         componentClasses.put(Component.PLAYER, Component.Player.class);
         componentClasses.put(Component.POSITION, Component.Position.class);
         componentClasses.put(Component.ROTATION, Component.Rotation.class);
+
+        Game.getEventManager().register(Event.EntityDead.class, this);
+        Game.getEventManager().register(Event.DetachedDead.class, this);
     }
 
-    public ArrayList<Entity> getEntities()
+    public CopyOnWriteArrayList<Entity> getEntities()
     {
         return entities;
     }
@@ -132,7 +109,7 @@ public class EntityManager
                 .addComponent(new Component.Appearance(ConquestApplication.getContext().getResources()
                         .getIdentifier(data.getString("marker"), "id", ConquestApplication.getContext().getPackageName())))
                 .addComponent(new Component.Health(data.getInt("health")))
-                .addComponent(new Component.Attack(data.getInt("attack")))
+                .addComponent(new Component.Attack(0))
                 .addComponent(new Component.Rotation(rotation))
                 .addComponent(new Component.Player("dummy"))
                 .addComponent(new Component.Army(data.getInt("interceptors"), data.getInt("scouts"),
@@ -215,39 +192,220 @@ public class EntityManager
         return userToEntity.get(username);
     }
 
-    public void createExplosion(LatLng position)
+    public void createExplosion(final LatLng position)
     {
-        Entity entity = new Entity.Unit();
+        TaskManager.getMainHandler().post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                final Entity entity = new Entity.Unit();
 
-        entity.addComponent(new Component.Position(position))
-                .addComponent(new Component.Appearance(R.mipmap.explosion0));
+                entity.addComponent(new Component.Position(position))
+                        .addComponent(new Component.Appearance(R.mipmap.explosion0));
 
-        Component.Animation anim = new Component.Animation().addMoveFrame(R.mipmap.explosion0).addMoveFrame(R.mipmap.explosion1).addMoveFrame(R.mipmap.explosion2);
-        anim.setState(Component.Animation.MOVE);
+                Component.Animation anim = new Component.Animation().addMoveFrame(R.mipmap.explosion0).addMoveFrame(R.mipmap.explosion1).addMoveFrame(R.mipmap.explosion2);
+                anim.setState(Component.Animation.MOVE);
 
-        entity.addComponent(anim);
+                entity.addComponent(anim);
 
-        entities.add(entity);
+                entities.add(entity);
 
-        Marker m = Game.ui().getMap().addMarker(new MarkerOptions().position(position).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.explosion0)).flat(true));
+                Marker m = Game.ui().getMap().addMarker(new MarkerOptions().position(position).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.explosion0)).flat(true));
 
-        Game.ui().insert(entity, m);
+                Game.ui().insert(entity, m);
+
+                TaskManager.getMainHandler().postDelayed(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        Game.getEventManager().emit(new Event.EntityDead(entity));
+                    }
+                }, 4 * Game.TICK);
+            }
+        });
     }
 
-    public void createDetached(Entity owner, LatLng position, LatLng destination, int type)
+    public Entity.Detached createDetached(Entity owner, LatLng position, LatLng destination, Polyline line, int type, int n)
     {
-        Entity entity = new Entity.Detached(type);
+        Component.Player player = owner.getComponent(Component.PLAYER);
+        Component.Army pArmy = owner.getComponent(Component.ARMY);
+        pArmy.removeUnits(Component.Army.INTERCEPTOR, 1);
+
+        Entity.Detached entity = new Entity.Detached();
 
         entity.addComponent(new Component.Position(position))
                 .addComponent(new Component.Appearance(R.mipmap.interceptor))
-                .addComponent(new Component.OwnedBy(owner))
+                .addComponent(new Component.OwnedBy(owner, line))
                 .addComponent(new Component.Destination(destination))
-                .addComponent(new Component.Health(100));
+                .addComponent(new Component.Health(100))
+                .addComponent(new Component.Attack(0));
+
+        Component.Army army = new Component.Army();
+        army.setUnit(Component.Army.INTERCEPTOR, n);
+
+        Component.Animation animation = new Component.Animation();
+        animation.addBattleFrame(R.mipmap.interceptor).addMoveFrame(R.mipmap.interceptor).addMoveFrame(R.mipmap.interceptor).addBattleFrame(R.mipmap.interceptor);
+
+        entity.addComponent(army);
+        entity.addComponent(animation);
 
         entities.add(entity);
+
+        if (userToDetached.get(player.getUsername()) == null)
+            userToDetached.put(player.getUsername(), new ArrayList<Entity.Detached>());
+
+        userToDetached.get(player.getUsername()).add(entity);
 
         Marker m = Game.ui().getMap().addMarker(new MarkerOptions().position(position).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.interceptor)).flat(true));
 
         Game.ui().insert(entity, m);
+
+        return entity;
+    }
+
+    public void createDetached(String username, LatLng position, LatLng destination, int type, int n)
+    {
+        Entity owner = getEntity(username);
+
+        Polyline line = Game.ui().getMap().addPolyline(new PolylineOptions().add(position).add(destination));
+        line.setWidth(2);
+
+        createDetached(owner, position, destination, line, type, n);
+    }
+
+    public void playerAttack(final Entity defender)
+    {
+        final Entity player = Game.getEntityManager().getEntity(Game.getPlayerInfo().getUsername());
+        if (player.getComponent(Component.ATTACKING) != null)
+            Log.d("GAME", "Entity already attacking");
+        else
+        {
+            Task.Waitable task = new Task.Waitable()
+            {
+                @Override
+                public void executeImpl()
+                {
+                    Component.Player pDefender = defender.getComponent(Component.PLAYER);
+
+                    ServerConnection.startAttack(Game.getPlayerInfo().getUsername(), pDefender.getUsername());
+                }
+
+                @Override
+                public void uiExecute()
+                {
+                    player.addComponent(new Component.Attacking(defender));
+                    Component.Animation anim = player.getComponent(Component.ANIMATION);
+                    anim.setState(Component.Animation.BATTLE);
+
+                    defender.addComponent(new Component.Attacking(player, true));
+                    anim = defender.getComponent(Component.ANIMATION);
+                    anim.setState(Component.Animation.BATTLE);
+                }
+            };
+
+            TaskManager.getTaskManager().executeAndPost(task);
+        }
+    }
+
+    public void startAttack(final Entity attacker, final Entity defender)
+    {
+        if (attacker.getComponent(Component.ATTACKING) != null)
+            Log.d("GAME", "Entity already attacking");
+        else
+        {
+            attacker.addComponent(new Component.Attacking(defender));
+            Component.Animation anim = attacker.getComponent(Component.ANIMATION);
+            anim.setState(Component.Animation.BATTLE);
+
+            defender.addComponent(new Component.Attacking(attacker, true));
+            anim = defender.getComponent(Component.ANIMATION);
+            anim.setState(Component.Animation.BATTLE);
+        }
+    }
+
+    public void detachedAttack(final Entity attacker, final Entity defender)
+    {
+        if (attacker.getComponent(Component.ATTACKING) != null)
+            Log.d("GAME", "Entity already attacking");
+        else
+        {
+            Task.Waitable task = new Task.Waitable()
+            {
+                @Override
+                public void executeImpl()
+                {
+                    Component.Player pDefender = defender.getComponent(Component.PLAYER);
+                    Component.Destination dest = attacker.getComponent(Component.DESTINATION);
+
+                    ServerConnection.startDetachedAttack(Game.getPlayerInfo().getUsername(), pDefender.getUsername(), dest.getLatLng());
+                }
+
+                @Override
+                public void uiExecute()
+                {
+                    attacker.addComponent(new Component.Attacking(defender));
+                    Component.Animation anim = attacker.getComponent(Component.ANIMATION);
+                    anim.setState(Component.Animation.BATTLE);
+
+                    defender.addComponent(new Component.Attacking(attacker, true));
+                    anim = defender.getComponent(Component.ANIMATION);
+                    anim.setState(Component.Animation.BATTLE);
+                }
+            };
+
+            TaskManager.getTaskManager().executeAndPost(task);
+        }
+    }
+
+    @Override
+    public void onReceive(final Event.EntityDead event)
+    {
+        if (event.entity.equals(getEntity(Game.getPlayerInfo().getUsername())))
+            return;
+
+        TaskManager.getMainHandler().post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                removeUserMapping(event.entity);
+                removeFromUi(event.entity);
+
+                for (Entity e : entities)
+                    if (e.equals(event.entity))
+                        entities.remove(e);
+            }
+        });
+    }
+
+    public void removeUserMapping(Entity entity)
+    {
+        for (Map.Entry<String, Entity> entry : userToEntity.entrySet())
+            if (entry.getValue().equals(entity))
+                userToEntity.remove(entry.getKey());
+    }
+
+    public void removeFromUi(Entity entity)
+    {
+        Game.ui().remove(entity.getId());
+    }
+
+    @Override
+    public void onReceive(final Event.DetachedDead event)
+    {
+        TaskManager.getMainHandler().post(new Runnable()
+        {
+
+
+            @Override
+            public void run()
+            {
+                for (Entity e : entities)
+                    if (e.equals(event.detached))
+                        entities.remove(e);
+            }
+        });
     }
 }

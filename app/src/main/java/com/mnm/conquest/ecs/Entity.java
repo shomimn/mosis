@@ -67,18 +67,9 @@ public abstract class Entity
 
     public static class Detached extends Entity.Unit
     {
-        public static int INTERCEPTOR = 0;
-        public static int SCOUT = 1;
-        public static int FIGHTER = 2;
-        public static int GUNSHIP = 3;
-        public static int BOMBER = 4;
-
-        private int detachedType;
-
-        public Detached(int t)
+        public Detached()
         {
             super();
-            detachedType = t;
         }
     }
 }
