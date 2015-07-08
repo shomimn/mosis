@@ -25,7 +25,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.mnm.conquest.ecs.Component;
 import com.mnm.conquest.ecs.Entity;
+import com.mnm.conquest.ecs.EntityManager;
 import com.mnm.conquest.ecs.Game;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class MapActivity extends AppCompatActivity
 {
@@ -236,10 +243,48 @@ public class MapActivity extends AppCompatActivity
                     map.addPolyline(new PolylineOptions().add(pos.getLatLng()).add(latLng));
 
                     Game.getEntityManager().createDetached(player, pos.getLatLng(), latLng, Entity.Detached.INTERCEPTOR);
+
+                    Game.setState(Game.NORMAL);
                 }
             }
         });
+        Task.Data task = new Task.Data(Game.getPlayerInfo().getUsername(), new Task.Data.DataReadyCallback()
+        {
+            @Override
+            public void dataReady()
+            {
+                JSONArray data = getData();
+                try
+                {
 
+                    for (int i = 0; i < data.length(); ++i)
+                    {
+                        JSONObject obj = (JSONObject) data.get(i);
+                        JSONArray f = obj.getJSONArray("fortresses");
+                        for(int j = 0; j < f.length(); j++)
+                        {
+                            JSONObject fortress = (JSONObject)f.get(j);
+                            LatLng pos = new LatLng(fortress.getDouble("latitude"), fortress.getDouble("longitude"));
+                            Game.getEntityManager().createFortress(pos, fortress);
+
+                        }
+
+                    }
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        })
+        {
+            @Override
+            public void executeImpl()
+            {
+                ServerConnection.getFortresses();
+            }
+        };
+        TaskManager.getTaskManager().execute(task);
         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 14);
         map.animateCamera(yourLocation);

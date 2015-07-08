@@ -33,8 +33,11 @@
         <activity
             android:name=".RegisterActivity"
             android:configChanges="orientation"
+            android:label="@string/title_activity_register" />
+            android:parentActivityName=".MainActivity"/>
             android:label="@string/title_activity_register"
             android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".MapActivity"
             android:label="@string/title_activity_map"
@@ -50,8 +53,15 @@
 
         <activity
             android:name=".AllianceActivity"
-            android:label="@string/title_activity_alliance"
-            android:parentActivityName=".MainActivity" >
+            android:label="@string/title_activity_alliance" >
+        </activity>
+        <activity
+            android:name=".BonusActivity"
+            android:label="@string/title_activity_bonus" >
+        </activity>
+        <activity
+            android:name=".ChatActivity"
+            android:label="@string/title_activity_chat" >
         </activity>
         <activity
             android:name=".HighScoreActivity"

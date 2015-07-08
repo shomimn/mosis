@@ -86,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:hint="@string/email_label"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 android:textColorHint="#bbbbbb"/>
             <com.mnm.conquest.FButton
                 android:id="@+id/sign_up_button"

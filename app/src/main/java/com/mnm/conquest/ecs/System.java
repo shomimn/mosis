@@ -152,7 +152,7 @@ public abstract class System
                 {
                     Component.Rotation rotation = e.getComponent(Component.ROTATION);
 
-//                    m.setRotation(rotation.getRotation());
+                    m.setRotation(rotation.getRotation());
                 }
             }
         }

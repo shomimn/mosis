@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.google.android.gms.maps.Projection;
 import com.mnm.conquest.ecs.Component;
 import com.mnm.conquest.ecs.Entity;
 import com.mnm.conquest.ecs.Event;
@@ -254,6 +255,8 @@ public class EntityView extends LinearLayout implements View.OnClickListener
                             Event.Combat event1 = new Event.Combat();
                             event1.attacker = displayedEntity;
                             event1.defender = player;
+                            Projection p = Game.ui().getMap().getProjection();
+                            Utils.findRotation(player,displayedEntity,p);
 
                             try
                             {
