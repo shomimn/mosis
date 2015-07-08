@@ -16,6 +16,7 @@ import de.tavendo.autobahn.WebSocketOptions;
 public class ServerConnection
 {
 
+
     private static final String SERVER_IP = "ws://192.168.0.16:8181/";
 
     private static ServerConnection instance = new ServerConnection();
@@ -38,7 +39,8 @@ public class ServerConnection
         public static final int NEW_FORTRESS = 10;
         public static final int DELETEALLY = 11;
         public static final int NEWALLY = 12;
-        public static final int GET_ALL_PLAYERS = 13;
+        public static final int FORTRESSES = 13;
+        public static final int GET_ALL_PLAYERS = 15;
 
         private Request() {}
     }
@@ -105,7 +107,21 @@ public class ServerConnection
             }
         }
     }
-
+    public static void logout(String username)
+    {
+        if (socket.isConnected())
+        {
+            try
+            {
+                JSONObject json = new JSONObject().put("type", Request.LOGOUT).put("data", new JSONObject().put("username", username));
+                socket.sendTextMessage(json.toString());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
     public static ServerHandler getHandler()
     {
         return handler;
@@ -293,6 +309,18 @@ public class ServerConnection
 
             json.put("data", fortress);
 
+            socket.sendTextMessage(json.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    public static void getFortresses()
+    {
+        try
+        {
+            JSONObject json = new JSONObject().put("type", Request.FORTRESSES);
             socket.sendTextMessage(json.toString());
         }
         catch (JSONException e)

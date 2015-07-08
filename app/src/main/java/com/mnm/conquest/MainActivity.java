@@ -29,6 +29,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -83,6 +85,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         Button profileSet = (Button) findViewById(R.id.player_settings);
         profileSet.setOnClickListener(MainActivity.this);
+
+
+        Button bonusButton = (Button)findViewById(R.id.bonus_button);
+        bonusButton.setOnClickListener(MainActivity.this);
 
         Button highScore = (Button) findViewById(R.id.high_scores);
         highScore.setOnClickListener(MainActivity.this);
@@ -142,9 +148,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
         else if(id == R.id.log_out)
         {
+            TextView content = new TextView(this);
+            content.setText("on another font");
+            content.setTypeface(Typeface.SANS_SERIF);
+
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Confirm");
             builder.setMessage("Are you sure?");
+
             builder.setPositiveButton("YES", new DialogInterface.OnClickListener()
             {
                 @Override
@@ -268,10 +279,17 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 startActivity(profSettings);
                 break;
             }
+            case R.id.bonus_button:
+            {
+                Intent i4 = new Intent(this, BonusActivity.class);
+                startActivity(i4);
+                break;
+            }
             case R.id.high_scores:
             {
                 Intent ihs = new Intent(this, HighScoreActivity.class);
                 startActivity(ihs);
+
             }
         }
     }

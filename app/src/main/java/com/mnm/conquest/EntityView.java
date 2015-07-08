@@ -18,6 +18,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.google.android.gms.maps.Projection;
 import com.mnm.conquest.ecs.Component;
 import com.mnm.conquest.ecs.Entity;
 import com.mnm.conquest.ecs.Event;
@@ -334,6 +335,7 @@ public class EntityView extends LinearLayout implements View.OnClickListener
                 String name = names[unitFlipper.getDisplayedChild()] + "s";
                 try
                 {
+
                     n = Game.getPlayerInfo().getData().getInt(name);
                     Game.getPlayerInfo().getData().put(name, n + 1);
 
