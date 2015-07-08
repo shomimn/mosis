@@ -265,7 +265,7 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
 //            options.inJustDecodeBounds = false;
             photo = BitmapFactory.decodeFile(selectedImagePath);
         }
-        photo = Bitmap.createScaledBitmap(photo, photo.getWidth() / 10, photo.getHeight() / 10, true);
+        photo = Bitmap.createScaledBitmap(photo, photo.getWidth() / 2, photo.getHeight() / 2, true);
         chooseImage.setImageBitmap(photo);
     }
 

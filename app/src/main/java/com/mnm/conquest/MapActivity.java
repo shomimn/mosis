@@ -14,6 +14,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -26,6 +29,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.mnm.conquest.ecs.Component;
 import com.mnm.conquest.ecs.Entity;
 import com.mnm.conquest.ecs.Game;
+
+import org.json.JSONException;
 
 public class MapActivity extends AppCompatActivity
 {
@@ -115,6 +120,8 @@ public class MapActivity extends AppCompatActivity
 
         entityView = (EntityView) findViewById(R.id.entity_view);
         entityView.setVisibility(View.GONE);
+
+        final TextView unitName = (TextView)findViewById(R.id.unit_name);
 
         buildingView = (BuildingView) findViewById(R.id.fortress);
         buildingView.setVisibility(View.GONE);
@@ -283,4 +290,20 @@ public class MapActivity extends AppCompatActivity
 
         super.onStop();
     }
+//    public int getUnitValue(String unit)
+//    {
+//        int value = 0;
+//        try
+//        {
+//            value = Game.getPlayerInfo().getData().getInt(unit + "s");
+//        }
+//        catch (JSONException e)
+//        {
+//            e.printStackTrace();
+//        }
+//        finally
+//        {
+//            return value;
+//        }
+//    }
 }

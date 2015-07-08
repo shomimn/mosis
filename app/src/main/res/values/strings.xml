@@ -43,4 +43,5 @@
     <string name="confirm_title">Confirm</string>
     <string name="confirm_message_delete">Are you sure you want to delete?</string>
     <string name="title_activity_high_score">HighScoreActivity</string>
+    <string name="detach">Detach</string>
 </resources>
