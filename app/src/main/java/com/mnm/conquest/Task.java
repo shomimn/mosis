@@ -325,6 +325,7 @@ public abstract class Task
         {
             return data;
         }
+
     }
 
     public static class Ally extends Data

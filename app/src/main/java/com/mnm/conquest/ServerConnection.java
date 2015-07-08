@@ -16,6 +16,7 @@ import de.tavendo.autobahn.WebSocketOptions;
 public class ServerConnection
 {
 
+
     private static final String SERVER_IP = "ws://192.168.0.103:8181/";
 
     private static ServerConnection instance = new ServerConnection();
@@ -39,6 +40,8 @@ public class ServerConnection
         public static final int DELETEALLY = 11;
         public static final int NEWALLY = 12;
         public static final int FORTRESSES = 13;
+        public static final int GET_ALL_PLAYERS = 15;
+
         private Request() {}
     }
 
@@ -156,6 +159,9 @@ public class ServerConnection
                 data.put("coins", 100);
                 data.put("fortresses", new JSONArray());
                 data.put("allies",new JSONArray() );
+                data.put("level", 5);
+                data.put("kills", 6);
+                data.put("deaths", 3);
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
@@ -315,6 +321,19 @@ public class ServerConnection
         try
         {
             JSONObject json = new JSONObject().put("type", Request.FORTRESSES);
+            socket.sendTextMessage(json.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    public static void getAllPlayers()
+    {
+        try
+        {
+            JSONObject json = new JSONObject().put("type", Request.GET_ALL_PLAYERS)
+                    .put("data", new JSONObject());
             socket.sendTextMessage(json.toString());
         }
         catch (JSONException e)

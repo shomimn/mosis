@@ -22,6 +22,9 @@ public class PlayerInfo
     private String email;
     private String markerName;
     private int markerId;
+    private int level;
+    private int kills;
+    private int deaths;
     private Bitmap photo;
     private Marker marker;
 
@@ -42,6 +45,9 @@ public class PlayerInfo
             markerName = player.getString("marker");
             markerId = ConquestApplication.getContext().getResources().getIdentifier(markerName, "id", ConquestApplication.getContext().getPackageName());
             coins = player.getInt("coins");
+            level = player.getInt("level");
+            kills = player.getInt("kills");
+            deaths = player.getInt("deaths");
 
             byte[] bitmap = Base64.decode(player.getString("photo"), Base64.DEFAULT);
             photo = BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
@@ -130,5 +136,14 @@ public class PlayerInfo
     {
         allies.add(ally);
     }
+
+    public  int getLevel() { return level; }
+    public void setLevel(int l) { level = l; }
+
+    public int getKills() { return kills; }
+    public void setKills(int k) { kills += k; }
+
+    public int getDeaths() { return deaths; }
+    public void setDeaths(int d) {deaths += d; }
 
 }
