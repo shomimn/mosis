@@ -3,8 +3,11 @@ package com.mnm.conquest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +51,12 @@ public class BonusActivity extends ActionBarActivity implements View.OnClickList
 
         layout = (LinearLayout)findViewById(R.id.bonus_activity_layout);
 
+        SpannableString s = new SpannableString("BonusActivity");
+        s.setSpan(new FTypefaceSpan(this, "kenvector_future.ttf"), 0, s.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(s);
     }
 
 
@@ -66,12 +75,6 @@ public class BonusActivity extends ActionBarActivity implements View.OnClickList
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

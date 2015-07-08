@@ -120,7 +120,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="DEF"
                 android:id="@+id/textView2"
-                android:layout_gravity="center_vertical"/>
+                />
 
             <RatingBar
                 android:layout_width="100dp"
@@ -153,7 +153,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="ATT"
                 android:id="@+id/textView3"
-                android:layout_gravity="center_vertical"/>
+                />
 
             <RatingBar
                 android:layout_width="100dp"
@@ -185,7 +185,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"/>
-        <TextView
+        <com.mnm.conquest.FTextView
             android:id="@+id/seek_value"
             android:layout_width="0dp"
             android:layout_weight="0.15"
@@ -194,7 +194,7 @@
             android:textColor="@color/white"
             android:textSize="25dp"
             android:layout_marginLeft="2dip"/>
-        <TextView
+        <com.mnm.conquest.FTextView
             android:id="@+id/armySize"
             android:text = "/"
             android:textSize="25dp"
@@ -202,7 +202,7 @@
             android:layout_weight="0.15"
             android:layout_height="wrap_content"
             android:layout_marginRight="2dip"/>
-        <Button
+        <com.mnm.conquest.FButton
             android:id="@+id/detach"
             android:layout_weight="0.3"
             android:text="@string/detach"

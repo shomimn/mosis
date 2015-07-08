@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,6 +45,13 @@ public class HighScoreActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_high_score);
 
+        SpannableString s = new SpannableString("High Scores");
+        s.setSpan(new FTypefaceSpan(this, "kenvector_future.ttf"), 0, s.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(s);
+
         players = new ArrayList<>();
         listView = (ListView)findViewById(R.id.high_score_list);
 
@@ -65,11 +74,6 @@ public class HighScoreActivity extends ActionBarActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

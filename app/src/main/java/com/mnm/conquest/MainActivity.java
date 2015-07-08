@@ -141,12 +141,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
-        else if(id == R.id.log_out)
+        if(id == R.id.log_out)
         {
             TextView content = new TextView(this);
             content.setText("on another font");
@@ -316,8 +311,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             MenuItem logOut = menu.findItem(R.id.log_out);
             logOut.setVisible(true);
 
-            SpannableString s = new SpannableString(getResources().getString(R.string.optionsActionBarName)
-                    + " " + username);
+            SpannableString s = new SpannableString(username);
             s.setSpan(new FTypefaceSpan(this, "kenvector_future.ttf"), 0, s.length(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             getSupportActionBar().setTitle(s);

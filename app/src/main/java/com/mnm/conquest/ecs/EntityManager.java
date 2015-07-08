@@ -182,7 +182,8 @@ public class EntityManager implements Event.EntityDeadListener, Event.DetachedDe
                 .addComponent(new Component.Appearance(markerId))
                 .addComponent(new Component.Health(data.getInt("health")))
                 .addComponent(new Component.Attack(data.getInt("attack")))
-                .addComponent(new Component.Player(data.getString("username")));
+                .addComponent(new Component.Player(data.getString("username")))
+                .addComponent(new Component.Army(2, 3, 1, 1, 1));
 
         entities.add(entity);
 
@@ -254,7 +255,15 @@ public class EntityManager implements Event.EntityDeadListener, Event.DetachedDe
         army.setUnit(Component.Army.INTERCEPTOR, n);
 
         Component.Animation animation = new Component.Animation();
-        animation.addBattleFrame(R.mipmap.interceptor).addMoveFrame(R.mipmap.interceptor).addMoveFrame(R.mipmap.interceptor).addBattleFrame(R.mipmap.interceptor);
+        animation.addBattleFrame(R.mipmap.interceptorbanim1)
+                .addBattleFrame(R.mipmap.interceptorbanim2)
+                .addBattleFrame(R.mipmap.interceptorbanim3)
+                .addBattleFrame(R.mipmap.interceptorbanim4)
+                .addMoveFrame(R.mipmap.interceptormanim1)
+                .addMoveFrame(R.mipmap.interceptormanim2)
+                .addMoveFrame(R.mipmap.interceptormanim3)
+                .addMoveFrame(R.mipmap.interceptormanim4)
+                .addMoveFrame(R.mipmap.interceptormanim5);
 
         entity.addComponent(army);
         entity.addComponent(animation);
@@ -273,14 +282,14 @@ public class EntityManager implements Event.EntityDeadListener, Event.DetachedDe
         return entity;
     }
 
-    public void createDetached(String username, LatLng position, LatLng destination, int type, int n)
+    public Entity.Detached createDetached(String username, LatLng position, LatLng destination, int type, int n)
     {
         Entity owner = getEntity(username);
 
         Polyline line = Game.ui().getMap().addPolyline(new PolylineOptions().add(position).add(destination));
         line.setWidth(2);
 
-        createDetached(owner, position, destination, line, type, n);
+        return createDetached(owner, position, destination, line, type, n);
     }
 
     public void playerAttack(final Entity defender)
@@ -305,11 +314,14 @@ public class EntityManager implements Event.EntityDeadListener, Event.DetachedDe
                 {
                     player.addComponent(new Component.Attacking(defender));
                     Component.Animation anim = player.getComponent(Component.ANIMATION);
-                    anim.setState(Component.Animation.BATTLE);
+                    boolean moving = (player.getComponentMask() & Component.DESTINATION) == Component.DESTINATION;
+                    anim.setState(moving ? Component.Animation.MOVE : Component.Animation.BATTLE);
 
                     defender.addComponent(new Component.Attacking(player, true));
                     anim = defender.getComponent(Component.ANIMATION);
-                    anim.setState(Component.Animation.BATTLE);
+                    moving = (defender.getComponentMask() & Component.DESTINATION) == Component.DESTINATION;
+                    anim.setState(moving ? Component.Animation.MOVE : Component.Animation.BATTLE);
+                    anim.setState(Component.Animation.MOVE);
                 }
             };
 
@@ -325,11 +337,13 @@ public class EntityManager implements Event.EntityDeadListener, Event.DetachedDe
         {
             attacker.addComponent(new Component.Attacking(defender));
             Component.Animation anim = attacker.getComponent(Component.ANIMATION);
-            anim.setState(Component.Animation.BATTLE);
+            boolean moving = (attacker.getComponentMask() & Component.DESTINATION) == Component.DESTINATION;
+            anim.setState(moving ? Component.Animation.MOVE : Component.Animation.BATTLE);
 
             defender.addComponent(new Component.Attacking(attacker, true));
             anim = defender.getComponent(Component.ANIMATION);
-            anim.setState(Component.Animation.BATTLE);
+            moving = (defender.getComponentMask() & Component.DESTINATION) == Component.DESTINATION;
+            anim.setState(moving ? Component.Animation.MOVE : Component.Animation.BATTLE);
         }
     }
 

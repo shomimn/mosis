@@ -49,7 +49,11 @@ public abstract class System
                     --d.steps;
 
                     if (d.steps == 0)
+                    {
                         e.removeComponent(Component.DESTINATION);
+                        Component.Animation anim = e.getComponent(Component.ANIMATION);
+                        anim.setState(Component.Animation.BATTLE);
+                    }
 
                     LatLng newPos = new LatLng(oldPos.latitude + latStep, oldPos.longitude + lngStep);
                     c.setLatLng(newPos);
@@ -102,7 +106,12 @@ public abstract class System
                             if (health.getHealth() <= 0)
                             {
                                 Component.Animation anim = e.getComponent(Component.ANIMATION);
-                                anim.reset();
+                                if (anim != null)
+                                    anim.reset();
+
+                                Component.OwnedBy ownedBy = defender.getComponent(Component.OWNED_BY);
+                                if (ownedBy != null)
+                                    ownedBy.removeOwnership();
 
                                 Component.Position pos = defender.getComponent(Component.POSITION);
 
@@ -193,10 +202,9 @@ public abstract class System
                 Marker m = markers.get(e.getId());
 
                 if ((mask & Component.POSITION) == Component.POSITION
-                        && (mask & Component.APPEARANCE) == Component.APPEARANCE && (mask & Component.HEALTH) == Component.HEALTH)
+                        && (mask & Component.HEALTH) == Component.HEALTH)
                 {
                     Component.Position position = e.getComponent(Component.POSITION);
-                    Component.Appearance appearance = e.getComponent(Component.APPEARANCE);
                     Component.Health health = e.getComponent(Component.HEALTH);
 
                     m.setPosition(position.getLatLng());

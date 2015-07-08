@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.mnm.conquest.ConquestApplication;
 import com.mnm.conquest.PlayerInfo;
 import com.mnm.conquest.ServerConnection;
@@ -175,6 +176,13 @@ public class Game
 
         entityManager.getEntities().add(fortress);
 
+        MarkerOptions options = new MarkerOptions().position(new LatLng(lat, lng))
+                .icon(BitmapDescriptorFactory.fromResource(markerId)).anchor(0.5f, 0.5f);
+
+        Marker m = gameUi.getMap().addMarker(options);
+
+        gameUi.insert(fortress, m);
+
         TaskManager.getTaskManager().execute(new Task(Task.SERVER)
         {
             @Override
@@ -264,6 +272,13 @@ public class Game
                     break;
                 case ServerConnection.Request.START_ATTACK:
                     startAttack(object.getJSONObject("data"));
+                    break;
+                case ServerConnection.Request.DETACHED_ATTACK:
+                    detachedAttack(object.getJSONObject("data"));
+                    break;
+                case ServerConnection.Request.DETACHED_MOVE:
+                    detachedMove(object.getJSONObject("data"));
+                    break;
             }
         }
         catch (Exception e)
@@ -327,13 +342,6 @@ public class Game
             int markerId = ConquestApplication.getContext().getResources().getIdentifier(markerName, "id", ConquestApplication.getContext().getPackageName());
 
             Entity entity = entityManager.createFortress(new LatLng(lat, lng), object);
-
-            MarkerOptions options = new MarkerOptions().position(new LatLng(lat, lng))
-                    .icon(BitmapDescriptorFactory.fromResource(markerId)).anchor(0.5f, 0.5f);
-
-            Marker m = gameUi.getMap().addMarker(options);
-
-            gameUi.insert(entity, m);
         }
         catch (JSONException e)
         {
@@ -349,6 +357,56 @@ public class Game
             String defender = object.getString("defender");
 
             entityManager.startAttack(entityManager.getEntity(attacker), entityManager.getEntity(defender));
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void detachedAttack(JSONObject object)
+    {
+        try
+        {
+            String attacker = object.getString("attacker");
+            String defender = object.getString("defender");
+
+            double lat = object.getDouble("latitude");
+            double lng = object.getDouble("longitude");
+
+            Entity owner = getEntityManager().getEntity(attacker);
+            Component.Position position = owner.getComponent(Component.POSITION);
+
+            LatLng src = position.getLatLng();
+            LatLng dst = new LatLng(lat, lng);
+
+            Entity.Detached detached = Game.getEntityManager().createDetached(attacker, src, dst, R.mipmap.interceptor, 1);
+            Entity defEntity = Game.getEntityManager().getEntity(defender);
+
+            Game.getEntityManager().startAttack(detached, defEntity);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void detachedMove(JSONObject object)
+    {
+        try
+        {
+            String username = object.getString("username");
+
+            double lat = object.getDouble("latitude");
+            double lng = object.getDouble("longitude");
+
+            Entity owner = getEntityManager().getEntity(username);
+            Component.Position position = owner.getComponent(Component.POSITION);
+
+            LatLng src = position.getLatLng();
+            LatLng dst = new LatLng(lat, lng);
+
+            Game.getEntityManager().createDetached(username, src, dst, R.mipmap.interceptor, 1);
         }
         catch (JSONException e)
         {

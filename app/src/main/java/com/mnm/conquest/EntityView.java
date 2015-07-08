@@ -16,6 +16,7 @@ import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.google.android.gms.maps.Projection;
@@ -61,6 +62,7 @@ public class EntityView extends LinearLayout implements View.OnClickListener
     private Button detachButton;
     private TextView seekValue;
     private TextView armySize;
+    private TextView coinView;
 
     private ViewFlipper unitFlipper;
 
@@ -68,7 +70,7 @@ public class EntityView extends LinearLayout implements View.OnClickListener
 
     private boolean isPlayer;
 
-    private int[] images = new int[] { R.mipmap.air1, R.mipmap.interceptor, R.mipmap.scout, R.mipmap.fighter, R.mipmap.gunship, R.mipmap.bomber };
+    private int[] images = new int[] { R.mipmap.red1, R.mipmap.interceptor, R.mipmap.scout, R.mipmap.fighter, R.mipmap.gunship, R.mipmap.bomber };
     private String[] names = new String[] { "username", "fighter", "interceptor", "scout", "gunship", "bomber" };
     private UnitStats[] stats = new UnitStats[] { new UnitStats(50, 60, 90, 0), new UnitStats(50,  50, 70, 50), new UnitStats(40, 50, 60, 45), new UnitStats(30, 60, 40, 30),
                                                   new UnitStats(70, 80, 60, 60), new UnitStats(70, 80, 80, 80) };
@@ -324,47 +326,56 @@ public class EntityView extends LinearLayout implements View.OnClickListener
                 seekPart.setVisibility(View.INVISIBLE);
                 break;
             case R.id.buy_button:
-//                if (buyButton.getText().toString().equals("buy"))
-//                {
-//                    seekBar.setMax(seekBar.getMax() + 1);
-//                    int cost = stats[unitFlipper.getDisplayedChild()].cost;
-//
-//                    //seekValue.setText(String.valueOf(seekBar.getProgress()) + "/" + String.valueOf(seekBar.getMax()));
-//                    Component.Army a = displayedEntity.getComponent(Component.ARMY);
-//                    a.addUnit(unitFlipper.getDisplayedChild() - 1);
-//
-//                    int n = 0;
-//                    String name = names[unitFlipper.getDisplayedChild()] + "s";
-//                    try
-//                    {
-//                        n = Game.getPlayerInfo().getData().getInt(name);
-//                        Game.getPlayerInfo().getData().put(name, n + 1);
-//
-//                        armySize.setText("/" + String.valueOf(n + 1));
-//                    }
-//                    catch (JSONException e)
-//                    {
-//                        e.printStackTrace();
-//                    }
-//                    updateUnitiesDB(name, n + 1);
-//                }
-//                else
-//                {
-                if (!isPlayer)
+                if (unitFlipper.getDisplayedChild() != 0 && isPlayer)
                 {
-                    TaskManager.getTaskManager().execute(new Task(Task.GENERAL)
+                    int coins = Integer.parseInt(coinView.getText().toString());
+                    int cost = stats[unitFlipper.getDisplayedChild()].cost;
+
+                    if (cost > coins)
                     {
-                        @Override
-                        public void execute()
-                        {
-                            Game.getEntityManager().playerAttack(displayedEntity);
-                        }
-                    });
+                        Toast.makeText(getContext(), "Not enough coins", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    seekBar.setMax(seekBar.getMax() + 1);
+
+                    Component.Army a = displayedEntity.getComponent(Component.ARMY);
+                    a.addUnit(unitFlipper.getDisplayedChild() - 1);
+
+                    int n = 0;
+                    String name = names[unitFlipper.getDisplayedChild()] + "s";
+                    try
+                    {
+                        n = Game.getPlayerInfo().getData().getInt(name);
+                        Game.getPlayerInfo().getData().put(name, n + 1);
+
+                        armySize.setText("/" + String.valueOf(n + 1));
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    updateUnitiesDB(name, n + 1);
+                    coinView.setText(String.valueOf(coins - cost));
                 }
-//                }
+                else
+                {
+                    if (!isPlayer)
+                    {
+                        TaskManager.getTaskManager().execute(new Task(Task.GENERAL)
+                        {
+                            @Override
+                            public void execute()
+                            {
+                                Game.getEntityManager().playerAttack(displayedEntity);
+                            }
+                        });
+                    }
+                }
             break;
             case R.id.detach:
                 Game.setState(Game.DETACHING);
+                Toast.makeText(getContext(), "Click on map or enemy", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.health_upgrade:
                 healthRating.setRating(healthRating.getRating() + 1);
@@ -390,15 +401,9 @@ public class EntityView extends LinearLayout implements View.OnClickListener
         };
         TaskManager.getTaskManager().execute(task);
     }
-//    public void seekViewEnemy(int val)
-//    {
-//        seekBar.setVisibility(View.GONE);
-//        detachButton.setVisibility(View.GONE);
-//        seekValue.setText("Number of units: "+String.valueOf(val));
-//    }
-//    public void seekViewMe()
-//    {
-//        seekBar.setVisibility(View.VISIBLE);
-//        detachButton.setVisibility(View.VISIBLE);
-//    }
+
+    public void setCoinView(TextView view)
+    {
+        coinView = view;
+    }
 }

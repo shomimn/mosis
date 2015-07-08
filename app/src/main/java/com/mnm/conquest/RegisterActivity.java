@@ -10,8 +10,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -48,7 +51,14 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        
+
+        SpannableString s = new SpannableString("Register");
+        s.setSpan(new FTypefaceSpan(this, "kenvector_future.ttf"), 0, s.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(s);
+
         name = (EditText)findViewById(R.id.name_sign_up);
         lastName = (EditText)findViewById(R.id.last_name_sign_up);
         userName = (EditText)findViewById(R.id.username_sign_up);
@@ -62,8 +72,7 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
 
         photo = BitmapFactory.decodeResource(getResources(), R.mipmap.player_default);
 
-        markerIds = new int[]{ R.mipmap.test1, R.mipmap.red1, R.mipmap.red2, R.mipmap.red3, R.mipmap.green1, R.mipmap.green2, R.mipmap.green3,
-                R.mipmap.blue1, R.mipmap.blue2, R.mipmap.blue3, R.mipmap.orange1, R.mipmap.orange2, R.mipmap.orange3};
+        markerIds = new int[]{ R.mipmap.red1, R.mipmap.red2, R.mipmap.green1, R.mipmap.green2, R.mipmap.blue1, R.mipmap.blue2};
 
         for(int i=0; i<markerIds.length; i++)
             setFlipperImage(markerIds[i]);
@@ -88,7 +97,13 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
                 photo = bundle.getParcelable("photo");
 
                 sign_save.setText("Save");
-                setTitle("Profile settings");
+//                setTitle("Profile settings");
+                s = new SpannableString("Profile settings");
+                s.setSpan(new FTypefaceSpan(this, "kenvector_future.ttf"), 0, s.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                actionBar.setTitle(s);
+
                 findViewById(R.id.username_sign_up).setEnabled(false);
                 register = false;
 
@@ -170,11 +185,6 @@ public class RegisterActivity extends ActionBarActivity implements View.OnClickL
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

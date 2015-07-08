@@ -55,7 +55,7 @@
                     android:padding="10dp"
                     android:text="@string/sign_in"
                     android:layout_margin="5dip"
-                    android:background="@drawable/button_background"
+                    android:background="@drawable/button_selector"
                     android:textColor="@color/white"/>
                 <com.mnm.conquest.FButton
                     android:id="@+id/sign_up_login_button"
@@ -64,7 +64,7 @@
                     android:layout_weight="0.5"
                     android:padding="10dp"
                     android:text="@string/sign_up"
-                    android:background="@drawable/button_background"
+                    android:background="@drawable/button_selector"
                     android:layout_margin="5dip"
                     android:textColor="@color/white"/>
                 </LinearLayout>
@@ -91,32 +91,48 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_width="150dip"
                     android:layout_height="150dip"
+                    android:layout_marginTop="10dp"
                     android:src="@mipmap/player_default"/>
                 <com.mnm.conquest.FButton
                     android:id="@+id/map_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="@string/play_button"/>
+                    android:background="@drawable/button_selector"
+                    android:text="@string/play_button"
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/white"/>
                 <com.mnm.conquest.FButton
                     android:id="@+id/alliance_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/alliances_button"/>
+                    android:background="@drawable/button_selector"
+                    android:text="@string/alliances_button"
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/white"/>
                 <com.mnm.conquest.FButton
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@drawable/button_selector"
                     android:text="@string/highScoresButton"
-                    android:id="@+id/high_scores"/>
+                    android:id="@+id/high_scores"
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/white"/>
                 <com.mnm.conquest.FButton
                     android:id="@+id/bonus_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="@string/bonus_info"/>
+                    android:background="@drawable/button_selector"
+                    android:text="@string/bonus_info"
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/white"/>
                 <com.mnm.conquest.FButton
                     android:id="@+id/player_settings"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="@string/player_settings"/>
+                    android:background="@drawable/button_selector"
+                    android:text="@string/player_settings"
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/white"/>
                 </LinearLayout>
             </LinearLayout>
     </RelativeLayout>

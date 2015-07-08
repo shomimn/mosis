@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.graphics.drawable.shapes.Shape;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,6 +61,12 @@ public class AllianceActivity extends ActionBarActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alliance);
+
+        SpannableString s = new SpannableString("Alliances");
+        s.setSpan(new FTypefaceSpan(this, "kenvector_future.ttf"), 0, s.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        getSupportActionBar().setTitle(s);
 
         listView = (ListView) findViewById(R.id.ally_list_view);
         playerInfoList = new ArrayList<>();
@@ -229,9 +237,7 @@ public class AllianceActivity extends ActionBarActivity
                     m.setIcon(R.mipmap.ic_action_bluetooth);
                     bluetoothEnabled = false;
                 }
-                break;
-            case R.id.action_settings:
-                return true;
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

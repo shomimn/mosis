@@ -463,6 +463,11 @@ public abstract class Component
             list.set(0, position.getLatLng());
             line.setPoints(list);
         }
+
+        public void removeOwnership()
+        {
+            line.remove();
+        }
     }
 
     public static class Destination extends Component

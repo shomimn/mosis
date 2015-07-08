@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
@@ -173,6 +174,7 @@ public class MapActivity extends AppCompatActivity
                             Game.createFortress(latLng);
                             ServerConnection.updateField(Game.getPlayerInfo().getUsername(), "coins", coins - 70);
                             Game.getPlayerInfo().setCoins(coins - 70);
+                            coinTextView.setText(String.valueOf(coins - 70));
                         }
                     }
                 });
@@ -184,7 +186,7 @@ public class MapActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker)
             {
-                Entity entity = Game.ui().getEntity(marker);
+                final Entity entity = Game.ui().getEntity(marker);
 
                 if (Game.getState() == Game.NORMAL)
                 {
@@ -202,16 +204,33 @@ public class MapActivity extends AppCompatActivity
                         Component.Position pos = player.getComponent(Component.POSITION);
 
                         Component.Position enemyPos = entity.getComponent(Component.POSITION);
-                        LatLng newPos = new LatLng(enemyPos.getLatLng().latitude - 0.01, enemyPos.getLatLng().longitude);
+                        final LatLng newPos = new LatLng(enemyPos.getLatLng().latitude - 0.01, enemyPos.getLatLng().longitude);
+                        final Component.Player pEnemy = entity.getComponent(Component.PLAYER);
 
                         Polyline line = map.addPolyline(new PolylineOptions().add(pos.getLatLng()).add(newPos).color(R.color.white));
                         line.setWidth(2);
 
-                        Entity.Detached detached = Game.getEntityManager().createDetached(player, pos.getLatLng(), newPos, line, R.mipmap.interceptor, 3);
-
-                        Game.getEntityManager().startAttack(detached, entity);
+                        final Entity.Detached detached = Game.getEntityManager().createDetached(player, pos.getLatLng(), newPos, line, R.mipmap.interceptor, 3);
 
                         Game.setState(Game.NORMAL);
+
+                        Task.Waitable task = new Task.Waitable()
+                        {
+
+                            @Override
+                            public void executeImpl()
+                            {
+                                ServerConnection.startDetachedAttack(Game.getPlayerInfo().getUsername(), pEnemy.getUsername(), newPos);
+                            }
+
+                            @Override
+                            public void uiExecute()
+                            {
+                                Game.getEntityManager().startAttack(detached, entity);
+                            }
+                        };
+
+                        TaskManager.getTaskManager().executeAndPost(task);
                     }
                 }
 
@@ -273,6 +292,8 @@ public class MapActivity extends AppCompatActivity
 
                     Game.getEntityManager().createDetached(player, pos.getLatLng(), latLng, line, R.mipmap.interceptor, 3);
 
+                    ServerConnection.detachedMove(Game.getPlayerInfo().getUsername(), latLng);
+
                     Game.setState(Game.NORMAL);
                 }
             }
@@ -295,7 +316,6 @@ public class MapActivity extends AppCompatActivity
                             JSONObject fortress = (JSONObject)f.get(j);
                             LatLng pos = new LatLng(fortress.getDouble("latitude"), fortress.getDouble("longitude"));
                             Game.getEntityManager().createFortress(pos, fortress);
-
                         }
 
                     }
@@ -337,13 +357,15 @@ public class MapActivity extends AppCompatActivity
         coinTextView = new FTextView(this);
         coinTextView.setText(String.valueOf(Game.getPlayerInfo().getCoins()));
 
+        entityView.setCoinView(coinTextView);
+
         ImageView image = new ImageView(this);
         image.setBackgroundResource(R.mipmap.coin);
 
         layout.addView(image);
         layout.addView(coinTextView);
 
-        MenuItem item  = menu.getItem(0);
+        MenuItem item = menu.getItem(0);
         item.setActionView(layout);
 
         return true;
